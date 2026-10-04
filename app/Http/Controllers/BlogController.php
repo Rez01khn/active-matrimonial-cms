@@ -163,14 +163,62 @@ class BlogController extends Controller
     }
 
 
-    public function all_blog() {
-        $blogs = Blog::where('status', 1)->orderBy('created_at', 'desc')->paginate(12);
-        return view("frontend.blog.listing", compact('blogs'));
+    public function all_blog(Request $request) {
+        $category_slug = $request->category;
+        $search = $request->search;
+        
+        $query = Blog::where('status', 1);
+
+        if (!empty($category_slug) && $category_slug !== 'all') {
+            $cat = BlogCategory::where('slug', $category_slug)->first();
+            if ($cat) {
+                $query->where('category_id', $cat->id);
+            }
+        }
+
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                  ->orWhere('short_description', 'like', '%'.$search.'%');
+            });
+        }
+
+        $blogs = $query->orderBy('created_at', 'desc')->paginate(6);
+        $categories = BlogCategory::withCount('blogs')->get();
+        $popular_blogs = Blog::where('status', 1)->orderBy('created_at', 'desc')->take(5)->get();
+
+        return view("frontend.blog.listing", compact('blogs', 'categories', 'popular_blogs', 'category_slug', 'search'));
     }
 
+
     public function blog_details($slug) {
-        $blog = Blog::where('slug', $slug)->first();
-        return view("frontend.blog.details", compact('blog'));
+        $blog = Blog::where('slug', $slug)->firstOrFail();
+        $categories = BlogCategory::withCount('blogs')->get();
+        $popular_blogs = Blog::where('status', 1)->where('id', '!=', $blog->id)->orderBy('created_at', 'desc')->take(4)->get();
+        if ($popular_blogs->isEmpty()) {
+            $popular_blogs = Blog::where('status', 1)->take(4)->get();
+        }
+        $prev_blog = Blog::where('status', 1)->where('id', '<', $blog->id)->orderBy('id', 'desc')->first();
+        if (!$prev_blog) {
+            $prev_blog = Blog::where('status', 1)->where('id', '!=', $blog->id)->orderBy('id', 'desc')->first();
+        }
+        $next_blog = Blog::where('status', 1)->where('id', '>', $blog->id)->orderBy('id', 'asc')->first();
+        if (!$next_blog) {
+            $next_blog = Blog::where('status', 1)->where('id', '!=', $blog->id)->orderBy('id', 'asc')->first();
+        }
+        $related_blogs = Blog::where('status', 1)
+            ->where('id', '!=', $blog->id)
+            ->where('category_id', $blog->category_id)
+            ->take(3)
+            ->get();
+        if ($related_blogs->count() < 3) {
+            $needed = 3 - $related_blogs->count();
+            $existing_ids = $related_blogs->pluck('id')->push($blog->id)->toArray();
+            $extra = Blog::where('status', 1)->whereNotIn('id', $existing_ids)->take($needed)->get();
+            $related_blogs = $related_blogs->concat($extra);
+        }
+
+        return view("frontend.blog.details", compact('blog', 'categories', 'popular_blogs', 'prev_blog', 'next_blog', 'related_blogs'));
     }
 
     public function check_blog_details($urls)

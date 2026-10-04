@@ -83,7 +83,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/custom-page/about-us') }}" class="nav-link nav-link-matrimony">
+                        <a href="{{ Route::has('about_us') ? route('about_us') : url('/about-us') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'about_us' || request()->is('about-us') || request()->is('custom-page/about-us')) active @endif">
                             {{ translate('About Us') }}
                         </a>
                     </li>

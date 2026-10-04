@@ -1,175 +1,176 @@
-<div class="aiz-filter-sidebar collapse-sidebar-wrap sidebar-xl z-1035">
-    <div class="overlay overlay-fixed dark c-pointer" data-toggle="class-toggle" data-target=".aiz-filter-sidebar" data-same=".filter-sidebar-thumb"></div>
-    <div class="card collapse-sidebar c-scrollbar-light shadow-none">
-        <div class="card-header pr-1 pl-3">
-            <h5 class="mb-0 h6">{{ translate('ADVANCED SEARCH') }}</h5>
-            <button class="btn btn-sm p-2 d-xl-none filter-sidebar-thumb" data-toggle="class-toggle" data-target=".aiz-filter-sidebar" type="button">
-                <i class="las la-times la-2x"></i>
-            </button>
+<div class="filter-card-container">
+    <div class="filter-sidebar-header">
+        <i class="las la-sliders-h fs-20 text-mat-gold"></i>
+        <span>{{ translate('Filter Matches') }}</span>
+        <button class="btn btn-sm p-1 d-xl-none ml-auto text-muted" data-toggle="class-toggle" data-target=".aiz-filter-sidebar" type="button">
+            <i class="las la-times fs-20"></i>
+        </button>
+    </div>
+
+    <form action="{{ route('member.listing') }}" method="get" id="filter-form">
+        <!-- 1. Looking For -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-user-tag text-mat-gold fs-15"></i>
+                <span>{{ translate('Looking For') }}</span>
+            </label>
+            <select name="gender" class="filter-field-input">
+                <option value="">{{ translate('Bride / Groom') }}</option>
+                <option value="2" @if(request('gender') == '2') selected @endif>{{ translate('Bride (Female)') }}</option>
+                <option value="1" @if(request('gender') == '1') selected @endif>{{ translate('Groom (Male)') }}</option>
+            </select>
         </div>
-        <div class="card-body">
-            <div class="pb-4">
-                <form action="{{ route('member.listing') }}" method="get">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="age_from">{{ translate('Age From') }}</label>
-                                <input type="number" name="age_from" value="{{ $age_from }}" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="age_to">{{ translate('To') }}</label>
-                                <input type="number" name="age_to" value="{{ $age_to }}" class="form-control">
-                          </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Member ID') }}</label>
-                                <input type="text" name="member_code" value="{{ $member_code }}" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Maritial Status') }}</label>
-                                @php $marital_statuses = \App\Models\MaritalStatus::all(); @endphp
-                                <select class="form-control aiz-selectpicker" name="marital_status" data-live-search="true">
-                                    <option value="">{{translate('Select One')}}</option>
-                                    @foreach ($marital_statuses as $marital_status)
-                                        <option value="{{$marital_status->id}}" @if($matital_status == $marital_status->id) selected @endif >{{$marital_status->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Religion') }}</label>
-                                @php $religions = \App\Models\Religion::all(); @endphp
-                                <select name="religion_id" id="religion_id" class="form-control aiz-selectpicker"  data-live-search="true" >
-                                    <option value="">{{translate('Choose One')}}</option>
-                                    @foreach ($religions as $religion)
-                                        <option value="{{ $religion->id }}" @if($religion->id == $religion_id) selected @endif> {{ $religion->name }} </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Caste') }}</label>
-                                <select name="caste_id" id="caste_id" class="form-control aiz-selectpicker" data-live-search="true" >
-                                    <option value="">{{translate('Select One')}}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Sub Caste') }}</label>
-                                <select name="sub_caste_id" id="sub_caste_id" class="form-control aiz-selectpicker" data-live-search="true">
-                                    <option value="">{{translate('Select One')}}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Mother Tongue') }}</label>
-                                @php $mother_tongues = \App\Models\MemberLanguage::all(); @endphp
-                                <select name="mother_tongue" class="form-control aiz-selectpicker" data-live-search="true" >
-                                    <option value="">{{translate('Select One')}}</option>
-                                    @foreach ($mother_tongues as $mother_tongue_select)
-                                        <option value="{{$mother_tongue_select->id}}" @if($mother_tongue_select->id == $mother_tongue) selected @endif> {{ $mother_tongue_select->name }} </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                        <div class="form-grohp mb-3">
-                                <label class="form-label" for="name">{{ translate('Profession') }}</label>
-                                <input type="text" name="profession" value="{{ $profession }}" class="form-control" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Country') }}</label>
-                                @php $countries = \App\Models\Country::where('status',1)->get(); @endphp
-                                <select name="country_id" id="country_id" class="form-control aiz-selectpicker" data-live-search="true" >
-                                    <option value="">{{translate('Select One')}}</option>
-                                    @foreach ($countries as $country)
-                                        <option value="{{ $country->id }}" @if($country->id == $country_id) selected @endif >{{ $country->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('State') }}</label>
-                                <select name="state_id" id="state_id" class="form-control aiz-selectpicker" data-live-search="true" >
 
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('City') }}</label>
-                                <select name="city_id" id="city_id" class="form-control aiz-selectpicker" data-live-search="true" >
+        <!-- 2. Age Range -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-history text-mat-gold fs-15"></i>
+                <span>{{ translate('Age Range') }}</span>
+            </label>
+            <select name="age_range" class="filter-field-input">
+                <option value="">{{ translate('18 - 30') }}</option>
+                <option value="18-25" @if(request('age_range') == '18-25' || ($age_from == 18 && $age_to == 25)) selected @endif>18 - 25</option>
+                <option value="26-32" @if(request('age_range') == '26-32' || ($age_from == 26 && $age_to == 32)) selected @endif>26 - 32</option>
+                <option value="33-40" @if(request('age_range') == '33-40' || ($age_from == 33 && $age_to == 40)) selected @endif>33 - 40</option>
+                <option value="40+" @if(request('age_range') == '40+') selected @endif>40+</option>
+            </select>
+            <input type="hidden" name="age_from" value="{{ $age_from }}">
+            <input type="hidden" name="age_to" value="{{ $age_to }}">
+        </div>
 
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Min Height') }}</label>
-                                <input type="number" name="min_height" value="{{ $min_height }}" class="form-control" min="0" step="0.01"  >
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="name">{{ translate('Max Height') }}</label>
-                                <input type="number" name="max_height" value="{{ $max_height }}" class="form-control" min="0" step="0.01"   >
-                          </div>
-                        </div>
-                    </div>
-                    <h6 class="separator text-left mb-3 fs-12 text-uppercase text-secondary">
-                        <span class="bg-white pr-3">{{ translate('Member Type') }}</span>
-                    </h6>
-                    <div class="aiz-radio-list">
-                        <label class="aiz-radio">
-                            <input type="radio" name="member_type" value="2" onchange="applyFilter()" @if($member_type == 2) checked @endif > {{ translate('Premium Member') }}
-                            <span class="aiz-rounded-check"></span>
-                        </label>
-                        <label class="aiz-radio">
-                            <input type="radio" name="member_type" value="1" onchange="applyFilter()"  @if($member_type == 1) checked @endif > {{ translate('Free member') }}
-                            <span class="aiz-rounded-check"></span>
-                        </label>
-                        <label class="aiz-radio">
-                            <input type="radio" name="member_type" value="0" @if($member_type == 0) checked @endif> {{ translate('All Member') }}
-                            <span class="aiz-rounded-check"></span>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-block btn-primary mt-4 round-btn">{{ translate('Search') }}</button>
-                </form>
+        <!-- 3. Religion -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-praying-hands text-mat-gold fs-15"></i>
+                <span>{{ translate('Religion') }}</span>
+            </label>
+            @php $religions = \App\Models\Religion::all(); @endphp
+            <select name="religion_id" id="religion_id" class="filter-field-input">
+                <option value="">{{ translate('Any Religion') }}</option>
+                @foreach ($religions as $religion)
+                    <option value="{{ $religion->id }}" @if($religion->id == $religion_id) selected @endif>{{ $religion->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- 4. Location -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-map-marker-alt text-mat-gold fs-15"></i>
+                <span>{{ translate('Location') }}</span>
+            </label>
+            @php $cities = \App\Models\City::all(); @endphp
+            <select name="city_id" class="filter-field-input">
+                <option value="">{{ translate('Dhaka / Any Location') }}</option>
+                @foreach ($cities as $city)
+                    <option value="{{ $city->id }}" @if($city->id == $city_id) selected @endif>{{ $city->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- 5. Education -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-graduation-cap text-mat-gold fs-15"></i>
+                <span>{{ translate('Education') }}</span>
+            </label>
+            <select name="education" class="filter-field-input">
+                <option value="">{{ translate('Any Education') }}</option>
+                <option value="Bachelor / Engineering" @if(request('education') == 'Bachelor / Engineering') selected @endif>BSc / Engineering</option>
+                <option value="Master / Business" @if(request('education') == 'Master / Business') selected @endif>MSc / MBA / Masters</option>
+                <option value="Medical / MBBS" @if(request('education') == 'Medical / MBBS') selected @endif>MBBS / Medical</option>
+                <option value="Doctorate / PhD" @if(request('education') == 'Doctorate / PhD') selected @endif>PhD / Doctorate</option>
+            </select>
+        </div>
+
+        <!-- 6. Profession -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-briefcase text-mat-gold fs-15"></i>
+                <span>{{ translate('Profession') }}</span>
+            </label>
+            <input type="text" name="profession" value="{{ $profession }}" placeholder="{{ translate('Any Profession') }}" class="filter-field-input">
+        </div>
+
+        <!-- 7. Marital Status -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-ring text-mat-gold fs-15"></i>
+                <span>{{ translate('Marital Status') }}</span>
+            </label>
+            @php $marital_statuses = \App\Models\MaritalStatus::all(); @endphp
+            <select name="marital_status" class="filter-field-input">
+                <option value="">{{ translate('Any Status') }}</option>
+                @foreach ($marital_statuses as $status)
+                    <option value="{{ $status->id }}" @if($matital_status == $status->id) selected @endif>{{ $status->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- 8. Height -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-ruler-vertical text-mat-gold fs-15"></i>
+                <span>{{ translate('Height') }}</span>
+            </label>
+            <select name="min_height" class="filter-field-input">
+                <option value="">{{ translate('Any Height') }}</option>
+                <option value="5.0" @if($min_height == '5.0') selected @endif>5' 0" (152 cm)</option>
+                <option value="5.2" @if($min_height == '5.2') selected @endif>5' 2" (157 cm)</option>
+                <option value="5.4" @if($min_height == '5.4') selected @endif>5' 4" (162 cm)</option>
+                <option value="5.6" @if($min_height == '5.6') selected @endif>5' 6" (167 cm)</option>
+                <option value="5.8" @if($min_height == '5.8') selected @endif>5' 8" (172 cm)</option>
+                <option value="6.0" @if($min_height == '6.0') selected @endif>6' 0" (182 cm)</option>
+            </select>
+        </div>
+
+        <!-- 9. Income -->
+        <div class="filter-field-group">
+            <label class="filter-field-label">
+                <i class="las la-wallet text-mat-gold fs-15"></i>
+                <span>{{ translate('Income') }}</span>
+            </label>
+            <select name="income" class="filter-field-input">
+                <option value="">{{ translate('Any Income') }}</option>
+                <option value="50k-100k">৳ 50,000 - ৳ 1,00,000</option>
+                <option value="100k-200k">৳ 1,00,000 - ৳ 2,00,000</option>
+                <option value="200k+">৳ 2,00,000+</option>
+            </select>
+        </div>
+
+        <!-- 10. Advanced Filters Accordion Trigger -->
+        <div class="filter-field-group">
+            <a href="#advanced-collapse" class="d-flex align-items-center justify-content-between text-muted fs-13 fw-600 text-decoration-none py-2 border-top" data-toggle="collapse" role="button" aria-expanded="false">
+                <span><i class="las la-leaf text-mat-gold mr-1"></i> {{ translate('Advanced Filters') }}</span>
+                <i class="las la-angle-down"></i>
+            </a>
+            <div class="collapse pt-2" id="advanced-collapse">
+                <div class="form-group mb-2">
+                    <label class="filter-field-label">{{ translate('Member ID') }}</label>
+                    <input type="text" name="member_code" value="{{ $member_code }}" placeholder="e.g. 100234" class="filter-field-input">
+                </div>
             </div>
         </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-4">
+            <button type="submit" class="btn-search-matches mb-2">
+                <i class="las la-search fs-16"></i>
+                <span>{{ translate('Search Matches') }}</span>
+            </button>
+            <a href="{{ route('member.listing') }}" class="btn-reset-filters">
+                <i class="las la-undo-alt fs-15"></i>
+                <span>{{ translate('Reset Filters') }}</span>
+            </a>
+        </div>
+    </form>
+
+    <!-- Bottom Decorative Card -->
+    <div class="filter-decorative-card">
+        <div class="text-danger fs-14 mb-1">❤</div>
+        <div class="font-serif italic text-mat-maroon fs-16 fw-600">
+            Better Matches,<br>Brighter Futures
+        </div>
+        <div class="text-muted fs-11 mt-1 opacity-70">✦ ✦ ✦</div>
     </div>
 </div>

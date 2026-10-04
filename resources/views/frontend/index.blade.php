@@ -504,46 +504,153 @@
     </section>
 
     <!-- 6. Real People. Real Connections. Real Stories. -->
-    <section class="py-6 bg-mat-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <!-- Left Side Multi-Image Collage (No Video Elements) -->
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <div class="story-collage-grid row gutters-10">
-                        <!-- Primary Couple Portrait -->
-                        <div class="col-7">
-                            <div class="story-img-card main-img-card">
-                                <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Rahim & Nusrat" class="story-img">
+    <section class="py-6 bg-mat-section position-relative">
+        <div class="container position-relative px-4 px-md-5">
+            <!-- Symmetrically Positioned Prev / Next Arrow Navigation Controls -->
+            <button type="button" class="story-nav-btn prev-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-prev-btn" aria-label="Previous Story">
+                <i class="las la-angle-left" style="color: #2C0A12; font-size: 20px;"></i>
+            </button>
+            <button type="button" class="story-nav-btn next-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-next-btn" aria-label="Next Story">
+                <i class="las la-angle-right" style="color: #2C0A12; font-size: 20px;"></i>
+            </button>
+
+            <!-- Carousel Slider Wrapper (slidesPerView: 1) -->
+            <div class="aiz-carousel" id="story-slider"
+                data-items="1"
+                data-xl-items="1"
+                data-lg-items="1"
+                data-md-items="1"
+                data-sm-items="1"
+                data-xs-items="1"
+                data-dots="false"
+                data-arrows="false"
+                data-autoplay="true"
+                data-infinite="true">
+
+                <!-- Slide Item 1 -->
+                <div class="carousel-box">
+                    <div class="row align-items-center">
+                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="story-collage-grid row gutters-10">
+                                <!-- Primary Couple Portrait -->
+                                <div class="col-7">
+                                    <div class="story-img-card main-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Rahim & Nusrat" class="story-img">
+                                    </div>
+                                </div>
+                                <!-- Stacked Accent Photos -->
+                                <div class="col-5 d-flex flex-column justify-content-between">
+                                    <div class="story-img-card accent-img-card mb-2">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
+                                    </div>
+                                    <div class="story-img-card accent-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <!-- Stacked Accent Photos -->
-                        <div class="col-5 d-flex flex-column justify-content-between">
-                            <div class="story-img-card accent-img-card mb-2">
-                                <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
-                            </div>
-                            <div class="story-img-card accent-img-card">
-                                <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
-                            </div>
+
+                        <!-- Right Side Quote Content -->
+                        <div class="col-lg-6 pl-lg-5">
+                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
+                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
+                                "We joined looking for someone compatible with our values. We never expected that a simple profile would lead us to each other."
+                            </blockquote>
+                            <div class="fw-700 fs-16 text-mat-maroon">— Rahim & Nusrat</div>
+                            <div class="fs-13 text-muted mb-4">Married in 2024</div>
+                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
+                                <span>Read Their Story</span>
+                                <i class="las la-arrow-right fs-16"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Side Quote Content -->
-                <div class="col-lg-6 pl-lg-5">
-                    <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
-                    <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
-                        "We joined looking for someone compatible with our values. We never expected that a simple profile would lead us to each other."
-                    </blockquote>
-                    <div class="fw-700 fs-16 text-mat-maroon">— Rahim & Nusrat</div>
-                    <div class="fs-13 text-muted mb-4">Married in 2024</div>
-                    <a href="{{ route('happy_stories') }}" class="story-read-btn">
-                        <span>Read Their Story</span>
-                        <i class="las la-arrow-right fs-16"></i>
-                    </a>
+                <!-- Slide Item 2 -->
+                <div class="carousel-box">
+                    <div class="row align-items-center">
+                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="story-collage-grid row gutters-10">
+                                <!-- Primary Couple Portrait -->
+                                <div class="col-7">
+                                    <div class="story-img-card main-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Tariq & Aisha" class="story-img">
+                                    </div>
+                                </div>
+                                <!-- Stacked Accent Photos -->
+                                <div class="col-5 d-flex flex-column justify-content-between">
+                                    <div class="story-img-card accent-img-card mb-2">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
+                                    </div>
+                                    <div class="story-img-card accent-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side Quote Content -->
+                        <div class="col-lg-6 pl-lg-5">
+                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
+                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
+                                "Finding a partner who shares your beliefs and life goals can be tough. Active Matrimonial made it feel effortless and natural."
+                            </blockquote>
+                            <div class="fw-700 fs-16 text-mat-maroon">— Tariq & Aisha</div>
+                            <div class="fs-13 text-muted mb-4">Married in 2023</div>
+                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
+                                <span>Read Their Story</span>
+                                <i class="las la-arrow-right fs-16"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Slide Item 3 -->
+                <div class="carousel-box">
+                    <div class="row align-items-center">
+                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="story-collage-grid row gutters-10">
+                                <!-- Primary Couple Portrait -->
+                                <div class="col-7">
+                                    <div class="story-img-card main-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Imran & Farhana" class="story-img">
+                                    </div>
+                                </div>
+                                <!-- Stacked Accent Photos -->
+                                <div class="col-5 d-flex flex-column justify-content-between">
+                                    <div class="story-img-card accent-img-card mb-2">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
+                                    </div>
+                                    <div class="story-img-card accent-img-card">
+                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side Quote Content -->
+                        <div class="col-lg-6 pl-lg-5">
+                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
+                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
+                                "Our families connected instantly, and so did we. Thank you for helping us find our lifelong happiness together!"
+                            </blockquote>
+                            <div class="fw-700 fs-16 text-mat-maroon">— Imran & Farhana</div>
+                            <div class="fs-13 text-muted mb-4">Married in 2024</div>
+                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
+                                <span>Read Their Story</span>
+                                <i class="las la-arrow-right fs-16"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
+
 
     <!-- 7. Premium Membership Banner CTA -->
     <section class="py-5 bg-mat-cream">
@@ -642,5 +749,37 @@
                 el.scrollBy({ left: amount, behavior: 'smooth' });
             }
         }
+
+        $(document).ready(function() {
+            var $storySlider = $('#story-slider');
+            if ($storySlider.length > 0) {
+                if ($storySlider.hasClass('slick-initialized')) {
+                    $storySlider.slick('unslick');
+                }
+                $storySlider.slick({
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 5500,
+                    pauseOnHover: true,
+                    infinite: true,
+                    arrows: false,
+                    dots: false,
+                    swipe: true,
+                    touchMove: true,
+                    rtl: $("html").attr("dir") === "rtl"
+                });
+
+                $('#story-prev-btn').on('click', function(e) {
+                    e.preventDefault();
+                    $storySlider.slick('slickPrev');
+                });
+
+                $('#story-next-btn').on('click', function(e) {
+                    e.preventDefault();
+                    $storySlider.slick('slickNext');
+                });
+            }
+        });
     </script>
 @endsection

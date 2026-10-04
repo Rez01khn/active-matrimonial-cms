@@ -168,7 +168,7 @@ $lang = \App\Models\Language::where('code', $locale)->first();
 <body class="text-left">
 
     <div
-        class="aiz-main-wrapper d-flex flex-column position-relative @if (Route::currentRouteName() != 'home') pt-8 pt-lg-10 @endif bg-white">
+        class="aiz-main-wrapper d-flex flex-column position-relative bg-white">
 
         @include('frontend.inc.header')
 

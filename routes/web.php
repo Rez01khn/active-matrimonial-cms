@@ -79,7 +79,10 @@ Route::controller(HomeController::class)->group(function () {
     Route::post('/password/reset/email/submit', 'reset_password_with_code')->name('password.update');
     Route::get('/users/login', 'login')->name('user.login');
     Route::get('/happy-stories', 'happy_stories')->name('happy_stories');
+    Route::get('/about-us', 'about_us')->name('about_us');
+    Route::get('/custom-page/about-us', 'about_us');
     Route::get('/story_details/{id}', 'story_details')->name('story_details');
+    Route::any('/member-listing', 'member_listing')->name('member.listing');
     Route::get('/users/blocked', 'user_account_blocked')->name('user.blocked');
     Route::post('/registration/verification-code-send', 'sendRegVerificationCode')->name('verification_code_send');
     Route::post('/registration/verification-code-confirmation', 'regVerifyCodeConfirmation')->name('verify_code_confirmation');
@@ -136,7 +139,6 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
         Route::post('/new-user-email', 'update_email')->name('user.change.email');
         Route::post('/new-user-verification', 'new_verify')->name('user.new.verify');
 
-        Route::any('/member-listing', 'member_listing')->name('member.listing');
         Route::get('/member-profile/{id}', 'view_member_profile')->name('member_profile');
 
         Route::post('/user/remaining_package_value', 'user_remaining_package_value')->name('user.remaining_package_value');

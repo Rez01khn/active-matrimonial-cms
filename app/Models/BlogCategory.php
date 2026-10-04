@@ -9,8 +9,16 @@ class BlogCategory extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = ['category_name', 'slug'];
+
     public function posts()
     {
-        return $this->hasMany(Blog::class);
+        return $this->hasMany(Blog::class, 'category_id');
+    }
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'category_id');
     }
 }
+

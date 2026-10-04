@@ -186,6 +186,12 @@ class HomeController extends Controller
         return view('frontend.happy_stories.index', compact('happy_stories'));
     }
 
+    public function about_us()
+    {
+        return view('frontend.about_us');
+    }
+
+
     public function story_details($id)
     {
         $happy_story = HappyStory::findOrFail($id);
@@ -213,25 +219,30 @@ class HomeController extends Controller
 
         $users = User::orderBy('created_at', 'desc')
             ->where('user_type', 'member')
-            ->where('id', '!=', Auth::user()->id)
             ->where('blocked', 0)
             ->where('deactivated', 0);
 
-        // Gender Check
-        $user_ids = Member::where('gender', '!=', Auth::user()->member->gender)->pluck('user_id')->toArray();
-        $users = $users->WhereIn('id', $user_ids);
+        if (Auth::check()) {
+            $users = $users->where('id', '!=', Auth::user()->id);
 
-        // Ignored member and ignored by member check
-        $users = $users->WhereNotIn("id", function ($query) {
-            $query->select('user_id')
-                ->from('ignored_users')
-                ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
-        })
-            ->WhereNotIn("id", function ($query) {
-                $query->select('ignored_by')
+            // Gender Check if member profile exists
+            if (Auth::user()->member && Auth::user()->member->gender != null) {
+                $user_ids = Member::where('gender', '!=', Auth::user()->member->gender)->pluck('user_id')->toArray();
+                $users = $users->WhereIn('id', $user_ids);
+            }
+
+            // Ignored member and ignored by member check
+            $users = $users->WhereNotIn("id", function ($query) {
+                $query->select('user_id')
                     ->from('ignored_users')
                     ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
-            });
+            })
+                ->WhereNotIn("id", function ($query) {
+                    $query->select('ignored_by')
+                        ->from('ignored_users')
+                        ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
+                });
+        }
 
         // Membership Check
         if ($member_type == 1 || $member_type == 2) {

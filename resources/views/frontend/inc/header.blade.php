@@ -1,71 +1,57 @@
 <!-- Top Bar -->
 @php
-    $ticker_text = get_setting('topbar_ticker_text') ?: '✨ Register Today & Get 4 Free Proposals!';
-    $helpline = get_setting('header_helpline', get_setting('contact_phone', get_setting('header_helpline_no', '+880 1812 345678')));
+    $ticker_raw = get_setting('topbar_ticker_text') ?: 'Register Today & Get 4 Free Proposals!';
+    $ticker_text = trim(preg_replace('/[\x{1F300}-\x{1FAD6}\x{2600}-\x{27BF}]/u', '', $ticker_raw));
+    if (empty($ticker_text)) {
+        $ticker_text = 'Register Today & Get 4 Free Proposals!';
+    }
+    $helpline = get_setting('header_helpline', get_setting('contact_phone', get_setting('header_helpline_no', '+01 112 352 566')));
     $helpline_clean = preg_replace('/[^0-9+]/', '', $helpline);
-    $facebook_link = get_setting('facebook_link');
-    $instagram_link = get_setting('instagram_link');
-    $youtube_link = get_setting('youtube_link');
-    $has_social = !empty($facebook_link) || !empty($instagram_link) || !empty($youtube_link);
+    $facebook_link = get_setting('facebook_link') ?: '#';
+    $instagram_link = get_setting('instagram_link') ?: '#';
+    $youtube_link = get_setting('youtube_link') ?: '#';
 @endphp
 <div class="top-navbar-matrimony" style="background-color: #2C0A12; color: #FFFFFF; font-size: 12px; height: 38px; line-height: 38px; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between d-flex align-items-center justify-content-between h-100" style="max-width: 1280px;">
-        
-        <!-- Left: Clean balanced spacer to keep marquee properly bounded and centered -->
-        <div class="topbar-left d-none d-lg-block flex-shrink-0" style="width: 80px;" aria-hidden="true"></div>
+    <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-100">
+        <div class="d-flex align-items-center justify-content-between h-100">
 
-        <!-- Middle: Dedicated overflow-hidden container for Pure Text Running (Marquee) Ticker (NO extra icons) -->
-        <div class="topbar-center-marquee flex-grow-1 overflow-hidden whitespace-nowrap mx-2 mx-md-4 position-relative" style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);">
-            <a href="{{ route('register') }}" class="topbar-marquee-track d-inline-flex align-items-center text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer;">
-                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;">
-                    {{ $ticker_text }}
-                </span>
-                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;" aria-hidden="true">
-                    {{ $ticker_text }}
-                </span>
-                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;" aria-hidden="true">
-                    {{ $ticker_text }}
-                </span>
-            </a>
-        </div>
-
-        <!-- Right: Dynamic Contact & Active Social Links -->
-        <div class="topbar-right d-flex align-items-center flex-shrink-0" style="gap: 12px;">
-            @if(!empty($helpline))
-                <!-- Helpline Phone (Single Primary Contact) -->
-                <a href="tel:{{ $helpline_clean }}" class="d-flex align-items-center text-white text-decoration-none topbar-phone-link" style="color: #FFFFFF; text-decoration: none; font-size: 12px; font-weight: 500; transition: color 0.2s ease;">
-                    <span class="mr-1.5" style="margin-right: 6px; font-size: 12px;">{{ translate('Helpline') }}:</span>
-                    <span class="d-inline">{{ $helpline }}</span>
+            <!-- Center: Pure Text Running Marquee Ticker (Strictly ONE single message, zero emojis) -->
+            <div class="topbar-center-marquee flex-grow-1 overflow-hidden whitespace-nowrap mr-3 position-relative" style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent);">
+                <a href="{{ route('register') }}" class="topbar-marquee-track text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer; display: inline-block;">
+                    <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
+                        {{ $ticker_text }}
+                    </span>
                 </a>
-            @endif
+            </div>
 
-            @if($has_social && !empty($helpline))
+            <!-- Right: Dynamic Contact & Social Links -->
+            <div class="topbar-right d-flex align-items-center flex-shrink-0" style="gap: 12px;">
+                @if(!empty($helpline))
+                    <!-- Helpline Phone -->
+                    <a href="tel:{{ $helpline_clean }}" class="d-flex align-items-center text-white text-decoration-none topbar-phone-link" style="color: #FFFFFF; text-decoration: none; font-size: 12px; font-weight: 500; transition: color 0.2s ease;">
+                        <span class="mr-1.5" style="margin-right: 6px; font-size: 12px;">{{ translate('Helpline') }}:</span>
+                        <span class="d-inline">{{ $helpline }}</span>
+                    </a>
+                @endif
+
                 <!-- Subtle 1px Divider -->
-                <span class="h-3.5 w-px bg-white/20 mx-2.5 d-inline-block" style="height: 14px; width: 1px; background-color: rgba(255, 255, 255, 0.2); margin: 0 2px;"></span>
-            @endif
+                <span class="h-3.5 w-px bg-white/20 mx-3 d-inline-block" style="height: 14px; width: 1px; background-color: rgba(255, 255, 255, 0.2); margin-left: 12px; margin-right: 12px;"></span>
 
-            @if($has_social)
-                <!-- Dynamic Social Media Icons (Only Render Active Links) -->
+                <!-- Dynamic Social Media Icons (Always visible with fallback) -->
                 <div class="topbar-social-icons d-flex align-items-center" style="gap: 10px;">
-                    @if(!empty($facebook_link))
-                        <a href="{{ $facebook_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="Facebook">
-                            <i class="lab la-facebook-f" style="font-size: 13px;"></i>
-                        </a>
-                    @endif
-                    @if(!empty($instagram_link))
-                        <a href="{{ $instagram_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="Instagram">
-                            <i class="lab la-instagram" style="font-size: 13px;"></i>
-                        </a>
-                    @endif
-                    @if(!empty($youtube_link))
-                        <a href="{{ $youtube_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="YouTube">
-                            <i class="lab la-youtube" style="font-size: 13px;"></i>
-                        </a>
-                    @endif
+                    <a href="{{ $facebook_link }}" target="{{ $facebook_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="Facebook">
+                        <i class="lab la-facebook-f" style="font-size: 13px;"></i>
+                    </a>
+                    <a href="{{ $instagram_link }}" target="{{ $instagram_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="Instagram">
+                        <i class="lab la-instagram" style="font-size: 13px;"></i>
+                    </a>
+                    <a href="{{ $youtube_link }}" target="{{ $youtube_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="YouTube">
+                        <i class="lab la-youtube" style="font-size: 13px;"></i>
+                    </a>
                 </div>
-            @endif
-        </div>
+            </div>
 
+        </div>
     </div>
 </div>
 

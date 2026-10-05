@@ -150,20 +150,21 @@ body {
   color: #FFFFFF;
 }
 
-/* Continuous Marquee Ticker Animation */
-@keyframes topbarMarquee {
+/* Continuous Single Marquee Ticker Animation */
+@keyframes topbarMarqueeSingle {
   0% {
     transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(-33.333333%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
   }
 }
 
 .topbar-marquee-track {
-  display: inline-flex;
+  display: inline-block;
   white-space: nowrap;
-  animation: topbarMarquee 26s linear infinite;
+  padding-left: 100%;
+  animation: topbarMarqueeSingle 24s linear infinite;
   will-change: transform;
 }
 
@@ -179,6 +180,38 @@ body {
   opacity: 1 !important;
   color: #FDE68A !important;
   transform: translateY(-1px);
+}
+
+/* Ensure Top Bar container perfectly matches main header navbar container */
+.top-navbar-matrimony .container {
+  max-width: 1400px;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+@media (max-width: 1399.98px) {
+  .top-navbar-matrimony .container {
+    max-width: 1140px;
+  }
+}
+@media (max-width: 1199.98px) {
+  .top-navbar-matrimony .container {
+    max-width: 960px;
+  }
+}
+@media (max-width: 991.98px) {
+  .top-navbar-matrimony .container {
+    max-width: 720px;
+  }
+}
+@media (max-width: 767.98px) {
+  .top-navbar-matrimony .container {
+    max-width: 540px;
+  }
+}
+@media (max-width: 575.98px) {
+  .top-navbar-matrimony .container {
+    max-width: 100%;
+  }
 }
 
 /* Main Navigation Header */

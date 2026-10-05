@@ -81,10 +81,48 @@ class HomeController extends Controller
 
         $new_members = $new_members->orderBy('id', 'desc')->limit(get_setting('max_new_member_show_homepage'))->get()->shuffle();
         $premium_members = $premium_members->where('membership', 2)->inRandomOrder()->limit(get_setting('max_premium_member_homepage'))->get();
-        $religions = Religion::all();
-        $cities = City::all();
+        $religions = Religion::orderBy('name', 'asc')->get();
+        $cities = City::select('id', 'name')->orderBy('name', 'asc')->get();
 
-        return view('frontend.index', compact('premium_members', 'new_members', 'religions', 'cities'));
+        $genders = [
+            2 => translate('Bride'),
+            1 => translate('Groom')
+        ];
+
+        $male_min_age = get_setting('male_min_age');
+        $female_min_age = get_setting('female_min_age');
+        $member_min_age = get_setting('member_min_age');
+        $configured_mins = array_filter([$female_min_age, $male_min_age, $member_min_age], function ($v) {
+            return is_numeric($v) && $v > 0;
+        });
+        $min_age = !empty($configured_mins) ? (int)min($configured_mins) : 18;
+        $max_age = (get_setting('member_max_age') && is_numeric(get_setting('member_max_age')))
+            ? (int)get_setting('member_max_age')
+            : ((get_setting('max_age') && is_numeric(get_setting('max_age'))) ? (int)get_setting('max_age') : 60);
+
+        if ($max_age <= $min_age) {
+            $max_age = $min_age + 40;
+        }
+
+        $age_ranges = [];
+        $current_start = $min_age;
+        $step = 6;
+        while ($current_start < $max_age) {
+            $current_end = min($current_start + $step - 1, $max_age);
+            if ($max_age - $current_end < 4) {
+                $current_end = $max_age;
+            }
+            $age_ranges[] = [
+                'value' => $current_start . '-' . $current_end,
+                'label' => $current_start . ' - ' . $current_end,
+            ];
+            if ($current_end >= $max_age) {
+                break;
+            }
+            $current_start = $current_end + 1;
+        }
+
+        return view('frontend.index', compact('premium_members', 'new_members', 'religions', 'cities', 'genders', 'age_ranges'));
     }
 
 
@@ -200,6 +238,8 @@ class HomeController extends Controller
 
     public function member_listing(Request $request)
     {
+        $gender         = ($request->gender != null) ? $request->gender : null;
+        $age_range      = $request->age_range ?? $request->age ?? null;
         $age_from       = ($request->age_from != null) ? $request->age_from : null;
         $age_to         = ($request->age_to != null) ? $request->age_to : null;
         $member_code    = ($request->member_code != null) ? $request->member_code : null;
@@ -215,33 +255,116 @@ class HomeController extends Controller
         $min_height     = ($request->min_height != null) ? $request->min_height : null;
         $max_height     = ($request->max_height != null) ? $request->max_height : null;
         $member_type    = ($request->member_type != null) ? $request->member_type : 0;
+        $sort           = $request->sort ?? 'latest';
 
+        // Parse age range if provided as "min-max" or "min+"
+        if (!empty($age_range) && empty($age_from) && empty($age_to)) {
+            if (strpos($age_range, '-') !== false) {
+                $parts = explode('-', $age_range);
+                $age_from = (int)trim($parts[0]);
+                $age_to = (int)trim($parts[1]);
+            } elseif (strpos($age_range, '+') !== false) {
+                $age_from = (int)trim(str_replace('+', '', $age_range));
+            }
+        }
 
-        $users = User::orderBy('created_at', 'desc')
-            ->where('user_type', 'member')
+        $users = User::where('user_type', 'member')
             ->where('blocked', 0)
             ->where('deactivated', 0);
 
+        // Exclude authenticated user safely without breaking if relations missing
         if (Auth::check()) {
-            $users = $users->where('id', '!=', Auth::user()->id);
+            $users = $users->where('id', '!=', Auth::id());
 
-            // Gender Check if member profile exists
-            if (Auth::user()->member && Auth::user()->member->gender != null) {
-                $user_ids = Member::where('gender', '!=', Auth::user()->member->gender)->pluck('user_id')->toArray();
-                $users = $users->WhereIn('id', $user_ids);
-            }
-
-            // Ignored member and ignored by member check
-            $users = $users->WhereNotIn("id", function ($query) {
+            // Ignored member and ignored by member check safely
+            $users = $users->whereNotIn("id", function ($query) {
                 $query->select('user_id')
                     ->from('ignored_users')
-                    ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
+                    ->where('ignored_by', Auth::id());
             })
-                ->WhereNotIn("id", function ($query) {
-                    $query->select('ignored_by')
-                        ->from('ignored_users')
-                        ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
-                });
+            ->whereNotIn("id", function ($query) {
+                $query->select('ignored_by')
+                    ->from('ignored_users')
+                    ->where('user_id', Auth::id());
+            });
+        }
+
+        // Scenario B: If search parameters exist, apply active filter clauses
+        // Filter by requested gender
+        if (!empty($gender)) {
+            $user_ids = Member::where('gender', $gender)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by religion
+        if (!empty($sub_caste_id)) {
+            $user_ids = SpiritualBackground::where('sub_caste_id', $sub_caste_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        } elseif (!empty($caste_id)) {
+            $user_ids = SpiritualBackground::where('caste_id', $caste_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        } elseif (!empty($religion_id)) {
+            $user_ids = SpiritualBackground::where('religion_id', $religion_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by age
+        if (!empty($age_from)) {
+            $age = $age_from + 1;
+            $start = date('Y-m-d', strtotime("- $age years"));
+            $user_ids = Member::where('birthday', '<=', $start)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+        if (!empty($age_to)) {
+            $age = $age_to + 1;
+            $end = date('Y-m-d', strtotime("- $age years +1 day"));
+            $user_ids = Member::where('birthday', '>=', $end)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by location
+        if (!empty($city_id)) {
+            $user_ids = Address::where('city_id', $city_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        } elseif (!empty($state_id)) {
+            $user_ids = Address::where('state_id', $state_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        } elseif (!empty($country_id)) {
+            $user_ids = Address::where('country_id', $country_id)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by marital status
+        if ($matital_status != null) {
+            $user_ids = Member::where('marital_status_id', $matital_status)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by profession
+        if (!empty($profession)) {
+            $user_ids = Career::where('designation', 'like', '%' . $profession . '%')->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Search by Member Code
+        if (!empty($member_code)) {
+            $users = $users->where('code', $member_code);
+        }
+
+        // Filter by mother tongue
+        if ($mother_tongue != null) {
+            $user_ids = Member::where('mothere_tongue', $mother_tongue)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+
+        // Filter by height
+        if (!empty($min_height)) {
+            $user_ids = PhysicalAttribute::where('height', '>=', $min_height)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
+        }
+        if (!empty($max_height)) {
+            $user_ids = PhysicalAttribute::where('height', '<=', $max_height)->pluck('user_id')->toArray();
+            $users = $users->whereIn('id', $user_ids);
         }
 
         // Membership Check
@@ -254,90 +377,16 @@ class HomeController extends Controller
             $users = $users->where('approved', 1);
         }
 
-        // Sort By age
-        if (!empty($age_from)) {
-            $age = $age_from + 1;
-            $start = date('Y-m-d', strtotime("- $age years"));
-            $user_ids = Member::where('birthday', '<=', $start)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
-        }
-        if (!empty($age_to)) {
-            $age = $age_to + 1;
-            $end = date('Y-m-d', strtotime("- $age years +1 day"));
-            $user_ids = Member::where('birthday', '>=', $end)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
+        // Sorting (default: recently joined)
+        if ($sort == 'relevance') {
+            $users = $users->orderBy('membership', 'desc')->orderBy('created_at', 'desc');
+        } else {
+            $users = $users->orderBy('created_at', 'desc');
         }
 
-        // Search by Member Code
-        if (!empty($member_code)) {
-            $users = $users->where('code', $member_code);
-        }
+        $users = $users->paginate(9);
 
-        // Sort by Matital Status
-        if ($matital_status != null) {
-            $user_ids = Member::where('marital_status_id', $matital_status)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
-        }
-
-        // Sort By religion
-        if (!empty($sub_caste_id)) {
-            $user_ids = SpiritualBackground::where('sub_caste_id', $sub_caste_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        } elseif (!empty($caste_id)) {
-            $user_ids = SpiritualBackground::where('caste_id', $caste_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        } elseif (!empty($religion_id)) {
-            $user_ids = SpiritualBackground::where('religion_id', $religion_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        }
-        // Profession
-        elseif (!empty($profession)) {
-            $user_ids = Career::where('designation', 'like', '%' . $profession . '%')->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        }
-
-        // Sort By location
-        if (!empty($city_id)) {
-            $user_ids = Address::where('city_id', $city_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        } elseif (!empty($state_id)) {
-            $user_ids = Address::where('state_id', $state_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        } elseif (!empty($country_id)) {
-            $user_ids = Address::where('country_id', $country_id)->pluck('user_id')->toArray();
-            $users = $users->WhereIn('id', $user_ids);
-        }
-
-        // Sort By Mother Tongue
-        if ($mother_tongue != null) {
-            $user_ids = Member::where('mothere_tongue', $mother_tongue)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
-        }
-
-        // Sort by Height
-        if (!empty($min_height)) {
-            $user_ids = PhysicalAttribute::where('height', '>=', $min_height)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
-        }
-        if (!empty($max_height)) {
-            $user_ids = PhysicalAttribute::where('height', '<=', $max_height)->pluck('user_id')->toArray();
-            if (count($user_ids) > 0) {
-                $users = $users->WhereIn('id', $user_ids);
-            }
-        }
-
-        $users = $users->paginate(10);
-        return view('frontend.member.member_listing.index', compact('users', 'age_from', 'age_to', 'member_code', 'matital_status', 'religion_id', 'caste_id', 'sub_caste_id', 'mother_tongue', 'profession', 'country_id', 'state_id', 'city_id', 'min_height', 'max_height', 'member_type'));
+        return view('frontend.member.member_listing.index', compact('users', 'gender', 'age_range', 'age_from', 'age_to', 'member_code', 'matital_status', 'religion_id', 'caste_id', 'sub_caste_id', 'mother_tongue', 'profession', 'country_id', 'state_id', 'city_id', 'min_height', 'max_height', 'member_type', 'sort'));
     }
 
     public function profile_edit(Request $request)
@@ -572,8 +621,8 @@ class HomeController extends Controller
     public function user_remaining_package_value(Request $request)
     {
         $colmn_name = $request->colmn_name;
-        $value = Member::where('user_id', $request->id)->first()->$colmn_name;
-        return $value;
+        $member = Member::where('user_id', $request->id)->first();
+        return ($member && isset($member->$colmn_name)) ? $member->$colmn_name : 0;
     }
 
     // fcm

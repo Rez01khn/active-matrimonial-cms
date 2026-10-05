@@ -30,8 +30,11 @@
                                 <div class="col-lg col-md-4 col-6 mb-3 mb-lg-0">
                                     <label>{{ translate('I am looking for') }}</label>
                                     <select class="form-control aiz-selectpicker" name="gender">
-                                        <option value="2">{{ translate('Bride') }}</option>
-                                        <option value="1">{{ translate('Groom') }}</option>
+                                        @foreach ($genders as $key => $name)
+                                            <option value="{{ $key }}" @if(request('gender', (Auth::check() && Auth::user()->member && Auth::user()->member->gender == 1 ? 2 : (Auth::check() && Auth::user()->member && Auth::user()->member->gender == 2 ? 1 : 2))) == $key) selected @endif>
+                                                {{ $name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <!-- Religion -->
@@ -41,28 +44,29 @@
                                         data-live-search="true">
                                         <option value="">{{ translate('Select Religion') }}</option>
                                         @foreach ($religions as $religion)
-                                            <option value="{{ $religion->id }}">{{ $religion->name }}</option>
+                                            <option value="{{ $religion->id }}" @if(request('religion_id') == $religion->id) selected @endif>{{ $religion->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <!-- Age Range -->
                                 <div class="col-lg col-md-4 col-6 mb-3 mb-lg-0">
                                     <label>{{ translate('Age Range') }}</label>
-                                    <select class="form-control aiz-selectpicker" name="age">
-                                        <option value="">25 - 30</option>
-                                        <option value="18-24">18 - 24</option>
-                                        <option value="25-30">25 - 30</option>
-                                        <option value="31-40">31 - 40</option>
-                                        <option value="41-50">41 - 50</option>
+                                    <select class="form-control aiz-selectpicker" name="age_range">
+                                        <option value="">{{ translate('Select Age Range') }}</option>
+                                        @foreach ($age_ranges as $range)
+                                            <option value="{{ $range['value'] }}" @if(request('age_range') == $range['value'] || request('age') == $range['value']) selected @endif>
+                                                {{ $range['label'] }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <!-- Location -->
                                 <div class="col-lg col-md-4 col-6 mb-3 mb-lg-0">
                                     <label>{{ translate('Location') }}</label>
                                     <select class="form-control aiz-selectpicker" name="city_id" data-live-search="true">
-                                        <option value="">Dhaka</option>
+                                        <option value="">{{ translate('Select Location') }}</option>
                                         @foreach ($cities as $city)
-                                            <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                            <option value="{{ $city->id }}" @if(request('city_id') == $city->id) selected @endif>{{ $city->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

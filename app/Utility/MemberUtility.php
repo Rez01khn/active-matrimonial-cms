@@ -40,10 +40,18 @@ class MemberUtility
     
     public static function member_interest_info($user_id = '')
     {
+        $auth_id = auth()->check() ? auth()->id() : null;
+        if (!$auth_id) {
+            return [
+                'interest_status' => 1,
+                'interest_text'   => translate('Interest')
+            ];
+        }
+
         $do_expressed_interest = ExpressInterest::where('user_id', $user_id)
-            ->where('interested_by', (auth()->check() && auth()->user()->id))
+            ->where('interested_by', $auth_id)
             ->first();
-        $received_expressed_interest = ExpressInterest::where('user_id', (auth()->check() && auth()->user()->id))
+        $received_expressed_interest = ExpressInterest::where('user_id', $auth_id)
             ->where('interested_by', $user_id)
             ->first();
         if (empty($do_expressed_interest) && empty($received_expressed_interest)) {
@@ -63,8 +71,16 @@ class MemberUtility
 
     public static function member_shortlist_info($user_id = '')
     {
+        $auth_id = auth()->check() ? auth()->id() : null;
+        if (!$auth_id) {
+            return [
+                'shortlist_status' => 1,
+                'shortlist_text'   => translate('Shortlist')
+            ];
+        }
+
         $shortlist = Shortlist::where('user_id', $user_id)
-            ->where('shortlisted_by', (auth()->check() && auth()->user()->id))
+            ->where('shortlisted_by', $auth_id)
             ->first();
         if (empty($shortlist)) {
             $data['shortlist_status'] = 1;
@@ -78,8 +94,12 @@ class MemberUtility
 
     public static function member_report_status($user_id = '')
     {
+        $auth_id = auth()->check() ? auth()->id() : null;
+        if (!$auth_id) {
+            return null;
+        }
         $profile_reported = ReportedUser::where('user_id', $user_id)
-            ->where('reported_by', (auth()->check() && auth()->user()->id))
+            ->where('reported_by', $auth_id)
             ->first();
         return $profile_reported;
     }

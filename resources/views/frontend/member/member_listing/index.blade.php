@@ -45,6 +45,7 @@
                     </div>
 
                     <form action="{{ route('member.listing') }}" method="get" id="filter-form">
+                        <input type="hidden" name="sort" id="filter-sort-input" value="{{ request('sort', 'latest') }}">
                         <!-- 1. Looking For -->
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
@@ -54,7 +55,7 @@
                             </label>
                             <select name="gender" class="filter-field-input form-control"
                                 style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
-                                <option value="">{{ translate('Bride') }}</option>
+                                <option value="">{{ translate('All / Any') }}</option>
                                 <option value="2" @if(request('gender') == '2') selected @endif>
                                     {{ translate('Bride (Female)') }}</option>
                                 <option value="1" @if(request('gender') == '1') selected @endif>
@@ -71,7 +72,7 @@
                             </label>
                             <select name="age_range" class="filter-field-input form-control"
                                 style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
-                                <option value="">{{ translate('18 - 30') }}</option>
+                                <option value="">{{ translate('Any Age') }}</option>
                                 <option value="18-25" @if(request('age_range') == '18-25') selected @endif>18 - 25</option>
                                 <option value="26-32" @if(request('age_range') == '26-32') selected @endif>26 - 32</option>
                                 <option value="33-40" @if(request('age_range') == '33-40') selected @endif>33 - 40</option>
@@ -104,10 +105,10 @@
                                 <i class="las la-map-marker-alt fs-15" style="color: #8C6239;"></i>
                                 <span>{{ translate('Location') }}</span>
                             </label>
-                            @php $cities = \App\Models\City::all(); @endphp
+                            @php $cities = \App\Models\City::select('id', 'name')->orderBy('name', 'asc')->get(); @endphp
                             <select name="city_id" class="filter-field-input form-control"
                                 style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
-                                <option value="">{{ translate('Dhaka') }}</option>
+                                <option value="">{{ translate('Any Location') }}</option>
                                 @foreach ($cities as $city)
                                     <option value="{{ $city->id }}" @if(request('city_id') == $city->id) selected @endif>
                                         {{ $city->name }}</option>
@@ -263,19 +264,17 @@
                     <!-- Left: Matches Count -->
                     <div class="matches-count-text d-flex align-items-center" style="gap: 8px;">
                         <i class="las la-users fs-22" style="color: #8C6239;"></i>
-                        <span class="fs-18 fw-700" style="color: #2C0A12; font-weight: 700;">1,248 Matches Found</span>
+                        <span class="fs-18 fw-700" style="color: #2C0A12; font-weight: 700;">{{ $users->total() }} {{ translate('Matches Found') }}</span>
                     </div>
 
                     <!-- Right: Sort By & View Toggles -->
                     <div class="d-flex align-items-center" style="gap: 14px;">
                         <div class="d-flex align-items-center" style="gap: 8px;">
                             <span class="fs-13 text-muted fw-600 d-none d-sm-inline">{{ translate('Sort By:') }}</span>
-                            <select class="form-control fs-13 py-1 px-3"
+                            <select name="sort" onchange="document.getElementById('filter-sort-input').value = this.value; document.getElementById('filter-form').submit();" class="form-control fs-13 py-1 px-3"
                                 style="border: 1px solid #E2DCD5; border-radius: 8px; height: 38px; width: auto; color: #444; background-color: #FFF;">
-                                <option value="latest">{{ translate('Recently Joined') }} ▾</option>
-                                <option value="relevance">{{ translate('Relevance') }}</option>
-                                <option value="age_asc">{{ translate('Age: Low to High') }}</option>
-                                <option value="age_desc">{{ translate('Age: High to Low') }}</option>
+                                <option value="latest" @if(request('sort', 'latest') == 'latest') selected @endif>{{ translate('Recently Joined') }}</option>
+                                <option value="relevance" @if(request('sort') == 'relevance') selected @endif>{{ translate('Relevance') }}</option>
                             </select>
                         </div>
                         <div class="d-flex align-items-center" style="gap: 4px;">
@@ -296,659 +295,156 @@
                 <!-- Profile Cards Grid (Strict 3 Columns on Desktop: 3x3 = 9 Cards) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-                    <!-- 1. Ayesha Rahman -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/ayesha.jpg') }}" alt="Ayesha Rahman"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(1)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Ayesha Rahman</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">26</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Dhaka, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>BSc in Computer Science</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Software Engineer</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(1)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    @forelse ($users as $user)
+                        @php
+                            $user_member = $user->member;
+                            $user_address = $user->addresses ? $user->addresses->first() : null;
+                            $user_career = $user->career ? $user->career->first() : null;
+                            $user_education = $user->education ? $user->education->first() : null;
+                            $user_spiritual = $user->spiritual_backgrounds;
+                            $user_family = $user->families;
 
-                    <!-- 2. Tanvir Hasan -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/tanvir.jpg') }}" alt="Tanvir Hasan"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(2)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Tanvir Hasan</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">29</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Chittagong, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>MBBS</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Doctor</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Upper Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(2)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Calculate Age
+                            $age = null;
+                            if ($user_member && !empty($user_member->birthday)) {
+                                try {
+                                    $age = \Carbon\Carbon::parse($user_member->birthday)->age;
+                                } catch (\Exception $e) {
+                                    $age = null;
+                                }
+                            }
 
-                    <!-- 3. Nusrat Jahan -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/nusrat.jpg') }}" alt="Nusrat Jahan"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(3)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Nusrat Jahan</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">24</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Sylhet, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>B.A. in English</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Teacher</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(3)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Shortlist info safely
+                            $shortlist_info = \App\Utility\MemberUtility::member_shortlist_info($user->id);
+                            $is_shortlisted = isset($shortlist_info['shortlist_status']) && $shortlist_info['shortlist_status'] == 0;
 
-                    <!-- 4. Rifat Islam -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/rifat.jpg') }}" alt="Rifat Islam"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(4)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Rifat Islam</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">30</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Dhaka, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>BSc in Engineering</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Engineer</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Upper Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(4)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Express Interest info safely
+                            $interest_info = \App\Utility\MemberUtility::member_interest_info($user->id);
+                            $interest_status = $interest_info['interest_status'] ?? 1;
 
-                    <!-- 5. Fatema Akter -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/fatema.jpg') }}" alt="Fatema Akter"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(5)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Fatema Akter</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">28</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Rajshahi, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>MSc in Biotechnology</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Researcher</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(5)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Location text
+                            $location_parts = [];
+                            if ($user_address) {
+                                if ($user_address->city && !empty($user_address->city->name)) {
+                                    $location_parts[] = $user_address->city->name;
+                                }
+                                if ($user_address->country && !empty($user_address->country->name)) {
+                                    $location_parts[] = $user_address->country->name;
+                                }
+                            }
+                            $location_text = !empty($location_parts) ? implode(', ', $location_parts) : translate('Bangladesh');
 
-                    <!-- 6. Mahfuz Rahman -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/mahfuz.jpg') }}" alt="Mahfuz Rahman"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(6)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Mahfuz Rahman</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">32</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Dhaka, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>MBA</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Business Analyst</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Upper Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(6)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Education text
+                            $education_text = ($user_education && !empty($user_education->degree)) ? $user_education->degree : translate('Graduate');
 
-                    <!-- 7. Shanta Islam -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/maliha.jpg') }}" alt="Shanta Islam"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(7)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Shanta Islam</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">25</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Khulna, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>BSc in EEE</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Electrical Engineer</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(7)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Career text
+                            $career_text = ($user_career && !empty($user_career->designation)) ? $user_career->designation : translate('Professional');
 
-                    <!-- 8. Arif Hossain -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/rahim.jpg') }}" alt="Arif Hossain"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(8)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Arif Hossain</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">27</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Barishal, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>BSc in Agriculture</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Agricultural Officer</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(8)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            // Family text
+                            $family_text = ($user_family && !empty($user_family->family_class)) ? $user_family->family_class : translate('Respectable Family');
 
-                    <!-- 9. Tasmia Rahman -->
-                    <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                        style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                        <div class="match-card-photo-wrap position-relative"
-                            style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
-                            <img src="{{ static_asset('assets/img/custom/tasmia.jpg') }}" alt="Tasmia Rahman"
-                                class="match-card-photo w-100 h-100"
-                                style="object-fit: cover; object-position: top center;">
-                            <button type="button" class="match-card-fav-btn" title="Add to Wishlist"
-                                onclick="do_shortlist(9)"
-                                style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666;">
-                                <i class="lar la-heart fs-18"></i>
-                            </button>
-                            <div class="match-card-verified-badge"
-                                style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="las la-check-circle fs-13"></i>
-                                <span>Verified Profile</span>
-                            </div>
-                        </div>
-                        <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                    style="font-size: 17px; font-weight: 700; color: #2C0A12;">Tasmia Rahman</h3>
-                                <span class="fs-15 fw-600 text-muted" style="color: #666;">31</span>
-                            </div>
-                            <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-map-marker-alt"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Comilla, Bangladesh</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-graduation-cap"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>M.A. in Islamic Studies</span>
-                                </li>
-                                <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-briefcase"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Lecturer</span>
-                                </li>
-                                <li class="match-meta-item fs-13 d-flex align-items-center"
-                                    style="gap: 8px; color: #555; line-height: 1.5;">
-                                    <i class="las la-users"
-                                        style="color: #8C6239; min-width: 18px; text-align: center;"></i>
-                                    <span>Upper Middle Class Family</span>
-                                </li>
-                            </ul>
-                            <div class="match-card-actions mt-auto pt-3 d-flex"
-                                style="gap: 6px; border-top: 1px solid #F3EFEA;">
-                                <a href="{{ route('register') }}" class="btn btn-match-view flex-grow-1 text-center"
-                                    style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">View
-                                    Profile</a>
-                                <button type="button"
-                                    class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
-                                    onclick="express_interest(9)"
-                                    style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
-                                    <i class="lar la-heart fs-13"></i>
-                                    <span>Send Interest</span>
+                            // Photo URL
+                            $avatar_url = null;
+                            if (!empty($user->photo)) {
+                                $avatar_url = uploaded_asset($user->photo);
+                            }
+                            if (empty($avatar_url)) {
+                                $gender_val = $user_member ? $user_member->gender : 1;
+                                $avatar_url = ($gender_val == 2)
+                                    ? static_asset('assets/img/avatar-female.png')
+                                    : static_asset('assets/img/avatar-place.png');
+                            }
+                        @endphp
+
+                        <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
+                            style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
+                            <div class="match-card-photo-wrap position-relative"
+                                style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
+                                <img src="{{ $avatar_url }}" alt="{{ $user->first_name }} {{ $user->last_name }}"
+                                    class="match-card-photo w-100 h-100"
+                                    style="object-fit: cover; object-position: top center;"
+                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                <button type="button" class="match-card-fav-btn" title="{{ $is_shortlisted ? translate('Shortlisted') : translate('Add to Wishlist') }}"
+                                    onclick="do_shortlist({{ $user->id }})"
+                                    style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: {{ $is_shortlisted ? '#E63946' : '#666' }};">
+                                    <i class="{{ $is_shortlisted ? 'las la-heart' : 'lar la-heart' }} fs-18"></i>
                                 </button>
+                                @if($user->approved == 1)
+                                    <div class="match-card-verified-badge"
+                                        style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
+                                        <i class="las la-check-circle fs-13"></i>
+                                        <span>{{ translate('Verified Profile') }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
+                                        style="font-size: 17px; font-weight: 700; color: #2C0A12;">
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </h3>
+                                    @if($age)
+                                        <span class="fs-15 fw-600 text-muted" style="color: #666;">{{ $age }}</span>
+                                    @endif
+                                </div>
+                                <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
+                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
+                                        style="gap: 8px; color: #555; line-height: 1.5;">
+                                        <i class="las la-map-marker-alt"
+                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <span>{{ $location_text }}</span>
+                                    </li>
+                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
+                                        style="gap: 8px; color: #555; line-height: 1.5;">
+                                        <i class="las la-graduation-cap"
+                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <span>{{ $education_text }}</span>
+                                    </li>
+                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
+                                        style="gap: 8px; color: #555; line-height: 1.5;">
+                                        <i class="las la-briefcase"
+                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <span>{{ $career_text }}</span>
+                                    </li>
+                                    <li class="match-meta-item fs-13 d-flex align-items-center"
+                                        style="gap: 8px; color: #555; line-height: 1.5;">
+                                        <i class="las la-users"
+                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <span>{{ $family_text }}</span>
+                                    </li>
+                                </ul>
+                                <div class="match-card-actions mt-auto pt-3 d-flex"
+                                    style="gap: 6px; border-top: 1px solid #F3EFEA;">
+                                    <a href="{{ route('member_profile', $user->id) }}" class="btn btn-match-view flex-grow-1 text-center"
+                                        style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">{{ translate('View Profile') }}</a>
+                                    <button type="button"
+                                        class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
+                                        onclick="express_interest({{ $user->id }})"
+                                        style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
+                                        <i class="{{ $interest_status === 0 ? 'las la-heart' : 'lar la-heart' }} fs-13"></i>
+                                        <span>{{ $interest_info['interest_text'] ?? translate('Send Interest') }}</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="col-span-1 md:col-span-2 xl:col-span-3 text-center py-5" style="grid-column: 1 / -1;">
+                            <div class="p-5 bg-white rounded-2xl border border-stone-200/80 shadow-sm" style="border-radius: 16px;">
+                                <i class="las la-search fs-48 mb-3" style="color: #8C6239;"></i>
+                                <h3 class="fs-18 fw-700 text-mat-maroon mb-2">{{ translate('No Matches Found') }}</h3>
+                                <p class="text-muted fs-14 mb-4">{{ translate('Try adjusting your search filters to find suitable profiles.') }}</p>
+                                <a href="{{ route('member.listing') }}" class="btn text-white px-4 py-2" style="background-color: #8C6239; border-radius: 8px;">
+                                    {{ translate('Reset Filters') }}
+                                </a>
+                            </div>
+                        </div>
+                    @endforelse
 
                 </div>
-
                 <!-- 5. Centered Bottom Pagination -->
                 <div class="matches-pagination-wrap d-flex justify-content-center align-items-center mt-5 mb-4"
                     style="padding-top: 24px;">
-                    <nav aria-label="Matches Pagination">
-                        <ul class="pagination mb-0 d-flex align-items-center"
-                            style="gap: 6px; list-style: none; padding: 0;">
-                            <li class="page-item disabled">
-                                <a class="page-link prev-next-btn" href="#" tabindex="-1"
-                                    style="border: 1px solid #E2DCD5; border-radius: 8px !important; color: #888; padding: 8px 16px; text-decoration: none; font-size: 13px; font-weight: 500;">
-                                    <i class="las la-angle-left mr-1"></i> {{ translate('Previous') }}
-                                </a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#"
-                                    style="background-color: #8C6239; border-color: #8C6239; color: #FFF; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600;">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"
-                                    style="border: 1px solid #E2DCD5; color: #555; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600; background: #FFF;">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"
-                                    style="border: 1px solid #E2DCD5; color: #555; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600; background: #FFF;">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"
-                                    style="border: 1px solid #E2DCD5; color: #555; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600; background: #FFF;">4</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"
-                                    style="border: 1px solid #E2DCD5; color: #555; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600; background: #FFF;">5</a>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link"
-                                    style="border: 1px solid #E2DCD5; color: #888; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; font-size: 13px; background: #FFF;">...</span>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"
-                                    style="border: 1px solid #E2DCD5; color: #555; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; text-decoration: none; font-size: 13px; font-weight: 600; background: #FFF;">20</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link prev-next-btn" href="#"
-                                    style="border: 1px solid #E2DCD5; border-radius: 8px !important; color: #555; padding: 8px 16px; text-decoration: none; font-size: 13px; font-weight: 500; background: #FFF;">
-                                    {{ translate('Next') }} <i class="las la-angle-right ml-1"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    {{ $users->appends(request()->input())->links() }}
                 </div>
 
             </main>
@@ -969,7 +465,7 @@
         }
 
         var package_validity = false;
-        @if(Auth::check() && package_validity(Auth::user()->id))
+        @if(Auth::check() && package_validity(Auth::id()))
             package_validity = true;
         @endif
 

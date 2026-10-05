@@ -416,8 +416,11 @@ if (!function_exists('sendSMS')) {
 if (!function_exists('get_remaining_package_value')) {
     function get_remaining_package_value($id, $colmn_name)
     {
-        $value = Member::where('user_id', $id)->first()->$colmn_name;
-        return $value;
+        if (!$id) {
+            return 0;
+        }
+        $member = Member::where('user_id', $id)->first();
+        return ($member && isset($member->$colmn_name)) ? $member->$colmn_name : 0;
     }
 }
 
@@ -425,12 +428,17 @@ if (!function_exists('get_remaining_package_value')) {
 if (!function_exists('package_validity')) {
     function package_validity($id)
     {
-        $package_validity = Member::where('user_id', $id)->first()->package_validity;
-        if ($package_validity == null || ($package_validity < date('Y-m-d'))) {
+        if (!$id) {
             return false;
-        } else {
-            return true;
         }
+        $member = Member::where('user_id', $id)->first();
+        if (!$member || empty($member->package_validity)) {
+            return false;
+        }
+        if ($member->package_validity < date('Y-m-d')) {
+            return false;
+        }
+        return true;
     }
 }
 

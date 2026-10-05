@@ -1,40 +1,71 @@
 <!-- Top Bar -->
-<div class="top-navbar-matrimony d-none d-lg-block">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <!-- Left Info -->
-            <div class="d-flex align-items-center gap-4">
-                <a href="mailto:{{ get_setting('footer_email', 'hello@yourmatrimony.com') }}" class="d-flex align-items-center mr-4 text-white text-decoration-none">
-                    <i class="las la-envelope mr-1 fs-15 text-mat-gold-light"></i>
-                    <span>{{ get_setting('footer_email', 'hello@yourmatrimony.com') }}</span>
-                </a>
-                <a href="tel:{{ get_setting('header_helpline_no', '+900 1012 345670') }}" class="d-flex align-items-center text-white text-decoration-none">
-                    <i class="las la-phone mr-1 fs-15 text-mat-gold-light"></i>
-                    <span>{{ get_setting('header_helpline_no', '+900 1012 345670') }}</span>
-                </a>
-            </div>
+@php
+    $ticker_text = get_setting('topbar_ticker_text') ?: '✨ Register Today & Get 4 Free Proposals!';
+    $helpline = get_setting('header_helpline', get_setting('contact_phone', get_setting('header_helpline_no', '+880 1812 345678')));
+    $helpline_clean = preg_replace('/[^0-9+]/', '', $helpline);
+    $facebook_link = get_setting('facebook_link');
+    $instagram_link = get_setting('instagram_link');
+    $youtube_link = get_setting('youtube_link');
+    $has_social = !empty($facebook_link) || !empty($instagram_link) || !empty($youtube_link);
+@endphp
+<div class="top-navbar-matrimony" style="background-color: #2C0A12; color: #FFFFFF; font-size: 12px; height: 38px; line-height: 38px; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between d-flex align-items-center justify-content-between h-100" style="max-width: 1280px;">
+        
+        <!-- Left: Clean balanced spacer to keep marquee properly bounded and centered -->
+        <div class="topbar-left d-none d-lg-block flex-shrink-0" style="width: 80px;" aria-hidden="true"></div>
 
-            <!-- Right Info & Social Links -->
-            <div class="d-flex align-items-center">
-                <div class="social-links mr-4 d-flex align-items-center gap-3">
-                    <a href="{{ get_setting('facebook_link', '#') }}" target="_blank" class="text-white opacity-80 hov-opacity-100 mx-2 fs-14">
-                        <i class="lab la-facebook-f"></i>
-                    </a>
-                    <a href="{{ get_setting('instagram_link', '#') }}" target="_blank" class="text-white opacity-80 hov-opacity-100 mx-2 fs-14">
-                        <i class="lab la-instagram"></i>
-                    </a>
-                    <a href="{{ get_setting('youtube_link', '#') }}" target="_blank" class="text-white opacity-80 hov-opacity-100 mx-2 fs-14">
-                        <i class="lab la-youtube"></i>
-                    </a>
-                </div>
-                <div class="border-left pl-3 border-secondary d-flex align-items-center">
-                    <a href="tel:+8001012345679" class="d-flex align-items-center text-white text-decoration-none">
-                        <i class="las la-phone mr-1 fs-15 text-mat-gold-light"></i>
-                        <span>+800 1012 345679</span>
-                    </a>
-                </div>
-            </div>
+        <!-- Middle: Dedicated overflow-hidden container for Pure Text Running (Marquee) Ticker (NO extra icons) -->
+        <div class="topbar-center-marquee flex-grow-1 overflow-hidden whitespace-nowrap mx-2 mx-md-4 position-relative" style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);">
+            <a href="{{ route('register') }}" class="topbar-marquee-track d-inline-flex align-items-center text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer;">
+                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;">
+                    {{ $ticker_text }}
+                </span>
+                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;" aria-hidden="true">
+                    {{ $ticker_text }}
+                </span>
+                <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em; padding-right: 64px;" aria-hidden="true">
+                    {{ $ticker_text }}
+                </span>
+            </a>
         </div>
+
+        <!-- Right: Dynamic Contact & Active Social Links -->
+        <div class="topbar-right d-flex align-items-center flex-shrink-0" style="gap: 12px;">
+            @if(!empty($helpline))
+                <!-- Helpline Phone (Single Primary Contact) -->
+                <a href="tel:{{ $helpline_clean }}" class="d-flex align-items-center text-white text-decoration-none topbar-phone-link" style="color: #FFFFFF; text-decoration: none; font-size: 12px; font-weight: 500; transition: color 0.2s ease;">
+                    <span class="mr-1.5" style="margin-right: 6px; font-size: 12px;">{{ translate('Helpline') }}:</span>
+                    <span class="d-inline">{{ $helpline }}</span>
+                </a>
+            @endif
+
+            @if($has_social && !empty($helpline))
+                <!-- Subtle 1px Divider -->
+                <span class="h-3.5 w-px bg-white/20 mx-2.5 d-inline-block" style="height: 14px; width: 1px; background-color: rgba(255, 255, 255, 0.2); margin: 0 2px;"></span>
+            @endif
+
+            @if($has_social)
+                <!-- Dynamic Social Media Icons (Only Render Active Links) -->
+                <div class="topbar-social-icons d-flex align-items-center" style="gap: 10px;">
+                    @if(!empty($facebook_link))
+                        <a href="{{ $facebook_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="Facebook">
+                            <i class="lab la-facebook-f" style="font-size: 13px;"></i>
+                        </a>
+                    @endif
+                    @if(!empty($instagram_link))
+                        <a href="{{ $instagram_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="Instagram">
+                            <i class="lab la-instagram" style="font-size: 13px;"></i>
+                        </a>
+                    @endif
+                    @if(!empty($youtube_link))
+                        <a href="{{ $youtube_link }}" target="_blank" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.85; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;" title="YouTube">
+                            <i class="lab la-youtube" style="font-size: 13px;"></i>
+                        </a>
+                    @endif
+                </div>
+            @endif
+        </div>
+
     </div>
 </div>
 
@@ -63,32 +94,32 @@
             <nav class="d-none d-lg-block">
                 <ul class="nav align-items-center mb-0">
                     <li class="nav-item">
-                        <a href="{{ route('home') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'home') active @endif">
+                        <a href="{{ route('home') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'home' || request()->is('/')) active @endif">
                             {{ translate('Home') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ Route::has('active_members') ? route('active_members') : url('/member-listing') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'active_members') active @endif">
+                        <a href="{{ Route::has('active_members') ? route('active_members') : url('/member-listing') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'active_members' || request()->is('member-listing*')) active @endif">
                             {{ translate('Find Matches') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ Route::has('packages') ? route('packages') : url('/packages') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'packages') active @endif">
+                        <a href="{{ Route::has('packages') ? route('packages') : url('/packages') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'packages' || request()->is('packages*')) active @endif">
                             {{ translate('Membership Plans') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ Route::has('happy_stories') ? route('happy_stories') : url('/happy-stories') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'happy_stories') active @endif">
+                        <a href="{{ Route::has('happy_stories') ? route('happy_stories') : url('/happy-stories') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'happy_stories' || request()->is('happy-stories*')) active @endif">
                             {{ translate('Success Stories') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ Route::has('about_us') ? route('about_us') : url('/about-us') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'about_us' || request()->is('about-us') || request()->is('custom-page/about-us')) active @endif">
+                        <a href="{{ Route::has('about_us') ? route('about_us') : url('/about-us') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'about_us' || request()->is('about-us*') || request()->is('custom-page/about-us*')) active @endif">
                             {{ translate('About Us') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ Route::has('blog') ? route('blog') : url('/blog') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'blog') active @endif">
+                        <a href="{{ Route::has('blog') ? route('blog') : url('/blog') }}" class="nav-link nav-link-matrimony @if(Route::currentRouteName() == 'blog' || Route::currentRouteName() == 'blog.details' || request()->is('blog*')) active @endif">
                             {{ translate('Blog') }}
                         </a>
                     </li>

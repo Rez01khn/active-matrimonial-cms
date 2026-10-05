@@ -50,6 +50,14 @@
               </div>
           </div>
 					<div class="form-group row">
+              <label class="col-md-3 col-from-label">{{translate('Topbar Running Text (Ticker)')}}</label>
+              <div class="col-md-8">
+                  <input type="hidden" name="types[]" value="topbar_ticker_text">
+                  <input type="text" name="topbar_ticker_text" class="form-control" placeholder="{{ translate('e.g., ✨ Register Today & Get 4 Free Proposals!') }}" value="{{ get_setting('topbar_ticker_text') }}">
+                  <small class="form-text text-muted">{{ translate('This text will scroll horizontally in the top bar marquee. Leave empty for default text.') }}</small>
+              </div>
+          </div>
+					<div class="form-group row">
 						<label class="col-md-3 col-from-label">{{translate('Enable Sticky header?')}}</label>
 						<div class="col-md-8">
 							<label class="aiz-switch aiz-switch-success mb-0">

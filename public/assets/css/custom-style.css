@@ -136,40 +136,114 @@ body {
 
 /* Top Navbar */
 .top-navbar-matrimony {
-  background-color: var(--mat-maroon);
+  background-color: var(--mat-maroon-dark, #2C0A12);
   color: #FFFFFF;
-  font-size: 13px;
-  padding: 8px 0;
+  font-size: 12px;
+  position: relative;
+  z-index: 1030;
 }
 .top-navbar-matrimony a {
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
 }
 .top-navbar-matrimony a:hover {
-  color: var(--mat-gold-light);
+  color: #FFFFFF;
+}
+
+/* Continuous Marquee Ticker Animation */
+@keyframes topbarMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-33.333333%, 0, 0);
+  }
+}
+
+.topbar-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: topbarMarquee 26s linear infinite;
+  will-change: transform;
+}
+
+.topbar-marquee-track:hover {
+  animation-play-state: paused !important;
+}
+
+.topbar-phone-link:hover {
+  color: #FDE68A !important;
+}
+
+.topbar-social-link:hover {
+  opacity: 1 !important;
+  color: #FDE68A !important;
+  transform: translateY(-1px);
 }
 
 /* Main Navigation Header */
 .main-header-matrimony {
   background-color: #FFFFFF;
   box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  padding: 12px 0;
+  padding: 14px 0;
+}
+.main-header-matrimony nav ul {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .nav-link-matrimony {
-  color: var(--mat-text-dark);
+  position: relative;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #2C0A12 !important;
   font-weight: 500;
   font-size: 15px;
-  padding: 8px 16px !important;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  line-height: 24px;
+  padding: 8px 14px !important;
+  border-radius: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  vertical-align: middle;
+  transition: color 0.3s ease-in-out;
 }
+
+/* Modern Animated Underline Indicator */
+.nav-link-matrimony::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background-color: #8C6239;
+  border-radius: 9999px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
 .nav-link-matrimony:hover {
-  color: var(--mat-gold);
+  color: #8C6239 !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
+
+.nav-link-matrimony:hover::after {
+  transform: scaleX(1);
+}
+
 .nav-link-matrimony.active {
-  background-color: var(--mat-gold-bg);
-  color: var(--mat-gold) !important;
-  font-weight: 600;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #8C6239 !important;
+  font-weight: 600 !important;
+}
+
+.nav-link-matrimony.active::after {
+  transform: scaleX(1);
 }
 
 /* Hero Section */

@@ -20,11 +20,11 @@ use custom-style.css
     --white: #fff;
     --gray: #6c757d;
     --gray-dark: #343a40;
-    --primary: #FD2C79 !important;
-    --hov-primary: #FD2C79;
-    --soft-primary: rgba(253,44,121,0.15);
-    --secondary: #8f97ab;
-    --soft-secondary: rgba(143, 151, 171, 0.15);
+    --primary: #4A1521 !important;
+    --hov-primary: #2C0A12;
+    --soft-primary: rgba(74, 21, 33, 0.12);
+    --secondary: #967240;
+    --soft-secondary: rgba(150, 114, 64, 0.15);
     --success: #0abb75;
     --soft-success: rgba(10, 187, 117, 0.15);
     --info: #25bcf1;

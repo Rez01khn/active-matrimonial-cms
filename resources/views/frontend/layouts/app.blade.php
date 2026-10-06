@@ -57,8 +57,10 @@ $lang = \App\Models\Language::where('code', $locale)->first();
     <!-- Favicon -->
     <link rel="icon" href="{{ uploaded_asset(get_setting('site_icon')) }}">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ static_asset('assets/css/vendors.css') }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ rand(1000,9999) }}">
@@ -72,34 +74,39 @@ $lang = \App\Models\Language::where('code', $locale)->first();
     </script>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--mat-font-sans, 'Plus Jakarta Sans', sans-serif);
             font-weight: 500;
-            color: #6d6e6f;
+            color: #2C2C2C;
+            background-color: #FFFDF9;
         }
 
         :root {
-            --primary: {{ get_setting('base_color', '#FD2C79') }};
-            --hov-primary: {{ get_setting('base_hov_color', '#0069d9') }};
-            --soft-primary: {{ hex2rgba(get_setting('base_hov_color', '#377dff'), 0.15) }};
-            --secondary: {{ get_setting('secondary_color', '#FD655B') }};
-            --soft-secondary: {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 0.15) }};
+            --primary: {{ get_setting('base_color', '#4A1521') }};
+            --hov-primary: {{ get_setting('base_hov_color', '#2C0A12') }};
+            --soft-primary: {{ hex2rgba(get_setting('base_color', '#4A1521'), 0.12) }};
+            --secondary: {{ get_setting('secondary_color', '#967240') }};
+            --hov-secondary: #805F32;
+            --soft-secondary: {{ hex2rgba(get_setting('secondary_color', '#967240'), 0.15) }};
         }
 
         .text-primary-grad {
-            background: rgb(253, 41, 123);
-            background: -moz-linear-gradient(0deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
-            background: -webkit-linear-gradient(0deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
-            background: linear-gradient(0deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
+            background: linear-gradient(135deg, {{ hex2rgba(get_setting('base_color', '#4A1521'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#967240'), 1) }} 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .btn-primary,
         .bg-primary-grad {
-            background: rgb(253, 41, 123);
-            background: -moz-linear-gradient(225deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
-            background: -webkit-linear-gradient(225deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
-            background: linear-gradient(225deg, {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }} 0%, {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }} 100%);
+            background: {{ get_setting('base_color', '#4A1521') }};
+            border-color: {{ get_setting('base_color', '#4A1521') }};
+            color: #ffffff !important;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: {{ get_setting('base_hov_color', '#2C0A12') }} !important;
+            border-color: {{ get_setting('base_hov_color', '#2C0A12') }} !important;
+            color: #ffffff !important;
         }
 
         .fill-dark {
@@ -107,11 +114,11 @@ $lang = \App\Models\Language::where('code', $locale)->first();
         }
 
         .fill-primary-grad stop:nth-child(1) {
-            stop-color: {{ hex2rgba(get_setting('secondary_color', '#FD655B'), 1) }};
+            stop-color: {{ hex2rgba(get_setting('secondary_color', '#967240'), 1) }};
         }
 
         .fill-primary-grad stop:nth-child(2) {
-            stop-color: {{ hex2rgba(get_setting('base_color', '#FD2C79'), 1) }};
+            stop-color: {{ hex2rgba(get_setting('base_color', '#4A1521'), 1) }};
         }
     </style>
 

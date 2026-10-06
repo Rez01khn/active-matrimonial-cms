@@ -11,7 +11,7 @@
     $instagram_link = get_setting('instagram_link') ?: '#';
     $youtube_link = get_setting('youtube_link') ?: '#';
 @endphp
-<div class="top-navbar-matrimony" style="background-color: #2C0A12; color: #FFFFFF; font-size: 12px; height: 38px; line-height: 38px; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+<div class="top-navbar-matrimony" style="background-color: var(--mat-maroon-dark); color: #FFFFFF; font-size: 12px; height: 38px; line-height: 38px; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
     <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-100">
         <div class="d-flex align-items-center justify-content-between h-100">
 

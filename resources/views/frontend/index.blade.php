@@ -194,6 +194,215 @@
         </div>
     </section>
 
+    <!-- Bangladesh Divisions Section -->
+    <section class="bd-divisions-section">
+        <!-- Botanical Corner Flourishes -->
+        <svg class="corner-flourish corner-flourish-tl" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 145C35 110 70 90 110 70M110 70C90 50 80 20 70 0M110 70C130 50 150 40 160 30" stroke="#8C6239" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M35 120C25 110 20 95 25 80C40 85 50 100 45 115" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M80 85C70 70 70 50 80 35C95 45 100 65 90 80" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M130 55C145 45 160 50 160 65C145 70 135 65 130 55" fill="#8C6239" fill-opacity="0.25"/>
+        </svg>
+        <svg class="corner-flourish corner-flourish-tr" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 145C35 110 70 90 110 70M110 70C90 50 80 20 70 0M110 70C130 50 150 40 160 30" stroke="#8C6239" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M35 120C25 110 20 95 25 80C40 85 50 100 45 115" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M80 85C70 70 70 50 80 35C95 45 100 65 90 80" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M130 55C145 45 160 50 160 65C145 70 135 65 130 55" fill="#8C6239" fill-opacity="0.25"/>
+        </svg>
+
+        <div class="container">
+            <!-- Section Header -->
+            <div class="heritage-header-wrap">
+                <div class="heritage-accent-badge">
+                    <span class="heritage-divider-wing"></span>
+                    <span class="heritage-icon-pin">
+                        <svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 0C4.477 0 0 4.477 0 10C0 17 10 24 10 24C10 24 20 17 20 10C20 4.477 15.523 0 10 0ZM10 13.5C8.067 13.5 6.5 11.933 6.5 10C6.5 8.067 8.067 6.5 10 6.5C11.933 6.5 13.5 8.067 13.5 10C13.5 11.933 11.933 13.5 10 13.5Z" fill="#8C6239"/>
+                        </svg>
+                    </span>
+                    <span class="heritage-divider-wing right"></span>
+                </div>
+                <h2 class="heritage-headline">Matches by Region &amp; Roots</h2>
+                <p class="heritage-subtitle">
+                    Discover compatible brides and grooms from your preferred division and cultural background.
+                </p>
+            </div>
+
+            <!-- 8 Division Cards Grid -->
+            <div class="bd-divisions-grid">
+                <!-- 1. Dhaka -->
+                <a href="{{ route('member.listing', ['division' => 'Dhaka', 'state_id' => 1]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="10" width="18" height="11" rx="2"></rect>
+                                <path d="M12 2L3 8h18L12 2z"></path>
+                                <line x1="8" y1="13" x2="8" y2="18"></line>
+                                <line x1="12" y1="13" x2="12" y2="18"></line>
+                                <line x1="16" y1="13" x2="16" y2="18"></line>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Dhaka Division</h3>
+                        <p class="division-tagline">The heart of Bangladesh, full of opportunities.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_dhaka.jpg') }}" alt="Dhaka Division - National Parliament" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 2. Chattogram -->
+                <a href="{{ route('member.listing', ['division' => 'Chattogram', 'state_id' => 2]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.5 0 2.5 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
+                                <path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7"></path>
+                                <path d="M12 4v6"></path>
+                                <path d="M8 8h8"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Chattogram Division</h3>
+                        <p class="division-tagline">By the sea, full of dreams and new beginnings.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_chattogram.jpg') }}" alt="Chattogram Division - Seaport" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 3. Rajshahi -->
+                <a href="{{ route('member.listing', ['division' => 'Rajshahi', 'state_id' => 3]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 21l7.03-3.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"></path>
+                                <path d="M12 7v5l3 3"></path>
+                                <path d="M9 17h6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Rajshahi Division</h3>
+                        <p class="division-tagline">Rich in culture, beautiful in nature.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_rajshahi.jpg') }}" alt="Rajshahi Division - Bagha Mosque" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 4. Khulna -->
+                <a href="{{ route('member.listing', ['division' => 'Khulna', 'state_id' => 4]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 19V5"></path>
+                                <path d="M8 9c-2 0-3 1.5-3 3.5 0 2 1.5 3.5 3 3.5h8c1.5 0 3-1.5 3-3.5 0-2-1-3.5-3-3.5-1-3-3.5-4-5-4s-4 1-5 4z"></path>
+                                <path d="M6 19h12"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Khulna Division</h3>
+                        <p class="division-tagline">Where rivers meet endless possibilities.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_khulna.jpg') }}" alt="Khulna Division - Sundarbans" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 5. Barishal -->
+                <a href="{{ route('member.listing', ['division' => 'Barishal', 'state_id' => 5]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 17l10 4 10-4-3-7H5l-3 7z"></path>
+                                <path d="M12 4v10"></path>
+                                <path d="M8 8l4-4 4 4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Barishal Division</h3>
+                        <p class="division-tagline">Land of rivers, land of peace.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_barishal.jpg') }}" alt="Barishal Division - River Life" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 6. Sylhet -->
+                <a href="{{ route('member.listing', ['division' => 'Sylhet', 'state_id' => 6]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22C12 22 20 18 20 10C20 6 16.5 3 12 2C7.5 3 4 6 4 10C4 18 12 22 12 22Z"></path>
+                                <path d="M12 2v20"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Sylhet Division</h3>
+                        <p class="division-tagline">Tea gardens, waterfalls and natural beauty.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_sylhet.jpg') }}" alt="Sylhet Division - Tea Gardens" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 7. Rangpur -->
+                <a href="{{ route('member.listing', ['division' => 'Rangpur', 'state_id' => 7]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 21h16"></path>
+                                <path d="M6 21V9l6-5 6 5v12"></path>
+                                <path d="M9 13h6v8H9z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Rangpur Division</h3>
+                        <p class="division-tagline">Tradition, simplicity and strong roots.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_rangpur.jpg') }}" alt="Rangpur Division - Tajhat Palace" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 8. Mymensingh -->
+                <a href="{{ route('member.listing', ['division' => 'Mymensingh', 'state_id' => 8]) }}" class="division-card">
+                    <div class="division-card-top">
+                        <div class="division-icon-badge">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 18l8 3 10-3-2-6H5l-2 6z"></path>
+                                <path d="M12 5v7"></path>
+                                <path d="M12 5l-4 4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="division-title">Mymensingh Division</h3>
+                        <p class="division-tagline">Known for its rivers, fields and friendly people.</p>
+                        <span class="division-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="division-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/divisions/div_mymensingh.jpg') }}" alt="Mymensingh Division - Brahmaputra River" loading="lazy">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- 4. Meet Our Featured Members -->
     <section class="py-6 bg-mat-section position-relative">
         <div class="container">
@@ -203,9 +412,9 @@
             </div>
 
             <!-- Member Carousel Container -->
-            <div class="member-carousel-wrap px-lg-4">
+            <div class="member-carousel-wrap">
                 <!-- Left Navigation Arrow -->
-                <button type="button" class="member-nav-btn prev-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickPrev')">
+                <button type="button" class="member-nav-btn prev-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickPrev')" aria-label="Previous Members">
                     <i class="las la-angle-left fs-18"></i>
                 </button>
 
@@ -395,9 +604,232 @@
                 </div>
 
                 <!-- Right Navigation Arrow -->
-                <button type="button" class="member-nav-btn next-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickNext')">
+                <button type="button" class="member-nav-btn next-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickNext')" aria-label="Next Members">
                     <i class="las la-angle-right fs-18"></i>
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Jobs in Bangladesh Section -->
+    <section class="popular-jobs-section">
+        <!-- Botanical Corner Flourishes -->
+        <svg class="corner-flourish corner-flourish-tl" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 145C35 110 70 90 110 70M110 70C90 50 80 20 70 0M110 70C130 50 150 40 160 30" stroke="#8C6239" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M35 120C25 110 20 95 25 80C40 85 50 100 45 115" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M80 85C70 70 70 50 80 35C95 45 100 65 90 80" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M130 55C145 45 160 50 160 65C145 70 135 65 130 55" fill="#8C6239" fill-opacity="0.25"/>
+        </svg>
+        <svg class="corner-flourish corner-flourish-tr" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 145C35 110 70 90 110 70M110 70C90 50 80 20 70 0M110 70C130 50 150 40 160 30" stroke="#8C6239" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M35 120C25 110 20 95 25 80C40 85 50 100 45 115" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M80 85C70 70 70 50 80 35C95 45 100 65 90 80" fill="#8C6239" fill-opacity="0.25"/>
+            <path d="M130 55C145 45 160 50 160 65C145 70 135 65 130 55" fill="#8C6239" fill-opacity="0.25"/>
+        </svg>
+
+        <div class="container">
+            <!-- Section Header -->
+            <div class="heritage-header-wrap">
+                <div class="heritage-accent-badge">
+                    <span class="heritage-divider-wing"></span>
+                    <span class="heritage-icon-pin">
+                        <svg width="22" height="20" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="6" width="20" height="14" rx="2.5" stroke="#8C6239" stroke-width="2"/>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#8C6239" stroke-width="2"/>
+                            <path d="M2 11h20" stroke="#8C6239" stroke-width="1.8"/>
+                        </svg>
+                    </span>
+                    <span class="heritage-divider-wing right"></span>
+                </div>
+                <h2 class="heritage-headline">Find Matches by Profession</h2>
+                <p class="heritage-subtitle">
+                    Connect with educated and established professionals who share your values, ambition, and lifestyle.
+                </p>
+            </div>
+
+            <!-- 8 Profession Cards Grid -->
+            <div class="popular-jobs-grid">
+                <!-- 1. IT & Software -->
+                <a href="{{ route('member.listing', ['profession' => 'IT']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                <polyline points="6 9 8 11 6 13"></polyline>
+                                <line x1="11" y1="13" x2="15" y2="13"></line>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">IT &amp; Software</h3>
+                        <span class="job-count">1,240+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_it_software.jpg') }}" alt="IT & Software" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 2. Education & Teaching -->
+                <a href="{{ route('member.listing', ['profession' => 'Teacher']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                <line x1="9" y1="7" x2="15" y2="7"></line>
+                                <line x1="9" y1="11" x2="13" y2="11"></line>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Education &amp; Teaching</h3>
+                        <span class="job-count">980+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_education.jpg') }}" alt="Education & Teaching" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 3. Government Service -->
+                <a href="{{ route('member.listing', ['profession' => 'Government']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 21h18"></path>
+                                <path d="M5 21V10l7-5 7 5v11"></path>
+                                <path d="M9 21v-4a3 3 0 0 1 6 0v4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Government Service</h3>
+                        <span class="job-count">760+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_government.jpg') }}" alt="Government Service" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 4. Healthcare & Medical -->
+                <a href="{{ route('member.listing', ['profession' => 'Doctor']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .2.3"></path>
+                                <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"></path>
+                                <circle cx="20" cy="10" r="2"></circle>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Healthcare &amp; Medical</h3>
+                        <span class="job-count">620+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_healthcare.jpg') }}" alt="Healthcare & Medical" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 5. Banking & Finance -->
+                <a href="{{ route('member.listing', ['profession' => 'Banker']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="10" width="18" height="11" rx="2"></rect>
+                                <path d="M12 2L3 8h18L12 2z"></path>
+                                <line x1="8" y1="13" x2="8" y2="18"></line>
+                                <line x1="12" y1="13" x2="12" y2="18"></line>
+                                <line x1="16" y1="13" x2="16" y2="18"></line>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Banking &amp; Finance</h3>
+                        <span class="job-count">540+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_banking.jpg') }}" alt="Banking & Finance" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 6. Engineering -->
+                <a href="{{ route('member.listing', ['profession' => 'Engineer']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Engineering</h3>
+                        <span class="job-count">480+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_engineering.jpg') }}" alt="Engineering" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 7. Business & Entrepreneurship -->
+                <a href="{{ route('member.listing', ['profession' => 'Business']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                                <polyline points="6 10 12 4 18 8"></polyline>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Business &amp; Entrepreneurship</h3>
+                        <span class="job-count">420+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_business.jpg') }}" alt="Business & Entrepreneurship" loading="lazy">
+                    </div>
+                </a>
+
+                <!-- 8. Other Professions -->
+                <a href="{{ route('member.listing', ['profession' => 'Other']) }}" class="job-card">
+                    <div class="job-card-content">
+                        <div class="job-icon-badge">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C6239" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3 class="job-title">Other Professions</h3>
+                        <span class="job-count">380+ Profiles</span>
+                        <span class="job-arrow-btn">
+                            <i class="las la-arrow-right"></i>
+                        </span>
+                    </div>
+                    <div class="job-card-visual">
+                        <img src="{{ static_asset('assets/img/custom/jobs/job_other.jpg') }}" alt="Other Professions" loading="lazy">
+                    </div>
+                </a>
+            </div>
+
+            <!-- Bottom Action Button -->
+            <div class="text-center mt-3">
+                <a href="{{ route('member.listing') }}" class="btn-explore-all-jobs">
+                    <span>Explore All Jobs</span>
+                    <i class="las la-arrow-right fs-16"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -409,16 +841,16 @@
 
         <!-- Floral Corner Watermarks -->
         <svg class="how-it-works-watermark-left" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 180C40 140 80 120 120 100M120 100C100 80 90 40 80 10M120 100C140 80 170 70 190 60" stroke="#8C6239" stroke-width="2" stroke-linecap="round"/>
-            <path d="M40 150C30 140 25 125 30 110C45 115 55 130 50 145" fill="#8C6239" fill-opacity="0.3"/>
-            <path d="M90 115C80 100 80 80 90 65C105 75 110 95 100 110" fill="#8C6239" fill-opacity="0.3"/>
-            <path d="M140 85C155 75 170 80 180 95C165 100 150 95 140 85" fill="#8C6239" fill-opacity="0.3"/>
+            <path d="M20 180C40 140 80 120 120 100M120 100C100 80 90 40 80 10M120 100C140 80 170 70 190 60" stroke="var(--mat-gold)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M40 150C30 140 25 125 30 110C45 115 55 130 50 145" fill="var(--mat-gold)" fill-opacity="0.3"/>
+            <path d="M90 115C80 100 80 80 90 65C105 75 110 95 100 110" fill="var(--mat-gold)" fill-opacity="0.3"/>
+            <path d="M140 85C155 75 170 80 180 95C165 100 150 95 140 85" fill="var(--mat-gold)" fill-opacity="0.3"/>
         </svg>
         <svg class="how-it-works-watermark-right" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 180C40 140 80 120 120 100M120 100C100 80 90 40 80 10M120 100C140 80 170 70 190 60" stroke="#8C6239" stroke-width="2" stroke-linecap="round"/>
-            <path d="M40 150C30 140 25 125 30 110C45 115 55 130 50 145" fill="#8C6239" fill-opacity="0.3"/>
-            <path d="M90 115C80 100 80 80 90 65C105 75 110 95 100 110" fill="#8C6239" fill-opacity="0.3"/>
-            <path d="M140 85C155 75 170 80 180 95C165 100 150 95 140 85" fill="#8C6239" fill-opacity="0.3"/>
+            <path d="M20 180C40 140 80 120 120 100M120 100C100 80 90 40 80 10M120 100C140 80 170 70 190 60" stroke="var(--mat-gold)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M40 150C30 140 25 125 30 110C45 115 55 130 50 145" fill="var(--mat-gold)" fill-opacity="0.3"/>
+            <path d="M90 115C80 100 80 80 90 65C105 75 110 95 100 110" fill="var(--mat-gold)" fill-opacity="0.3"/>
+            <path d="M140 85C155 75 170 80 180 95C165 100 150 95 140 85" fill="var(--mat-gold)" fill-opacity="0.3"/>
         </svg>
 
         <div class="container how-it-works-content">
@@ -512,10 +944,10 @@
         <div class="container position-relative px-4 px-md-5">
             <!-- Symmetrically Positioned Prev / Next Arrow Navigation Controls -->
             <button type="button" class="story-nav-btn prev-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-prev-btn" aria-label="Previous Story">
-                <i class="las la-angle-left" style="color: #2C0A12; font-size: 20px;"></i>
+                <i class="las la-angle-left" style="color: var(--mat-maroon-dark); font-size: 20px;"></i>
             </button>
             <button type="button" class="story-nav-btn next-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-next-btn" aria-label="Next Story">
-                <i class="las la-angle-right" style="color: #2C0A12; font-size: 20px;"></i>
+                <i class="las la-angle-right" style="color: var(--mat-maroon-dark); font-size: 20px;"></i>
             </button>
 
             <!-- Carousel Slider Wrapper (slidesPerView: 1) -->

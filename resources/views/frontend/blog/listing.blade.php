@@ -382,7 +382,7 @@
         const btn = document.getElementById('newsletterSubmitBtn');
         if (input && input.value) {
             btn.innerHTML = '{{ translate("Subscribed!") }} ✓';
-            btn.style.backgroundColor = '#4A1521';
+            btn.style.backgroundColor = 'var(--mat-maroon)';
             input.value = '';
             if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
                 AIZ.plugins.notify('success', 'Thank you for subscribing to our newsletter!');

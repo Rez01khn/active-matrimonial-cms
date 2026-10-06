@@ -30,14 +30,7 @@
                       <tr id="shortlisted_member_{{ $shortlist->user_id }}">
                           <td>{{ ($key+1) + ($shortlists->currentPage() - 1)*$shortlists->perPage() }}</td>
                           <td>
-                            <a
-                              @if(get_setting('full_profile_show_according_to_membership') == 1 && Auth::user()->membership == 1)
-                                  href="javascript:void(0);" onclick="package_update_alert()"
-                              @else
-                                  href="{{ route('member_profile', $shortlist->user_id) }}"
-                              @endif
-                              class="text-reset c-pointer"
-                            >
+                            <a href="{{ route('member_profile', $shortlist->user_id) }}" class="text-reset c-pointer">
                                 @if(uploaded_asset($shortlist->user->photo) != null)
                                     <img class="img-md" src="{{ uploaded_asset($shortlist->user->photo) }}" height="45px"  alt="{{translate('photo')}}">
                                 @else
@@ -46,14 +39,7 @@
                             </a>
                           </td>
                           <td>
-                              <a
-                                @if(get_setting('full_profile_show_according_to_membership') == 1 && Auth::user()->membership == 1)
-                                    href="javascript:void(0);" onclick="package_update_alert()"
-                                @else
-                                    href="{{ route('member_profile', $shortlist->user_id) }}"
-                                @endif
-                                class="text-reset c-pointer"
-                              >
+                              <a href="{{ route('member_profile', $shortlist->user_id) }}" class="text-reset c-pointer">
                                 {{ $shortlist->user->first_name.' '.$shortlist->user->last_name }}
                             </a>
                           </td>
@@ -151,28 +137,17 @@
     }
 
     // Express Interest
-    var package_validity = {{ package_validity(Auth::user()->id) }};
+    var is_paid_user = {{ is_paid_member(Auth::id()) ? 'true' : 'false' }};
 
     function express_interest(id)
     {
-      var user_id = {{ Auth::user()->id }}
-      $.post('{{ route('user.remaining_package_value') }}', {_token:'{{ csrf_token() }}', id:user_id, colmn_name:'remaining_interest' }, function(data){
-          
-          var remaining_interest = data;
-          if(!package_validity || remaining_interest < 1){
-              $('.package_update_alert_modal').modal('show');
-          }
-          else{
-            $('.confirm_modal').modal('show');
-            $("#confirm_modal_title").html("{{ translate('Confirm Express Interest') }}");
-            $("#confirm_modal_content").html("<p class='fs-14'>{{translate('Remaining Express Interests')}}: "+remaining_interest+" {{translate('Times')}}</p><small class='text-danger fs-12'>{{translate('**N.B. Expressing An Interest Will Cost 1 From Your Remaining Interests**')}}</small>");
-            $("#confirm_button").attr("onclick","do_express_interest("+id+")");
-          }
-      });
-    }
+      if(!is_paid_user){
+          $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+          $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+          $('.package_update_alert_modal').modal('show');
+          return;
+      }
 
-    function do_express_interest(id){
-      $('.confirm_modal').modal('hide');
       $("#interest_a_id_"+id).removeAttr("onclick");
       $.post('{{ route('express-interest.store') }}',
         {
@@ -180,16 +155,26 @@
           id: id
         },
         function (data) {
-          if (data) {
+          if (data == 1 || (data && data.result)) {
             $("#interest_a_id_"+id).attr("class","btn btn-soft-success btn-icon btn-circle btn-sm");
-            $("#interest_a_id_"+id).attr("title","{{ translate('Interest Expressed') }}");
-            AIZ.plugins.notify('success', '{{translate('Interest Expressed Sucessfully')}}');
+            $("#interest_a_id_"+id).attr("title","{{ translate('Interest Sent') }}");
+            AIZ.plugins.notify('success', '{{translate('Interest expressed successfully!')}}');
+          }
+          else if (data && data.status === 'upgrade_required') {
+            $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+            $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+            $('.package_update_alert_modal').modal('show');
+            $("#interest_a_id_"+id).attr("onclick","express_interest("+id+")");
           }
           else {
-              AIZ.plugins.notify('danger', '{{translate('Something went wrong')}}');
+            $("#interest_a_id_"+id).attr("onclick","express_interest("+id+")");
+            AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{translate('Something went wrong')}}');
           }
         }
-      );
+      ).fail(function() {
+        $("#interest_a_id_"+id).attr("onclick","express_interest("+id+")");
+        AIZ.plugins.notify('danger', '{{translate('Something went wrong')}}');
+      });
     }
 
     function package_update_alert(){

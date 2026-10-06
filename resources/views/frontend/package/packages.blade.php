@@ -6,13 +6,13 @@
 <section class="plans-hero-section">
     <!-- Subtle Floral Watermark Accent (SVG) -->
     <svg class="plans-hero-vines" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0C40 20 70 60 80 110C85 130 90 150 110 160" stroke="#8C6239" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <path d="M10 0C50 30 80 75 90 130" stroke="#8C6239" stroke-width="1.2"/>
-        <circle cx="45" cy="30" r="3" fill="#8C6239" fill-opacity="0.4"/>
-        <circle cx="75" cy="70" r="4" fill="#8C6239" fill-opacity="0.5"/>
-        <circle cx="95" cy="125" r="3.5" fill="#8C6239" fill-opacity="0.4"/>
-        <path d="M45 30C52 24 60 26 62 32C56 36 48 34 45 30Z" fill="#8C6239" fill-opacity="0.3"/>
-        <path d="M75 70C82 64 90 66 92 72C86 76 78 74 75 70Z" fill="#8C6239" fill-opacity="0.3"/>
+        <path d="M0 0C40 20 70 60 80 110C85 130 90 150 110 160" stroke="var(--mat-gold)" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M10 0C50 30 80 75 90 130" stroke="var(--mat-gold)" stroke-width="1.2"/>
+        <circle cx="45" cy="30" r="3" fill="var(--mat-gold)" fill-opacity="0.4"/>
+        <circle cx="75" cy="70" r="4" fill="var(--mat-gold)" fill-opacity="0.5"/>
+        <circle cx="95" cy="125" r="3.5" fill="var(--mat-gold)" fill-opacity="0.4"/>
+        <path d="M45 30C52 24 60 26 62 32C56 36 48 34 45 30Z" fill="var(--mat-gold)" fill-opacity="0.3"/>
+        <path d="M75 70C82 64 90 66 92 72C86 76 78 74 75 70Z" fill="var(--mat-gold)" fill-opacity="0.3"/>
     </svg>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 position-relative z-2">
@@ -37,7 +37,7 @@
                 <!-- Centered/Left delicate divider with heart (— ♥ —) -->
                 <div class="plans-hero-divider mt-4">
                     <div class="plans-hero-divider-line"></div>
-                    <i class="las la-heart" style="color: #2C0A12; font-size: 16px;"></i>
+                    <i class="las la-heart text-mat-maroon-dark" style="font-size: 16px;"></i>
                     <div class="plans-hero-divider-line"></div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                         <span>Real People</span><br>
                         <span>Real Stories</span><br>
                         <span>Lasting Love</span>
-                        <div class="text-center mt-1" style="font-size: 13px; color: #8C6239;">❤</div>
+                        <div class="text-center mt-1 text-mat-gold" style="font-size: 13px;">❤</div>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
             <div class="plan-card plan-card-basic">
                 <div>
                     <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle" style="background-color: #FDF0F0; color: #8C6239;">
+                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-maroon-light-bg);">
                         <i class="las la-feather-alt"></i>
                     </div>
 
@@ -95,24 +95,24 @@
                         <span class="plan-price-period text-muted">/ 3 Months</span>
                     </div>
 
-                    <div style="height: 1px; background-color: #F0ECE6; margin-bottom: 20px;"></div>
+                    <div style="height: 1px; background-color: var(--mat-border-light); margin-bottom: 20px;"></div>
 
                     <!-- Features List -->
                     <ul class="plan-features-list">
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Create your profile</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Browse matches</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Send up to 10 interests/day</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>View limited profiles</span>
                         </li>
                     </ul>
@@ -142,7 +142,7 @@
 
                 <div>
                     <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle" style="background-color: #F4ECE1; color: #8C6239;">
+                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-gold-bg);">
                         <i class="las la-crown"></i>
                     </div>
 
@@ -155,24 +155,24 @@
                         <span class="plan-price-period text-muted">/ 6 Months</span>
                     </div>
 
-                    <div style="height: 1px; background-color: #E8DFD5; margin-bottom: 20px;"></div>
+                    <div style="height: 1px; background-color: var(--mat-border); margin-bottom: 20px;"></div>
 
                     <!-- Features List -->
                     <ul class="plan-features-list">
                         <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #8C6239; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
                             <span>All Basic features</span>
                         </li>
                         <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #8C6239; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
                             <span>Send up to 30 interests/day</span>
                         </li>
                         <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #8C6239; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
                             <span>View all profiles</span>
                         </li>
                         <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #8C6239; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
                             <span>Access to success stories</span>
                         </li>
                     </ul>
@@ -199,7 +199,7 @@
             <div class="plan-card plan-card-premium">
                 <div>
                     <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle" style="background-color: #FDF0F0; color: #8C6239;">
+                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-maroon-light-bg);">
                         <i class="las la-gem"></i>
                     </div>
 
@@ -212,28 +212,28 @@
                         <span class="plan-price-period text-muted">/ 12 Months</span>
                     </div>
 
-                    <div style="height: 1px; background-color: #F0ECE6; margin-bottom: 20px;"></div>
+                    <div style="height: 1px; background-color: var(--mat-border-light); margin-bottom: 20px;"></div>
 
                     <!-- Features List -->
                     <ul class="plan-features-list">
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>All Standard features</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Unlimited interests</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>See who viewed your profile</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Priority customer support</span>
                         </li>
                         <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #2C0A12; font-weight: 700;"></i>
+                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
                             <span>Access to premium matches</span>
                         </li>
                     </ul>
@@ -326,7 +326,7 @@
 
             <!-- 1. Verified Profiles -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF2E9; color: #8C6239;">
+                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
                     <i class="las la-shield-alt"></i>
                 </div>
                 <h4 class="trust-item-title">Verified Profiles</h4>
@@ -335,7 +335,7 @@
 
             <!-- 2. Privacy Protection -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF0F0; color: #A62B39;">
+                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
                     <i class="las la-lock"></i>
                 </div>
                 <h4 class="trust-item-title">Privacy Protection</h4>
@@ -344,7 +344,7 @@
 
             <!-- 3. Safe Communication -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF2E9; color: #8C6239;">
+                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
                     <i class="las la-comment-dots"></i>
                 </div>
                 <h4 class="trust-item-title">Safe Communication</h4>
@@ -353,7 +353,7 @@
 
             <!-- 4. Advanced Filters -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF0F0; color: #A62B39;">
+                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
                     <i class="las la-sliders-h"></i>
                 </div>
                 <h4 class="trust-item-title">Advanced Filters</h4>
@@ -362,7 +362,7 @@
 
             <!-- 5. NID/Passport Verification -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF2E9; color: #8C6239;">
+                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
                     <i class="las la-id-card"></i>
                 </div>
                 <h4 class="trust-item-title">NID/Passport Verification</h4>
@@ -371,7 +371,7 @@
 
             <!-- 6. 24/7 Support -->
             <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box" style="background-color: #FDF0F0; color: #A62B39;">
+                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
                     <i class="las la-headset"></i>
                 </div>
                 <h4 class="trust-item-title">24/7 Support</h4>
@@ -383,20 +383,20 @@
 </section>
 
 <!-- 5. Conversion Banner & FAQ Section (Bottom Row) -->
-<section class="py-5" style="background-color: #FBF8F4; border-top: 1px solid #EFEAE3;">
+<section class="py-5" style="background-color: var(--mat-bg-section); border-top: 1px solid var(--mat-border-light);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="row align-items-center">
 
             <!-- Left Side: Ready to Find Your Soulmate -->
             <div class="col-lg-4 mb-4 mb-lg-0 pr-lg-4">
-                <i class="las la-heart fs-36" style="color: #2C0A12;"></i>
-                <h3 class="font-serif fw-700 mt-2 mb-2" style="font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: #2C0A12; line-height: 1.25;">
+                <i class="las la-heart fs-36 text-mat-maroon-dark"></i>
+                <h3 class="font-serif fw-700 mt-2 mb-2 text-mat-maroon-dark" style="font-size: 26px; line-height: 1.25;">
                     Ready to Find Your Soulmate?
                 </h3>
                 <p class="text-muted fs-14 mb-4" style="line-height: 1.55;">
                     Join thousands of happy couples who found their life partner through our trusted platform.
                 </p>
-                <a href="{{ route('register') }}" class="btn text-white d-inline-flex align-items-center" style="background: #2C0A12; border-radius: 9999px; padding: 11px 26px; font-size: 14px; font-weight: 600; gap: 8px; text-decoration: none; box-shadow: 0 4px 14px rgba(44, 10, 18, 0.2);">
+                <a href="{{ route('register') }}" class="btn text-white d-inline-flex align-items-center" style="background: var(--mat-maroon-dark); border-radius: 9999px; padding: 11px 26px; font-size: 14px; font-weight: 600; gap: 8px; text-decoration: none; box-shadow: 0 4px 14px rgba(44, 10, 18, 0.2);">
                     <i class="las la-user-plus fs-16"></i>
                     <span>Register Free &rarr;</span>
                 </a>
@@ -404,7 +404,7 @@
 
             <!-- Middle Side: Frequently Asked Questions Accordion -->
             <div class="col-lg-5 mb-4 mb-lg-0 px-lg-3">
-                <h3 class="font-serif fw-700 mb-3" style="font-family: 'Playfair Display', Georgia, serif; font-size: 20px; color: #2C0A12;">
+                <h3 class="font-serif fw-700 mb-3 text-mat-maroon-dark" style="font-size: 20px;">
                     Frequently Asked Questions
                 </h3>
 
@@ -444,14 +444,14 @@
 
             <!-- Right Side: Decorative Linked Hearts & Script Text -->
             <div class="col-lg-3 text-center pl-lg-4">
-                <div class="p-4 rounded-2xl position-relative" style="background: rgba(255, 255, 255, 0.65); border: 1px solid #ECE7E0; border-radius: 16px;">
+                <div class="p-4 rounded-2xl position-relative" style="background: rgba(255, 255, 255, 0.65); border: 1px solid var(--mat-border-light); border-radius: 16px;">
                     <!-- Linked Hearts SVG -->
                     <svg width="60" height="42" viewBox="0 0 60 42" fill="none" class="mx-auto mb-3" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 6C17 1 9 4 9 11C9 19 22 29 22 29C22 29 35 19 35 11C35 4 27 1 22 6Z" fill="#F4ECE1" stroke="#8C6239" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M38 12C33 7 25 10 25 17C25 25 38 35 38 35C38 35 51 25 51 17C51 10 43 7 38 12Z" fill="#FDF0F0" stroke="#2C0A12" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M22 6C17 1 9 4 9 11C9 19 22 29 22 29C22 29 35 19 35 11C35 4 27 1 22 6Z" fill="#F4ECE1" stroke="var(--mat-gold)" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M38 12C33 7 25 10 25 17C25 25 38 35 38 35C38 35 51 25 51 17C51 10 43 7 38 12Z" fill="var(--mat-maroon-light-bg)" stroke="var(--mat-maroon-dark)" stroke-width="1.6" stroke-linejoin="round"/>
                     </svg>
 
-                    <div style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 20px; font-weight: 600; color: #8C6239; line-height: 1.3;">
+                    <div class="font-serif" style="font-style: italic; font-size: 20px; font-weight: 600; color: var(--mat-gold); line-height: 1.3;">
                         Better Matches<br>Brighter Futures
                     </div>
                     <div class="mt-2 text-muted fs-11 opacity-60">✦ ✦ ✦</div>

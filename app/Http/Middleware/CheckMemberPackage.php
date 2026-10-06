@@ -18,6 +18,14 @@ class CheckMemberPackage
     {
         $user = Auth::user();
 
+        if ($request->routeIs('member_profile') || $request->is('member-profile/*')) {
+            $target_id = $request->route('id');
+            if ($user && $user->user_type == 'member' && ($target_id != $user->id) && !is_paid_member($user->id)) {
+                flash(translate('Please upgrade to a premium package to view complete biodata and profile details.'))->warning();
+                return redirect()->route('packages');
+            }
+        }
+
         if ($user && $user->member && is_null($user->member->current_package_id)) {
 
             if (!$request->routeIs(['home', 'packages', 'package_payment_methods', 'free_package_purchase', 'package_payment.invoice', 'package_purchase_history', 'package.payment'])) {

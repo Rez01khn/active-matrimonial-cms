@@ -23,6 +23,7 @@ use App\Models\ProfileViewer;
 use App\Models\RegistrationVerificationCode;
 use App\Models\Religion;
 use App\Models\City;
+use App\Models\State;
 use App\Utility\EmailUtility;
 use App\Utility\SmsUtility;
 use Notification;
@@ -251,6 +252,12 @@ class HomeController extends Controller
         $profession     = ($request->profession != null) ? $request->profession : null;
         $country_id     = ($request->country_id != null) ? $request->country_id : null;
         $state_id       = ($request->state_id != null) ? $request->state_id : null;
+        if (empty($state_id) && !empty($request->division)) {
+            $matchedState = State::where('name', 'like', '%' . $request->division . '%')->first();
+            if ($matchedState) {
+                $state_id = $matchedState->id;
+            }
+        }
         $city_id        = ($request->city_id != null) ? $request->city_id : null;
         $min_height     = ($request->min_height != null) ? $request->min_height : null;
         $max_height     = ($request->max_height != null) ? $request->max_height : null;
@@ -327,7 +334,11 @@ class HomeController extends Controller
             $user_ids = Address::where('city_id', $city_id)->pluck('user_id')->toArray();
             $users = $users->whereIn('id', $user_ids);
         } elseif (!empty($state_id)) {
-            $user_ids = Address::where('state_id', $state_id)->pluck('user_id')->toArray();
+            $city_ids_for_state = City::where('state_id', $state_id)->pluck('id')->toArray();
+            $user_ids = Address::where('state_id', $state_id)
+                ->orWhereIn('city_id', $city_ids_for_state)
+                ->pluck('user_id')
+                ->toArray();
             $users = $users->whereIn('id', $user_ids);
         } elseif (!empty($country_id)) {
             $user_ids = Address::where('country_id', $country_id)->pluck('user_id')->toArray();
@@ -429,7 +440,13 @@ class HomeController extends Controller
 
     public function view_member_profile($id)
     {
-        $authUser= auth()->user();
+        $authUser = auth()->user();
+
+        if ($authUser && $authUser->user_type == 'member' && ($authUser->id != $id) && !is_paid_member($authUser->id)) {
+            flash(translate('Please upgrade to a premium package to view complete biodata and profile details.'))->warning();
+            return redirect()->route('packages');
+        }
+
         $similar_profiles = ProfileMatch::orderBy('match_percentage', 'desc')
             ->where('user_id', $authUser->id)
             ->where('match_id', '!=', $id)

@@ -2215,8 +2215,9 @@
 
 @section('script')
     <script type="text/javascript">
-        var package_validity = {{ package_validity(Auth::user()->id) }};
-        var user_id = {{ Auth::user()->id }}
+        var package_validity = {{ package_validity(Auth::user()->id) ? 'true' : 'false' }};
+        var is_paid_user = {{ is_paid_member(Auth::id()) ? 'true' : 'false' }};
+        var user_id = {{ Auth::user()->id }};
 
         // View Contact details
         function view_contact(id) {
@@ -2266,49 +2267,43 @@
 
         // Express Interest
         function express_interest(id) {
-            $.post('{{ route('user.remaining_package_value') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: user_id,
-                    colmn_name: 'remaining_interest'
-                },
-                function(data) {
-                    var remaining_interest = data;
-                    if (!package_validity || remaining_interest < 1) {
-                        $('.package_update_alert_modal').modal('show');
-                    } else {
-                        $('.confirm_modal').modal('show');
-                        $("#confirm_modal_title").html("{{ translate('Confirm Express Interest!') }}");
-                        $("#confirm_modal_content").html(
-                            "<p class='fs-14'>{{ translate('Remaining Express Interest') }}: " +
-                            remaining_interest +
-                            " {{ translate('Times') }}</p class='fs-12'><small class='text-danger'>{{ translate('**N.B. Expressing An Interest Will Cost 1 From Your Remaining Interests**') }}</small>"
-                        );
-                        $("#confirm_button").attr("onclick", "do_express_interest(" + id + ")");
-                    }
-                }
-            );
-        }
+            if (!is_paid_user) {
+                $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+                $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                $('.package_update_alert_modal').modal('show');
+                return;
+            }
 
-        function do_express_interest(id) {
-            $('.confirm_modal').modal('hide');
             $("#interest_a_id_" + id).removeAttr("onclick");
-            $("#interest_id_" + id).html("{{ translate('Processing') }}..");
+            $("#interest_id_" + id).html("{{ translate('Sending...') }}");
+
             $.post('{{ route('express-interest.store') }}', {
                     _token: '{{ csrf_token() }}',
                     id: id
                 },
                 function(data) {
-                    if (data) {
-                        $("#interest_id_" + id).html("{{ translate('Interest Expressed') }}");
+                    if (data == 1 || (data && data.result)) {
+                        $("#interest_id_" + id).html("{{ translate('Interest Sent') }}");
                         $("#interest_id_" + id).attr("class", "d-block fs-13 text-white");
-                        AIZ.plugins.notify('success', '{{ translate('Interest Expressed Sucessfully') }}');
-                        location.reload();
+                        $("#interest_a_id_" + id).find('i').removeClass('la-heart-o').addClass('la-heart');
+                        AIZ.plugins.notify('success', '{{ translate('Interest expressed successfully!') }}');
+                    } else if (data && data.status === 'upgrade_required') {
+                        $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+                        $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                        $('.package_update_alert_modal').modal('show');
+                        $("#interest_id_" + id).html("{{ translate('Interest') }}");
+                        $("#interest_a_id_" + id).attr("onclick", "express_interest(" + id + ")");
                     } else {
                         $("#interest_id_" + id).html("{{ translate('Interest') }}");
-                        AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+                        $("#interest_a_id_" + id).attr("onclick", "express_interest(" + id + ")");
+                        AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{ translate('Something went wrong') }}');
                     }
                 }
-            );
+            ).fail(function() {
+                $("#interest_id_" + id).html("{{ translate('Interest') }}");
+                $("#interest_a_id_" + id).attr("onclick", "express_interest(" + id + ")");
+                AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+            });
         }
 
         // Shortlist

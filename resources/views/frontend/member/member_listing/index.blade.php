@@ -17,10 +17,10 @@
                     </ol>
                 </nav>
 
-                <h1 class="matches-hero-title mb-3"
-                    style="color: #2C0A12; font-family: 'Playfair Display', Georgia, serif; font-size: 38px; font-weight: 700; line-height: 1.2;">
+                <h1 class="matches-hero-title mb-3 font-serif fw-700 text-mat-maroon-dark"
+                    style="font-size: 38px; line-height: 1.2;">
                     Find Your Perfect Match</h1>
-                <p class="matches-hero-subtitle mb-0" style="color: #555555; font-size: 15px; line-height: 1.6;">
+                <p class="matches-hero-subtitle mb-0 text-muted" style="font-size: 15px; line-height: 1.6;">
                     Discover genuine connections with like-minded people and build a beautiful future together.
                 </p>
             </div>
@@ -34,14 +34,13 @@
             <!-- 3. Left Column (25% - 28% width): Strictly ONE Single Filter Sidebar -->
             <aside class="lg:col-span-3">
                 <div class="filter-card-container bg-white rounded-2xl shadow-sm border border-stone-200/80 p-5"
-                    style="border-radius: 16px; border: 1px solid #EAE5DD; padding: 22px; background: #FFFFFF; box-shadow: 0 4px 18px rgba(0,0,0,0.04);">
+                    style="border-radius: 16px; border: 1px solid var(--mat-border); padding: 22px; background: #FFFFFF; box-shadow: 0 4px 18px rgba(0,0,0,0.04);">
 
                     <!-- Filter Header -->
                     <div class="filter-sidebar-header d-flex align-items-center mb-4 pb-3"
-                        style="border-bottom: 1px solid #F0ECE6; gap: 10px;">
-                        <i class="las la-sliders-h fs-20" style="color: #8C6239;"></i>
-                        <span class="fs-18 fw-700 text-mat-maroon"
-                            style="color: #2C0A12; font-weight: 700;">{{ translate('Filter Matches') }}</span>
+                        style="border-bottom: 1px solid var(--mat-border-light); gap: 10px;">
+                        <i class="las la-sliders-h fs-20 text-mat-gold"></i>
+                        <span class="fs-18 fw-700 text-mat-maroon-dark">{{ translate('Filter Matches') }}</span>
                     </div>
 
                     <form action="{{ route('member.listing') }}" method="get" id="filter-form">
@@ -50,11 +49,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-user-tag fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-user-tag fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Looking For') }}</span>
                             </label>
                             <select name="gender" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('All / Any') }}</option>
                                 <option value="2" @if(request('gender') == '2') selected @endif>
                                     {{ translate('Bride (Female)') }}</option>
@@ -67,11 +66,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-history fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-history fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Age Range') }}</span>
                             </label>
                             <select name="age_range" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Age') }}</option>
                                 <option value="18-25" @if(request('age_range') == '18-25') selected @endif>18 - 25</option>
                                 <option value="26-32" @if(request('age_range') == '26-32') selected @endif>26 - 32</option>
@@ -84,12 +83,12 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-praying-hands fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-praying-hands fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Religion') }}</span>
                             </label>
                             @php $religions = \App\Models\Religion::all(); @endphp
                             <select name="religion_id" id="religion_id" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Religion') }}</option>
                                 @foreach ($religions as $religion)
                                     <option value="{{ $religion->id }}" @if(request('religion_id') == $religion->id) selected
@@ -98,16 +97,35 @@
                             </select>
                         </div>
 
-                        <!-- 4. Location -->
+                        <!-- 4. Division / Region -->
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-map-marker-alt fs-15" style="color: #8C6239;"></i>
-                                <span>{{ translate('Location') }}</span>
+                                <i class="las la-map-marked-alt fs-15 text-mat-gold"></i>
+                                <span>{{ translate('Division / Region') }}</span>
+                            </label>
+                            @php $allStates = \App\Models\State::where('country_id', 18)->orWhere('id', '<=', 8)->get(); @endphp
+                            <select name="state_id" class="filter-field-input form-control"
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                <option value="">{{ translate('All Divisions') }}</option>
+                                @foreach ($allStates as $st)
+                                    <option value="{{ $st->id }}" @if(request('state_id', $state_id) == $st->id || (request('division') && strtolower(request('division')) == strtolower($st->name))) selected @endif>
+                                        {{ $st->name }} {{ translate('Division') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- 5. City / Location -->
+                        <div class="filter-field-group mb-3">
+                            <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
+                                style="color: #333; gap: 6px;">
+                                <i class="las la-map-marker-alt fs-15 text-mat-gold"></i>
+                                <span>{{ translate('City / District') }}</span>
                             </label>
                             @php $cities = \App\Models\City::select('id', 'name')->orderBy('name', 'asc')->get(); @endphp
                             <select name="city_id" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Location') }}</option>
                                 @foreach ($cities as $city)
                                     <option value="{{ $city->id }}" @if(request('city_id') == $city->id) selected @endif>
@@ -120,11 +138,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-graduation-cap fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-graduation-cap fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Education') }}</span>
                             </label>
                             <select name="education" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Education') }}</option>
                                 <option value="BSc in Computer Science">BSc in Computer Science</option>
                                 <option value="BSc in Engineering">BSc in Engineering</option>
@@ -138,11 +156,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-briefcase fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-briefcase fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Profession') }}</span>
                             </label>
                             <select name="profession" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Profession') }}</option>
                                 <option value="Software Engineer">Software Engineer</option>
                                 <option value="Doctor">Doctor</option>
@@ -156,12 +174,12 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-ring fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-ring fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Marital Status') }}</span>
                             </label>
                             @php $marital_statuses = \App\Models\MaritalStatus::all(); @endphp
                             <select name="marital_status" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Status') }}</option>
                                 @foreach ($marital_statuses as $status)
                                     <option value="{{ $status->id }}" @if(request('marital_status') == $status->id) selected
@@ -174,11 +192,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-ruler-vertical fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-ruler-vertical fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Height') }}</span>
                             </label>
                             <select name="min_height" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Height') }}</option>
                                 <option value="5.0">5' 0" (152 cm)</option>
                                 <option value="5.2">5' 2" (157 cm)</option>
@@ -193,11 +211,11 @@
                         <div class="filter-field-group mb-3">
                             <label class="filter-field-label fs-13 fw-600 mb-1 d-flex align-items-center"
                                 style="color: #333; gap: 6px;">
-                                <i class="las la-wallet fs-15" style="color: #8C6239;"></i>
+                                <i class="las la-wallet fs-15 text-mat-gold"></i>
                                 <span>{{ translate('Income') }}</span>
                             </label>
                             <select name="income" class="filter-field-input form-control"
-                                style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 42px; background-color: #FFF;">
                                 <option value="">{{ translate('Any Income') }}</option>
                                 <option value="50k-100k">৳ 50,000 - ৳ 1,00,000</option>
                                 <option value="100k-200k">৳ 1,00,000 - ৳ 2,00,000</option>
@@ -211,7 +229,7 @@
                                 class="d-flex align-items-center justify-content-between text-muted fs-13 fw-600 text-decoration-none py-2 border-top"
                                 data-toggle="collapse" role="button" aria-expanded="false"
                                 style="color: #666; text-decoration: none;">
-                                <span><i class="las la-leaf mr-1" style="color: #8C6239;"></i>
+                                <span><i class="las la-leaf mr-1 text-mat-gold"></i>
                                     {{ translate('Advanced Filters') }}</span>
                                 <i class="las la-angle-down"></i>
                             </a>
@@ -220,7 +238,7 @@
                                     <label class="filter-field-label fs-12 text-muted">{{ translate('Member ID') }}</label>
                                     <input type="text" name="member_code" value="{{ request('member_code') }}"
                                         placeholder="e.g. 100234" class="filter-field-input form-control"
-                                        style="border: 1px solid #E2DCD5; border-radius: 10px; font-size: 13px; height: 40px;">
+                                        style="border: 1px solid var(--mat-border-light); border-radius: 10px; font-size: 13px; height: 40px;">
                                 </div>
                             </div>
                         </div>
@@ -228,13 +246,13 @@
                         <!-- Sidebar Buttons -->
                         <div>
                             <button type="submit" class="btn w-100 py-3 mb-2 fw-600 text-white"
-                                style="background-color: #8C6239; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; box-shadow: 0 4px 14px rgba(140, 98, 57, 0.25);">
+                                style="background-color: var(--mat-gold); border-radius: 12px; font-weight: 600; font-size: 14px; border: none; box-shadow: 0 4px 14px rgba(150, 114, 64, 0.25);">
                                 <i class="las la-search fs-16 mr-1"></i>
                                 <span>{{ translate('Search Matches') }}</span>
                             </button>
                             <a href="{{ route('member.listing') }}"
                                 class="btn w-100 py-2.5 fw-500 d-flex align-items-center justify-content-center"
-                                style="border: 1px solid #DCD5CC; border-radius: 12px; color: #555; font-size: 13px; text-decoration: none; background: transparent;">
+                                style="border: 1px solid var(--mat-border); border-radius: 12px; color: #555; font-size: 13px; text-decoration: none; background: transparent;">
                                 <i class="las la-undo-alt fs-15 mr-1"></i>
                                 <span>{{ translate('Reset Filters') }}</span>
                             </a>
@@ -243,10 +261,9 @@
 
                     <!-- Bottom Accent Card -->
                     <div class="mt-4 p-4 text-center rounded-2xl"
-                        style="background: #FAF7F2; border: 1px solid #EFEAE3; border-radius: 14px;">
+                        style="background: var(--mat-bg-section); border: 1px solid var(--mat-border); border-radius: 14px;">
                         <div class="fs-15 mb-1" style="color: #E63946;">❤</div>
-                        <div class="font-serif italic fs-16 fw-600"
-                            style="color: #2C0A12; font-family: 'Playfair Display', Georgia, serif;">
+                        <div class="font-serif italic fs-16 fw-600 text-mat-maroon-dark">
                             Better Matches,<br>Brighter Futures
                         </div>
                         <div class="text-muted fs-11 mt-1 opacity-60">✦ ✦ ✦</div>
@@ -258,13 +275,37 @@
             <!-- 4. Right Column (72% - 75% width): Results Header, 3x3 Grid, and Pagination -->
             <main class="lg:col-span-9">
 
+                @if (!empty($state_id))
+                    @php $activeState = \App\Models\State::find($state_id); @endphp
+                    @if ($activeState)
+                        <div class="active-division-alert d-flex align-items-center justify-content-between p-3 mb-4 rounded-xl"
+                            style="background-color: #FAF6F0; border: 1px solid rgba(140, 98, 57, 0.35); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+                            <div class="d-flex align-items-center" style="gap: 12px;">
+                                <span class="fs-22 text-mat-gold">📍</span>
+                                <div>
+                                    <div class="fs-15 fw-700 text-mat-maroon-dark">
+                                        {{ $activeState->name }} {{ translate('Division Matches') }}
+                                    </div>
+                                    <div class="fs-12 text-muted">
+                                        {{ translate('Showing only verified brides and grooms from') }} {{ $activeState->name }} {{ translate('Division') }}.
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ route('member.listing') }}" class="btn btn-sm btn-outline-secondary fs-12 px-3 py-1.5"
+                                style="border-radius: 8px; font-weight: 600; text-decoration: none;">
+                                <i class="las la-times mr-1"></i>{{ translate('Clear Filter') }}
+                            </a>
+                        </div>
+                    @endif
+                @endif
+
                 <!-- Top Controls Bar -->
                 <div class="matches-controls-bar d-flex align-items-center justify-content-between mb-4 pb-3"
-                    style="border-bottom: 1px solid #EFEAE3;">
+                    style="border-bottom: 1px solid var(--mat-border);">
                     <!-- Left: Matches Count -->
                     <div class="matches-count-text d-flex align-items-center" style="gap: 8px;">
-                        <i class="las la-users fs-22" style="color: #8C6239;"></i>
-                        <span class="fs-18 fw-700" style="color: #2C0A12; font-weight: 700;">{{ $users->total() }} {{ translate('Matches Found') }}</span>
+                        <i class="las la-users fs-22 text-mat-gold"></i>
+                        <span class="fs-18 fw-700 text-mat-maroon-dark">{{ $users->total() }} {{ translate('Matches Found') }}</span>
                     </div>
 
                     <!-- Right: Sort By & View Toggles -->
@@ -272,20 +313,20 @@
                         <div class="d-flex align-items-center" style="gap: 8px;">
                             <span class="fs-13 text-muted fw-600 d-none d-sm-inline">{{ translate('Sort By:') }}</span>
                             <select name="sort" onchange="document.getElementById('filter-sort-input').value = this.value; document.getElementById('filter-form').submit();" class="form-control fs-13 py-1 px-3"
-                                style="border: 1px solid #E2DCD5; border-radius: 8px; height: 38px; width: auto; color: #444; background-color: #FFF;">
+                                style="border: 1px solid var(--mat-border-light); border-radius: 8px; height: 38px; width: auto; color: #444; background-color: #FFF;">
                                 <option value="latest" @if(request('sort', 'latest') == 'latest') selected @endif>{{ translate('Recently Joined') }}</option>
-                                <option value="relevance" @if(request('sort') == 'relevance') selected @endif>{{ translate('Relevance') }}</option>
+                                <option value="relevance" @if(request('sort', 'relevance') == 'relevance') selected @endif>{{ translate('Relevance') }}</option>
                             </select>
                         </div>
                         <div class="d-flex align-items-center" style="gap: 4px;">
                             <button type="button"
                                 class="btn p-0 d-flex align-items-center justify-content-center text-white"
-                                style="width: 36px; height: 36px; border-radius: 8px; background-color: #8C6239; border: 1px solid #8C6239;">
+                                style="width: 36px; height: 36px; border-radius: 8px; background-color: var(--mat-gold); border: 1px solid var(--mat-gold);">
                                 <i class="las la-border-all fs-18"></i>
                             </button>
                             <button type="button"
                                 class="btn p-0 d-flex align-items-center justify-content-center text-muted"
-                                style="width: 36px; height: 36px; border-radius: 8px; background-color: #FFF; border: 1px solid #E2DCD5;">
+                                style="width: 36px; height: 36px; border-radius: 8px; background-color: #FFF; border: 1px solid var(--mat-border-light);">
                                 <i class="las la-list fs-18"></i>
                             </button>
                         </div>
@@ -328,7 +369,9 @@
                                 if ($user_address->city && !empty($user_address->city->name)) {
                                     $location_parts[] = $user_address->city->name;
                                 }
-                                if ($user_address->country && !empty($user_address->country->name)) {
+                                if ($user_address->state && !empty($user_address->state->name)) {
+                                    $location_parts[] = $user_address->state->name;
+                                } elseif ($user_address->country && !empty($user_address->country->name)) {
                                     $location_parts[] = $user_address->country->name;
                                 }
                             }
@@ -346,7 +389,7 @@
                             // Photo URL
                             $avatar_url = null;
                             if (!empty($user->photo)) {
-                                $avatar_url = uploaded_asset($user->photo);
+                                $avatar_url = is_numeric($user->photo) ? uploaded_asset($user->photo) : static_asset($user->photo);
                             }
                             if (empty($avatar_url)) {
                                 $gender_val = $user_member ? $user_member->gender : 1;
@@ -357,9 +400,9 @@
                         @endphp
 
                         <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                            style="border-radius: 16px; border: 1px solid #ECE7E0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
+                            style="border-radius: 16px; border: 1px solid var(--mat-border); box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
                             <div class="match-card-photo-wrap position-relative"
-                                style="height: 250px; background-color: #F5F2ED; overflow: hidden;">
+                                style="height: 250px; background-color: var(--mat-gold-bg); overflow: hidden;">
                                 <img src="{{ $avatar_url }}" alt="{{ $user->first_name }} {{ $user->last_name }}"
                                     class="match-card-photo w-100 h-100"
                                     style="object-fit: cover; object-position: top center;"
@@ -379,8 +422,7 @@
                             </div>
                             <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h3 class="fs-17 fw-700 text-mat-maroon mb-0"
-                                        style="font-size: 17px; font-weight: 700; color: #2C0A12;">
+                                    <h3 class="fs-17 fw-700 text-mat-maroon-dark mb-0">
                                         {{ $user->first_name }} {{ $user->last_name }}
                                     </h3>
                                     @if($age)
@@ -390,39 +432,41 @@
                                 <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
                                     <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
                                         style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-map-marker-alt"
-                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <i class="las la-map-marker-alt text-mat-gold"
+                                            style="min-width: 18px; text-align: center;"></i>
                                         <span>{{ $location_text }}</span>
                                     </li>
                                     <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
                                         style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-graduation-cap"
-                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <i class="las la-graduation-cap text-mat-gold"
+                                            style="min-width: 18px; text-align: center;"></i>
                                         <span>{{ $education_text }}</span>
                                     </li>
                                     <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
                                         style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-briefcase"
-                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <i class="las la-briefcase text-mat-gold"
+                                            style="min-width: 18px; text-align: center;"></i>
                                         <span>{{ $career_text }}</span>
                                     </li>
                                     <li class="match-meta-item fs-13 d-flex align-items-center"
                                         style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-users"
-                                            style="color: #8C6239; min-width: 18px; text-align: center;"></i>
+                                        <i class="las la-users text-mat-gold"
+                                            style="min-width: 18px; text-align: center;"></i>
                                         <span>{{ $family_text }}</span>
                                     </li>
                                 </ul>
                                 <div class="match-card-actions mt-auto pt-3 d-flex"
-                                    style="gap: 6px; border-top: 1px solid #F3EFEA;">
+                                    style="gap: 6px; border-top: 1px solid var(--mat-border-light);">
                                     <a href="{{ route('member_profile', $user->id) }}" class="btn btn-match-view flex-grow-1 text-center"
-                                        style="border: 1px solid #D8CFC4; border-radius: 9px; text-decoration: none; color: #2C0A12; background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">{{ translate('View Profile') }}</a>
+                                        style="border: 1px solid var(--mat-border); border-radius: 9px; text-decoration: none; color: var(--mat-maroon-dark); background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">{{ translate('View Profile') }}</a>
                                     <button type="button"
+                                        id="interest_btn_{{ $user->id }}"
                                         class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
                                         onclick="express_interest({{ $user->id }})"
-                                        style="background-color: #8C6239; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px;">
+                                        style="background-color: {{ $interest_status === 0 ? '#4A5568' : 'var(--mat-gold)' }}; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px; {{ $interest_status === 0 ? 'cursor: default;' : '' }}"
+                                        {{ $interest_status === 0 ? 'disabled' : '' }}>
                                         <i class="{{ $interest_status === 0 ? 'las la-heart' : 'lar la-heart' }} fs-13"></i>
-                                        <span>{{ $interest_info['interest_text'] ?? translate('Send Interest') }}</span>
+                                        <span id="interest_text_{{ $user->id }}">{{ $interest_status === 0 ? translate('Interest Sent') : ($interest_info['interest_text'] ?? translate('Send Interest')) }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -430,17 +474,17 @@
                     @empty
                         <div class="col-span-1 md:col-span-2 xl:col-span-3 text-center py-5" style="grid-column: 1 / -1;">
                             <div class="p-5 bg-white rounded-2xl border border-stone-200/80 shadow-sm" style="border-radius: 16px;">
-                                <i class="las la-search fs-48 mb-3" style="color: #8C6239;"></i>
-                                <h3 class="fs-18 fw-700 text-mat-maroon mb-2">{{ translate('No Matches Found') }}</h3>
+                                <i class="las la-search fs-48 mb-3 text-mat-gold"></i>
+                                <h3 class="fs-18 fw-700 text-mat-maroon-dark mb-2">{{ translate('No Matches Found') }}</h3>
                                 <p class="text-muted fs-14 mb-4">{{ translate('Try adjusting your search filters to find suitable profiles.') }}</p>
-                                <a href="{{ route('member.listing') }}" class="btn text-white px-4 py-2" style="background-color: #8C6239; border-radius: 8px;">
+                                <a href="{{ route('member.listing') }}" class="btn text-white px-4 py-2" style="background-color: var(--mat-gold); border-radius: 8px;">
                                     {{ translate('Reset Filters') }}
                                 </a>
                             </div>
                         </div>
                     @endforelse
 
-                </div>
+                </div>            </div>
                 <!-- 5. Centered Bottom Pagination -->
                 <div class="matches-pagination-wrap d-flex justify-content-center align-items-center mt-5 mb-4"
                     style="padding-top: 24px;">
@@ -464,46 +508,52 @@
             $('.package_update_alert_modal').modal('show');
         }
 
-        var package_validity = false;
-        @if(Auth::check() && package_validity(Auth::id()))
-            package_validity = true;
-        @endif
+        var is_logged_in = {{ Auth::check() ? 'true' : 'false' }};
+        var is_paid_user = {{ (Auth::check() && is_paid_member(Auth::id())) ? 'true' : 'false' }};
 
-            function express_interest(id) {
-                @if(!Auth::check())
-                    window.location.href = "{{ route('login') }}";
-                    return;
-                @else
-                    var user_id = {{ Auth::user()->id }};
-                    $.post('{{ route('user.remaining_package_value') }}', {
-                        _token: '{{ csrf_token() }}',
-                        id: id,
-                        colmn_name: 'remaining_interest'
-                    }, function (data) {
-                        var remaining_interest = data;
-                        if (!package_validity || remaining_interest < 1) {
-                            $('.package_update_alert_modal').modal('show');
-                        } else {
-                            $('.confirm_modal').modal('show');
-                            $("#confirm_modal_title").html("{{ translate('Confirm Express Interest!') }}");
-                            $("#confirm_modal_content").html("<p class='fs-14'>{{ translate('Remaining Express Interest') }}: " + remaining_interest + " {{ translate('Times') }}</p><p class='fs-12 text-danger'>{{ translate('**N.B. Expressing An Interest Will Cost 1 From Your Remaining Interests**') }}</p>");
-                            $("#confirm_button").attr("onclick", "do_express_interest(" + id + ")");
-                        }
-                    });
-                @endif
-        }
+        function express_interest(id) {
+            if (!is_logged_in) {
+                window.location.href = "{{ route('user.login') }}";
+                return;
+            }
 
-        function do_express_interest(id) {
-            $('.confirm_modal').modal('hide');
+            if (!is_paid_user) {
+                $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+                $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                $('.package_update_alert_modal').modal('show');
+                return;
+            }
+
+            var $btn = $('#interest_btn_' + id);
+            var $text = $('#interest_text_' + id);
+            var originalContent = $btn.html();
+
+            $btn.prop('disabled', true);
+            $text.text("{{ translate('Sending...') }}");
+
             $.post('{{ route('express-interest.store') }}', {
                 _token: '{{ csrf_token() }}',
                 id: id
             }, function (data) {
-                if (data == 1) {
-                    AIZ.plugins.notify('success', '{{ translate('Interest Expressed Successfully') }}');
+                if (data == 1 || (data && data.result)) {
+                    $btn.css('background-color', '#4A5568')
+                        .css('cursor', 'default')
+                        .prop('disabled', true)
+                        .removeAttr('onclick')
+                        .html('<i class="las la-heart fs-13"></i> <span>{{ translate('Interest Sent') }}</span>');
+                    AIZ.plugins.notify('success', '{{ translate('Interest expressed successfully!') }}');
+                } else if (data && data.status === 'upgrade_required') {
+                    $btn.prop('disabled', false).html(originalContent);
+                    $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
+                    $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                    $('.package_update_alert_modal').modal('show');
                 } else {
-                    AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+                    $btn.prop('disabled', false).html(originalContent);
+                    AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{ translate('Something went wrong') }}');
                 }
+            }).fail(function() {
+                $btn.prop('disabled', false).html(originalContent);
+                AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
             });
         }
 

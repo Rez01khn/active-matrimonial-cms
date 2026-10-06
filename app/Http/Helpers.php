@@ -19,6 +19,7 @@ use App\Models\AdditionalMemberInfo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('site_url')) {
     function site_url()
@@ -436,6 +437,32 @@ if (!function_exists('package_validity')) {
             return false;
         }
         if ($member->package_validity < date('Y-m-d')) {
+            return false;
+        }
+        return true;
+    }
+}
+
+if (!function_exists('is_paid_member')) {
+    function is_paid_member($id = null)
+    {
+        $id = $id ?? (Auth::check() ? Auth::id() : null);
+        if (!$id) {
+            return false;
+        }
+        $user = User::find($id);
+        if (!$user || $user->user_type != 'member' || !$user->member) {
+            return false;
+        }
+        if (!package_validity($id)) {
+            return false;
+        }
+        $member = $user->member;
+        if (empty($member->current_package_id) || $member->current_package_id == 1) {
+            return false;
+        }
+        $package = $member->package;
+        if (!$package || $package->price <= 0) {
             return false;
         }
         return true;

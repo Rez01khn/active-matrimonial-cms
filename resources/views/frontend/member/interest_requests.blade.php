@@ -22,10 +22,7 @@
                             <tr id="interested_member_{{ $interested_by->id }}">
                                 <td>{{ $key + 1 + ($interests->currentPage() - 1) * $interests->perPage() }}</td>
                                 <td>
-                                    <a @if (get_setting('full_profile_show_according_to_membership') == 1 && Auth::user()->membership == 1) href="javascript:void(0);" onclick="package_update_alert()"
-                                        @else
-                                            href="{{ route('member_profile', $interested_by->id) }}" @endif
-                                        class="text-reset c-pointer">
+                                    <a href="{{ route('member_profile', $interested_by->id) }}" class="text-reset c-pointer">
                                         @if (uploaded_asset($interested_by->photo) != null)
                                             <img class="img-md" src="{{ uploaded_asset($interested_by->photo) }}"
                                                 height="45px" alt="{{ translate('photo') }}">
@@ -36,13 +33,10 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a @if (get_setting('full_profile_show_according_to_membership') == 1 && Auth::user()->membership == 1) href="javascript:void(0);" onclick="package_update_alert()"
-                                        @else
-                                            href="{{ route('member_profile', $interested_by->id) }}" @endif
-                                        class="text-reset c-pointer">
+                                    <a href="{{ route('member_profile', $interested_by->id) }}" class="text-reset c-pointer">
                                         {{ $interested_by->first_name . ' ' . $interested_by->last_name }}
+                                    </a>
                                 </td>
-                                </a>
 
                                 <td>{{ \Carbon\Carbon::parse($interested_by->member->birthday)->age }}</td>
                                 <td class="text-center">

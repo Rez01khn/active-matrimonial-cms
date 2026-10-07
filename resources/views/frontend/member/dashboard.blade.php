@@ -8,160 +8,263 @@
         if($profile_picture_privacy == 'only_me'){
             $col++;
         }
-        elseif($gallery_image_privacy == 'only_me') {
+        if($gallery_image_privacy == 'only_me') {
             $col++;
         }
     @endphp
-    <div class="row gutters-5 row-cols-xl-{{ $col }} row-cols-2">
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="la la-heart-o la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_interest') }}</div>
-                <div class="opacity-50">{{ translate('Remaining') }} <br> {{ translate('Interest') }}</div>
+
+    {{-- Top Quota Metric Cards --}}
+    <div class="row gutters-10 row-cols-xl-{{ $col }} row-cols-2 mb-4">
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-heart"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_interest') }}</div>
+                <div class="member-stat-label">{{ translate('Remaining Interests') }}</div>
             </div>
         </div>
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="las la-phone la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_contact_view') }}</div>
-                <div class="opacity-50 ">{{ translate('Remaining') }} <br> {{ translate('Contact View') }}</div>
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-phone"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_contact_view') }}</div>
+                <div class="member-stat-label">{{ translate('Contact Info Views') }}</div>
             </div>
         </div>
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="las la-phone la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_profile_viewer_view') }}</div>
-                <div class="opacity-50 ">{{ translate('Remaining') }} <br> {{ translate('Profile Viewer View') }}</div>
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-eye"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_profile_viewer_view') }}</div>
+                <div class="member-stat-label">{{ translate('Profile Viewer Views') }}</div>
             </div>
         </div>
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="las la-image la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-center text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_photo_gallery') }}</div>
-                <div class="opacity-50 text-center">{{ translate('Remaining') }} <br> {{ translate('Gallery Image Upload') }}</div>
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-images"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_photo_gallery') }}</div>
+                <div class="member-stat-label">{{ translate('Gallery Uploads') }}</div>
             </div>
         </div>
         @if($profile_picture_privacy == 'only_me')
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="las la-user-circle la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_profile_image_view') }}</div>
-                <div class="opacity-50 ">{{ translate('Remaining') }} <br> {{ translate('Profile Picture View') }}</div>
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-user-circle"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_profile_image_view') }}</div>
+                <div class="member-stat-label">{{ translate('Avatar Views') }}</div>
             </div>
         </div>
         @endif
         @if($gallery_image_privacy == 'only_me')
-        <div class="col mx-auto mb-3" >
-            <div class="bg-light rounded overflow-hidden text-center p-3">
-                <i class="las la-images la-2x mb-3 text-primary-grad"></i>
-                <div class="h4 fw-700 text-center text-primary-grad">{{ get_remaining_package_value($user->id,'remaining_gallery_image_view') }}</div>
-                <div class="opacity-50 text-center">{{ translate('Remaining') }} <br> {{ translate('Gallery Images View') }}</div>
+        <div class="col mb-3">
+            <div class="member-stat-card">
+                <div class="member-stat-icon-wrap">
+                    <i class="las la-photo-video"></i>
+                </div>
+                <div class="member-stat-value">{{ get_remaining_package_value($user->id,'remaining_gallery_image_view') }}</div>
+                <div class="member-stat-label">{{ translate('Gallery Views') }}</div>
             </div>
         </div>
         @endif
     </div>
 
-    <div class="row gutters-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="fs-16 mb-0">{{  translate('Current package') }}</h2>
+    <div class="row gutters-15">
+        {{-- Left Column: Current Package Details --}}
+        <div class="col-lg-6 mb-4">
+            <div class="member-package-card h-100">
+                <div class="member-package-header d-flex justify-content-between align-items-center">
+                    <h2 class="fs-16 fw-700 mb-0 text-dark">
+                        <i class="las la-crown text-warning mr-1"></i>{{ translate('Current Membership') }}
+                    </h2>
+                    @if ($user->member->current_package_id != null && package_validity($user->id))
+                        <span class="badge badge-inline badge-success">{{ translate('Active') }}</span>
+                    @else
+                        <span class="badge badge-inline badge-danger">{{ translate('Expired / Inactive') }}</span>
+                    @endif
                 </div>
+
                 @if ($user->member->current_package_id != null)
-                    <div class="card-body">
-                        <div class="text-center mb-4 mt-3">
-                            <img class="mw-100 mx-auto mb-4" src="{{ uploaded_asset($user->member->package->image) }}" height="130">
-                            <h5 class="mb-3 h5 fw-600">{{$user->member->package->name}}</h5>
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <div class="member-package-icon-badge">
+                                <i class="las la-crown"></i>
+                            </div>
+                            <h3 class="h5 fw-700 mb-1 text-dark">{{ $user->member->package->name }}</h3>
+                            <div class="fs-13 text-muted">
+                                {{ translate('Package Validity') }}:
+                                @if(package_validity($user->id))
+                                    <span class="fw-600 text-dark">{{ $user->member->package_validity }}</span>
+                                @else
+                                    <span class="text-danger fw-600">{{ translate('Expired') }}</span>
+                                @endif
+                            </div>
                         </div>
-                        <ul class="list-group list-group-raw fs-15 mb-4 pb-4 border-bottom">
-                            <li class="list-group-item py-2">
-                                <i class="las la-check text-success mr-2"></i>
-                                {{ $user->member->package->express_interest }} {{ translate('Express Interests') }}
+
+                        <ul class="list-group list-group-flush fs-14 mb-4 border-top border-bottom py-2">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                <span><i class="las la-heart text-primary mr-2"></i>{{ translate('Express Interests') }}</span>
+                                <span class="fw-700 text-dark">{{ $user->member->package->express_interest }}</span>
                             </li>
-                            <li class="list-group-item py-2">
-                                <i class="las la-check text-success mr-2"></i>
-                                {{ $user->member->package->photo_gallery }} {{ translate('Gallery Photo Upload') }}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                <span><i class="las la-images text-primary mr-2"></i>{{ translate('Gallery Photos') }}</span>
+                                <span class="fw-700 text-dark">{{ $user->member->package->photo_gallery }}</span>
                             </li>
-                            <li class="list-group-item py-2">
-                                <i class="las la-check text-success mr-2"></i>
-                                {{ $user->member->package->contact }} {{ translate('Contact Info View') }}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                <span><i class="las la-phone text-primary mr-2"></i>{{ translate('Contact Info Views') }}</span>
+                                <span class="fw-700 text-dark">{{ $user->member->package->contact }}</span>
                             </li>
-                            <li class="list-group-item py-2">
-                                <i class="las la-check text-success mr-2"></i>
-                                {{ $user->member->package->profile_viewers_view }} {{ translate('Profile Viewer View') }}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                <span><i class="las la-eye text-primary mr-2"></i>{{ translate('Profile Viewer Views') }}</span>
+                                <span class="fw-700 text-dark">{{ $user->member->package->profile_viewers_view }}</span>
                             </li>
                             @if($profile_picture_privacy == 'only_me')
-                                <li class="list-group-item py-2">
-                                    <i class="las la-check text-success mr-2"></i>
-                                    {{ $user->member->package->profile_image_view }} {{ translate('Profile Image View') }}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                    <span><i class="las la-user-circle text-primary mr-2"></i>{{ translate('Avatar Views') }}</span>
+                                    <span class="fw-700 text-dark">{{ $user->member->package->profile_image_view }}</span>
                                 </li>
                             @endif
                             @if($gallery_image_privacy == 'only_me')
-                                <li class="list-group-item py-2">
-                                    <i class="las la-check text-success mr-2"></i>
-                                    {{ $user->member->package->gallery_image_view }} {{ translate('Gallery Image View') }}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                    <span><i class="las la-photo-video text-primary mr-2"></i>{{ translate('Gallery Image Views') }}</span>
+                                    <span class="fw-700 text-dark">{{ $user->member->package->gallery_image_view }}</span>
                                 </li>
                             @endif
-                            <li class="list-group-item py-2 text-line-through">
-                                @if( $user->member->package->auto_profile_match == 0 )
-                                    <i class="las la-times text-danger mr-2"></i>
-                                    <del class="opacity-60">{{ translate('Show Auto Profile Match') }}</del>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                <span><i class="las la-user-friends text-primary mr-2"></i>{{ translate('Auto Profile Matching') }}</span>
+                                @if($user->member->package->auto_profile_match == 1)
+                                    <span class="badge badge-inline badge-soft-success"><i class="las la-check mr-1"></i>{{ translate('Enabled') }}</span>
                                 @else
-                                    <i class="las la-check text-success mr-2"></i>
-                                    {{ translate('Show Auto Profile Match') }}
-                                @endif
-                            </li>
-                            <li class="list-group-item py-2 text-line-through">
-                                @if( $user->member->package->auto_horoscope_profile_match == 0 )
-                                    <i class="las la-times text-danger mr-2"></i>
-                                    <del class="opacity-60">{{ translate('Show Auto Horoscope Profile Match') }}</del>
-                                @else
-                                    <i class="las la-check text-success mr-2"></i>
-                                    {{ translate('Show Auto Horoscope Profile Match') }}
+                                    <span class="badge badge-inline badge-soft-secondary">{{ translate('Disabled') }}</span>
                                 @endif
                             </li>
                         </ul>
-                        <h4 class="fs-18 mb-3">
-                        {{ translate('Package expiry date') }}:
-                        @if(package_validity($user->id))
-                            {{ $user->member->package_validity }}
-                        @else
-                            <span class="text-danger">{{translate('Expired')}}</span>
-                        @endif
-                        </h4>
-                        <a href="{{ route('packages') }}" class="btn btn-success d-inline-block">{{ translate('Upgrade Package') }}</a>
+
+                        <div class="text-center">
+                            <a href="{{ route('packages') }}" class="btn btn-mat-gold btn-block py-2">
+                                <i class="las la-rocket mr-1"></i>{{ translate('Upgrade / Renew Package') }}
+                            </a>
+                        </div>
                     </div>
                 @else
-                    <div class="card mb-0 p-5 h-20 d-flex align-items-center justify-content-center">
-                            {{ translate('No Package Available') }} 
-                            <div class="mt-2">
-                                <a href="{{ route('packages') }}"
-                                    class="btn btn-sm btn-primary">{{ translate('Purchase a Package') }}</a>
-                            </div>    
-                    </div>   
-                @endif    
+                    <div class="card-body p-5 text-center">
+                        <div class="member-package-icon-badge mb-3">
+                            <i class="las la-cube text-muted"></i>
+                        </div>
+                        <h4 class="h6 fw-700 text-dark mb-2">{{ translate('No Active Membership Package') }}</h4>
+                        <p class="text-muted fs-13 mb-4">{{ translate('Upgrade to a premium package to start connecting with verified brides and grooms.') }}</p>
+                        <a href="{{ route('packages') }}" class="btn btn-mat-gold px-4 py-2">
+                            <i class="las la-crown mr-1"></i>{{ translate('Purchase a Package') }}
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
-        <div class="col-md-6">
-            @if(get_setting('member_verification'))
-                <div class="card mb-0 p-5 h-15 d-flex align-items-center justify-content-center mb-2">
-                    @if ($user->approved == 0)
-                        <div class="my-n4 py-1 text-center">
-                            <img src="{{ static_asset('assets/img/non_verified.png') }}" alt=""
-                                class="w-xxl-130px w-90px d-block">
-                            <a href="{{ route('member.verification') }}"
-                                class="btn btn-sm btn-primary">{{ translate('Verify Now') }}</a>
-                        </div>
+
+        {{-- Right Column: Biodata PDF Card + Activity Tracker + Matched Profiles --}}
+        <div class="col-lg-6 mb-4">
+            {{-- Biodata PDF & Verification Card --}}
+            <div class="member-action-card mb-4">
+                <div class="member-action-header d-flex justify-content-between align-items-center">
+                    <h3 class="fs-15 fw-700 mb-0 text-dark">
+                        <i class="las la-id-badge text-primary mr-1"></i>{{ translate('E-Biodata & Verification') }}
+                    </h3>
+                    @if ($user->approved == 1)
+                        <span class="badge badge-inline badge-soft-success"><i class="las la-check-circle mr-1"></i>{{ translate('Verified') }}</span>
                     @else
-                        <div class="my-2 py-1">
-                            <img src="{{ static_asset('assets/img/verified.png') }}" alt="" width="">
-                        </div>
+                        <span class="badge badge-inline badge-soft-warning"><i class="las la-clock mr-1"></i>{{ translate('Unverified') }}</span>
                     @endif
                 </div>
-            @endif
-            
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="mr-3">
+                            @if ($user->approved == 1)
+                                <img src="{{ static_asset('assets/img/verified.png') }}" alt="Verified" width="56" height="56">
+                            @else
+                                <img src="{{ static_asset('assets/img/non_verified.png') }}" alt="Non Verified" width="56" height="56">
+                            @endif
+                        </div>
+                        <div>
+                            @if ($user->approved == 1)
+                                <h4 class="fs-14 fw-700 mb-1 text-dark">{{ translate('Verified Official Biodata') }}</h4>
+                                <p class="fs-12 text-muted mb-0">{{ translate('Your biodata is verified and carries the trusted badge for families.') }}</p>
+                            @else
+                                <h4 class="fs-14 fw-700 mb-1 text-dark">{{ translate('Profile Verification Pending') }}</h4>
+                                <p class="fs-12 text-muted mb-0">{{ translate('Get verified to increase proposal responses and family trust.') }}</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="row gutters-5">
+                        <div class="col-sm-6 mb-2 mb-sm-0">
+                            <a href="{{ route('member_profile', $user->id) }}" target="_blank" class="btn btn-luxury-outline btn-block btn-sm py-2">
+                                <i class="las la-file-download mr-1"></i>{{ translate('Download Biodata / PDF') }}
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            @if ($user->approved == 0 && get_setting('member_verification'))
+                                <a href="{{ route('member.verification') }}" class="btn btn-mat-gold btn-block btn-sm py-2">
+                                    <i class="las la-shield-alt mr-1"></i>{{ translate('Verify Profile') }}
+                                </a>
+                            @else
+                                <a href="{{ route('profile_settings') }}" class="btn btn-mat-maroon btn-block btn-sm py-2">
+                                    <i class="las la-edit mr-1"></i>{{ translate('Edit Biodata') }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Proposals & Activity Tracker Widget --}}
+            <div class="member-action-card mb-4">
+                <div class="member-action-header d-flex justify-content-between align-items-center">
+                    <h3 class="fs-15 fw-700 mb-0 text-dark">
+                        <i class="las la-heartbeat text-danger mr-1"></i>{{ translate('Proposals & Matchmaking Activity') }}
+                    </h3>
+                    <a href="{{ route('my_interests.index') }}" class="fs-12 text-primary fw-600">
+                        {{ translate('View All') }} &rarr;
+                    </a>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row gutters-10">
+                        <div class="col-3">
+                            <a href="{{ route('my_interests.index') }}" class="proposal-metric-box">
+                                <div class="proposal-metric-num">{{ $sent_interests_count ?? 0 }}</div>
+                                <div class="proposal-metric-title">{{ translate('Sent') }}</div>
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a href="{{ route('interest_requests') }}" class="proposal-metric-box">
+                                <div class="proposal-metric-num">{{ $received_interests_count ?? 0 }}</div>
+                                <div class="proposal-metric-title">{{ translate('Received') }}</div>
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <div class="proposal-metric-box">
+                                <div class="proposal-metric-num text-success">{{ $accepted_interests_count ?? 0 }}</div>
+                                <div class="proposal-metric-title">{{ translate('Connected') }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <a href="{{ route('my_shortlists') }}" class="proposal-metric-box">
+                                <div class="proposal-metric-num">{{ $shortlists_count ?? 0 }}</div>
+                                <div class="proposal-metric-title">{{ translate('Shortlist') }}</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Matched Profiles Widget --}}
             @if (Auth::user()->member->current_package_id != null)
-                <div class="card">
+                <div class="member-action-card">
                     @php
                         $canRefresh = true;
                         if(Auth::user()->match_refresh_updated_at){
@@ -171,256 +274,106 @@
                             }
                         }
                     @endphp
-                    <div class="card-header d-flex justify-content-between align-items-center">
-
+                    <div class="member-action-header d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-
-                            <h2 class="fs-16 mb-0 mr-2">
-                                {{ translate('Matched profile') }}
-                            </h2>
-
+                            <h3 class="fs-15 fw-700 mb-0 mr-2 text-dark">
+                                <i class="las la-user-check text-primary mr-1"></i>{{ translate('Partner Matches') }}
+                            </h3>
                             @if (Auth::user()->member->auto_profile_match == 1)
-                                {{-- Refresh Button --}}
                                 @if($canRefresh)
                                     <a href="{{ route('match.refresh') }}"
-                                    class="btn btn-soft-primary btn-icon btn-circle btn-sm"
-                                    title="{{ translate('Refresh') }}">
+                                       class="btn btn-soft-primary btn-icon btn-circle btn-xs"
+                                       title="{{ translate('Refresh Matches') }}">
                                         <i class="las la-sync"></i>
                                     </a>
                                 @else
-                                    <button class="btn btn-soft-secondary btn-icon btn-circle btn-sm"
+                                    <button class="btn btn-soft-secondary btn-icon btn-circle btn-xs"
                                             disabled
-                                            title="{{ translate('You can refresh after 30 minutes') }}">
+                                            title="{{ translate('You can refresh every 30 minutes') }}">
                                         <i class="las la-sync"></i>
                                     </button>
                                 @endif
                             @endif
-
                         </div>
-
-                        {{-- Arrow Icon --}}
-                        <a href="{{ route('my_matched_profiles') }}" class="text-dark">
-                            <i class="las la-arrow-right fs-18"></i>
+                        <a href="{{ route('my_matched_profiles') }}" class="fs-12 text-primary fw-600">
+                            {{ translate('See More') }} &rarr;
                         </a>
-
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-3">
                         @if(Auth::user()->member->auto_profile_match == 1)
-                        <div class="scrolling-horoscope-partner-match">
-                            @forelse ($similar_profiles->shuffle() as $similar_profile)
-                            @if($similar_profile->user != null)
-                                <a href="{{ route('member_profile', $similar_profile->match_id) }}" class="text-reset border rounded row no-gutters align-items-center mb-3">
-                                    <div class="col-auto w-100px">
-                                    @php
-                                        $avatar_image = $similar_profile->user->member->gender == 1 ? 'assets/img/avatar-place.png' : 'assets/img/female-avatar-place.png';
-                                        $profile_picture_show = show_profile_picture($similar_profile->user);
-                                    @endphp
-                                    <img
-                                        @if ($profile_picture_show)
-                                        src="{{ uploaded_asset($similar_profile->user->photo) }}"
-                                        @else
-                                        src="{{ static_asset($avatar_image) }}"
-                                        @endif
-                                        onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
-                                        class="img-fit w-100 size-100px"
-                                    >
+                            <div class="matched-profiles-scroll-list" style="max-height: 380px; overflow-y: auto;">
+                                @forelse ($similar_profiles->shuffle() as $similar_profile)
+                                    @if($similar_profile->user != null)
+                                        @php
+                                            $matched_u = $similar_profile->user;
+                                            $avatar_image = ($matched_u->member && $matched_u->member->gender == 2)
+                                                ? 'assets/img/female-avatar-place.png'
+                                                : 'assets/img/avatar-place.png';
+                                            $show_pic = show_profile_picture($matched_u);
+                                            $pic_url = ($show_pic && $matched_u->photo) ? uploaded_asset($matched_u->photo) : null;
+                                            if (!$pic_url) {
+                                                $pic_url = static_asset($avatar_image);
+                                            }
+                                        @endphp
+                                        <a href="{{ route('member_profile', $similar_profile->match_id) }}"
+                                           class="matched-profile-item row no-gutters align-items-center mb-2 p-2">
+                                            <div class="col-auto">
+                                                <img src="{{ $pic_url }}"
+                                                     onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
+                                                     class="matched-profile-avatar rounded"
+                                                     alt="{{ $matched_u->first_name }}">
+                                            </div>
+                                            <div class="col pl-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h5 class="fs-14 fw-700 text-dark mb-0 text-truncate">
+                                                        {{ $matched_u->first_name . ' ' . $matched_u->last_name }}
+                                                    </h5>
+                                                    <span class="badge badge-inline badge-soft-primary fs-11">
+                                                        {{ round($similar_profile->match_percentage) }}% {{ translate('Match') }}
+                                                    </span>
+                                                </div>
+                                                <div class="fs-12 text-muted text-truncate-2">
+                                                    @if(!empty($matched_u->member->birthday))
+                                                        <span>{{ \Carbon\Carbon::parse($matched_u->member->birthday)->age }} {{ translate('yrs') }}</span> &bull;
+                                                    @endif
+                                                    @if(!empty($matched_u->physical_attributes->height))
+                                                        <span>{{ $matched_u->physical_attributes->height }} {{ translate('ft') }}</span> &bull;
+                                                    @endif
+                                                    @if(!empty($matched_u->spiritual_backgrounds->religion->name))
+                                                        <span>{{ $matched_u->spiritual_backgrounds->religion->name }}</span> &bull;
+                                                    @endif
+                                                    @if(!empty($matched_u->member->marital_status->name))
+                                                        <span>{{ $matched_u->member->marital_status->name }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @endif
+                                @empty
+                                    <div class="text-center py-4 px-2" style="background: var(--mat-bg-cream); border-radius: 8px;">
+                                        <i class="las la-sliders-h text-muted la-2x mb-2"></i>
+                                        <h5 class="fs-14 fw-600 text-dark mb-1">{{ translate('No Matched Profiles Found Yet') }}</h5>
+                                        <p class="fs-12 text-muted mb-3">{{ translate('Set your partner expectations to get personalized auto recommendations.') }}</p>
+                                        <a href="{{ route('profile_settings') }}#partner_expectation" class="btn btn-sm btn-mat-gold">
+                                            <i class="las la-sliders-h mr-1"></i>{{ translate('Set Partner Preferences') }} &rarr;
+                                        </a>
                                     </div>
-                                    <div class="col">
-                                    <div class="p-3">
-                                        <h5 class="fs-16 text-body text-truncate">{{ $similar_profile->user->first_name.' '.$similar_profile->user->last_name }}</h5>
-                                        <div class="fs-12 text-truncate-3">
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_profile->user->member->birthday))
-                                                {{ \Carbon\Carbon::parse($similar_profile->user->member->birthday)->age }} {{ translate('yrs') }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_profile->user->physical_attributes->height))
-                                                {{ $similar_profile->user->physical_attributes->height }} {{ translate('Feet') }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_profile->user->member->marital_status->name))
-                                                {{ $similar_profile->user->member->marital_status->name }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                {{ !empty($similar_profile->user->spiritual_backgrounds->religion->name) ? $similar_profile->user->spiritual_backgrounds->religion->name.', ' : "" }}
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                {{ !empty($similar_profile->user->spiritual_backgrounds->caste->name) ? $similar_profile->user->spiritual_backgrounds->caste->name.', ' : "" }}
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                <td class="py-1">{{ !empty($similar_profile->user->spiritual_backgrounds->sub_caste->name) ? $similar_profile->user->spiritual_backgrounds->sub_caste->name : "" }}</td>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </a>
-                            @endif
-                            @empty
-                                @php
-                                    $expectation = Auth::user()->partner_expectations;
-
-                                    $expectation_filled = $expectation &&
-                                                        !empty($expectation->residence_country_id) &&
-                                                        !empty($expectation->weight) &&
-                                                        !empty($expectation->marital_status_id) &&
-                                                        !empty($expectation->religion) &&
-                                                        !empty($expectation->language_id) &&
-                                                        !empty($expectation->education) &&
-                                                        !empty($expectation->profession) &&
-                                                        !empty($expectation->smoking_acceptable) &&
-                                                        !empty($expectation->drinking_acceptable) &&
-                                                        !empty($expectation->diet) &&
-                                                        !empty($expectation->preferred_state_id) &&
-                                                        !empty($expectation->preferred_country_id) &&
-                                                        !empty($expectation->family_value_id) &&
-                                                        !empty($expectation->height);
-                                @endphp
-
-                                @if(!$expectation_filled)
-                                    <div class="alert alert-info">
-                                        {{ translate('Update your partner expectation for auto match making') }}
-                                    </div>
-                                @else
-                                    <div class="alert alert-warning">
-                                        {{ translate('No matched profile found') }}
-                                    </div>
-                                @endif
-                            @endforelse
-                        </div>
+                                @endforelse
+                            </div>
                         @else
-                            <div class="alert alert-info">{{  translate('Upgrade your package for auto match making') }}</div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="card">
-                    @php
-                        $canHoroscopeRefresh = true;
-                        if(Auth::user()->refresh_updated_at){
-                            $nextRefresh = \Carbon\Carbon::parse(Auth::user()->refresh_updated_at)->addMinutes(30);
-                            if($nextRefresh->isFuture()){
-                                $canHoroscopeRefresh = false;
-                            }
-                        }
-                    @endphp
-                    <div class="card-header d-flex justify-content-between align-items-center">
-
-                        <div class="d-flex align-items-center">
-
-                            <h2 class="fs-16 mb-0 mr-2">
-                                {{ translate('Horoscope Matched profile') }}
-                            </h2>
-
-                            @if (Auth::user()->member->auto_horoscope_profile_match == 1)
-                                {{-- Refresh Button --}}
-                                @if($canHoroscopeRefresh)
-                                    <a href="{{ route('horoscope.match.refresh') }}"
-                                    class="btn btn-soft-primary btn-icon btn-circle btn-sm"
-                                    title="{{ translate('Refresh') }}">
-                                        <i class="las la-sync"></i>
-                                    </a>
-                                @else
-                                    <button class="btn btn-soft-secondary btn-circle btn-icon btn-sm"
-                                            disabled
-                                            title="{{ translate('You can refresh after 30 minutes') }}">
-                                        <i class="las la-sync"></i>
-                                    </button>
-                                @endif
-                            @endif
-
-                        </div>
-
-                        {{-- Arrow Icon --}}
-                        <a href="{{ route('horoscope_matched_profiles') }}" class="text-dark">
-                            <i class="las la-arrow-right fs-18"></i>
-                        </a>
-
-                    </div>
-                    <div class="card-body">
-                        @if(Auth::user()->member->auto_horoscope_profile_match == 1)
-                        <div class="scrolling-horoscope-partner-match">
-                            @forelse ($similar_horoscope_profiles->shuffle() as $similar_horoscope_profile)
-                            @if($similar_horoscope_profile->user != null)
-                                <a href="{{ route('member_profile', $similar_horoscope_profile->match_id) }}" class="text-reset border rounded row no-gutters align-items-center mb-3">
-                                    <div class="col-auto w-100px">
-                                    @php
-                                        $avatar_image = $similar_horoscope_profile->user->member->gender == 1 ? 'assets/img/avatar-place.png' : 'assets/img/female-avatar-place.png';
-                                        $profile_picture_show = show_profile_picture($similar_horoscope_profile->user);
-                                    @endphp
-                                    <img
-                                        @if ($profile_picture_show)
-                                        src="{{ uploaded_asset($similar_horoscope_profile->user->photo) }}"
-                                        @else
-                                        src="{{ static_asset($avatar_image) }}"
-                                        @endif
-                                        onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
-                                        class="img-fit w-100 size-100px"
-                                    >
-                                    </div>
-                                    <div class="col">
-                                    <div class="p-3">
-                                        <h5 class="fs-16 text-body text-truncate">{{ $similar_horoscope_profile->user->first_name.' '.$similar_horoscope_profile->user->last_name }}</h5>
-                                        <div class="fs-12 text-truncate-3">
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_horoscope_profile->user->member->birthday))
-                                                {{ \Carbon\Carbon::parse($similar_horoscope_profile->user->member->birthday)->age }} {{ translate('yrs') }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_horoscope_profile->user->physical_attributes->height))
-                                                {{ $similar_horoscope_profile->user->physical_attributes->height }} {{ translate('Feet') }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                @if(!empty($similar_horoscope_profile->user->member->marital_status->name))
-                                                {{ $similar_horoscope_profile->user->member->marital_status->name }},
-                                                @endif
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                {{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->religion->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->religion->name.', ' : "" }}
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                {{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->caste->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->caste->name.', ' : "" }}
-                                            </span>
-                                            <span class="mr-1 d-inline-block">
-                                                <td class="py-1">{{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->sub_caste->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->sub_caste->name : "" }}</td>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    </div>
+                            <div class="text-center py-4 px-2" style="background: var(--mat-bg-cream); border-radius: 8px;">
+                                <i class="las la-crown text-warning la-2x mb-2"></i>
+                                <h5 class="fs-14 fw-600 text-dark mb-1">{{ translate('Auto Matchmaking Available in Premium') }}</h5>
+                                <p class="fs-12 text-muted mb-3">{{ translate('Upgrade your package to unlock intelligent partner matchmaking.') }}</p>
+                                <a href="{{ route('packages') }}" class="btn btn-sm btn-mat-gold">
+                                    {{ translate('Upgrade Package') }} &rarr;
                                 </a>
-                            @endif
-                            @empty
-                                @php
-                                    $astrologies = Auth::user()->astrologies;
-                                    $horoscope_filled = !empty($astrologies->moon_sign) 
-                                                        && !empty($astrologies->nadi) 
-                                                        && !empty($astrologies->manglik) 
-                                                        && !empty($astrologies->gana) 
-                                                        && !empty($astrologies->time_of_birth);
-                                @endphp
-                                @if(!$horoscope_filled)
-                                    <div class="alert alert-info">
-                                        {{ translate('Update your astronomic & horoscope info for auto horoscope match making') }}
-                                    </div>
-                                @else
-                                    <div class="alert alert-warning">
-                                        {{ translate('No matched horoscope profile found') }}
-                                    </div>
-                                @endif
-                            @endforelse
-                        </div>
-                        @else
-                            <div class="alert alert-info">{{  translate('Upgrade your package for auto horoscope match making') }}</div>
+                            </div>
                         @endif
                     </div>
                 </div>
             @endif
         </div>
     </div>
-
-
 @endsection
+

@@ -26,15 +26,6 @@
                                                 '%)';
                                         }
 
-                                        $horoscope_profile_match = \App\Models\HoroscopeProfileMatch::where('user_id', Auth::user()->id)
-                                            ->where('match_id', $user->id)
-                                            ->first();
-                                        if (!empty($horoscope_profile_match) && Auth::user()->member->auto_horoscope_profile_match == 1) {
-                                            echo '(' .
-                                                translate('Horoscope Matched') .
-                                                ' - ' .
-                                                $horoscope_profile_match->match_count;
-                                        }
                                     @endphp
                                 </span>
                             </h1>
@@ -331,76 +322,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if (Auth::user()->member->auto_horoscope_profile_match == 1)
-                            <div class="mb-4">
-                                <div class="d-flex justify-content-between">
-                                    <h3 class="fs-18 mb-3">{{ translate('Similar Horoscope Profiles') }}</h3>
-                                </div>
-                                <div>
-                                    @foreach ($similar_horoscope_profiles->shuffle()->take(4) as $similar_horoscope_profile)
-                                        @if ($similar_horoscope_profile->user != null)
-                                            <a href="{{ route('member_profile', $similar_horoscope_profile->match_id) }}"
-                                                class="text-reset border rounded row no-gutters align-items-center mb-3">
-                                                <div class="col-auto w-120px">
-                                                    @php
-                                                        $avatar_image =
-                                                            $similar_horoscope_profile->user->member->gender == 1
-                                                                ? 'assets/img/avatar-place.png'
-                                                                : 'assets/img/female-avatar-place.png';
-                                                        $profile_picture_show = show_profile_picture(
-                                                            $similar_horoscope_profile->user,
-                                                        );
-                                                    @endphp
 
-                                                    <img @if ($profile_picture_show) src="{{ uploaded_asset($similar_horoscope_profile->user->photo) }}"
-                                                        @else
-                                                        src="{{ static_asset($avatar_image) }}" @endif
-                                                        onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
-                                                        class="img-fit w-100 size-120px">
-                                                </div>
-                                                <div class="col">
-                                                    <div class="p-3">
-                                                        <h5 class="fs-16 text-body text-truncate">
-                                                            {{ $similar_horoscope_profile->user->first_name . ' ' . $similar_horoscope_profile->user->last_name }}
-                                                        </h5>
-                                                        <div class="fs-12 text-truncate-3">
-                                                            <span class="mr-1 d-inline-block">
-                                                                @if (!empty($similar_horoscope_profile->user->member->birthday))
-                                                                    {{ \Carbon\Carbon::parse($similar_horoscope_profile->user->member->birthday)->age }}
-                                                                    {{ translate('yrs') }},
-                                                                @endif
-                                                            </span>
-                                                            <span class="mr-1 d-inline-block">
-                                                                @if (!empty($similar_horoscope_profile->user->physical_attributes->height))
-                                                                    {{ $similar_horoscope_profile->user->physical_attributes->height }}
-                                                                    {{ translate('Feet') }},
-                                                                @endif
-                                                            </span>
-                                                            <span class="mr-1 d-inline-block">
-                                                                @if (!empty($similar_horoscope_profile->user->member->marital_status->name))
-                                                                    {{ $similar_horoscope_profile->user->member->marital_status->name }},
-                                                                @endif
-                                                            </span>
-                                                            <span class="mr-1 d-inline-block">
-                                                                {{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->religion->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->religion->name . ', ' : '' }}
-                                                            </span>
-                                                            <span class="mr-1 d-inline-block">
-                                                                {{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->caste->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->caste->name . ', ' : '' }}
-                                                            </span>
-                                                            <span class="mr-1 d-inline-block">
-                                                                <td class="py-1">
-                                                                    {{ !empty($similar_horoscope_profile->user->spiritual_backgrounds->sub_caste->name) ? $similar_horoscope_profile->user->spiritual_backgrounds->sub_caste->name : '' }}
-                                                                </td>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                         <div class="border rounded">
                             <a href="{{ get_setting('public_profile_page_banner_link') }}" class="text-reset">
                                 <img src="{{ uploaded_asset(get_setting('public_profile_page_banner')) }}"

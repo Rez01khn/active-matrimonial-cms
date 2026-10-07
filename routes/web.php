@@ -82,6 +82,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/about-us', 'about_us')->name('about_us');
     Route::get('/custom-page/about-us', 'about_us');
     Route::get('/story_details/{id}', 'story_details')->name('story_details');
+    Route::get('/story/{id}', 'story_details')->name('story.show');
     Route::any('/member-listing', 'member_listing')->name('member.listing');
     Route::get('/users/blocked', 'user_account_blocked')->name('user.blocked');
     Route::post('/registration/verification-code-send', 'sendRegVerificationCode')->name('verification_code_send');
@@ -239,9 +240,13 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
 
         Route::resource('profile-viewers', ProfileViewerController::class);
         Route::get('/matched-profiles', [ProfileMatchController::class, 'myMatchedProfiles'])->name('my_matched_profiles');
-        Route::get('/horoscope-matched-profiles', [HoroscopeProfileMatchController::class, 'horoscopeMatchedProfiles'])->name('horoscope_matched_profiles');
         Route::get('/matched-refresh', [ProfileMatchController::class, 'matchedRefresh'])->name('match.refresh');
-        Route::get('/horoscope-matched-refresh', [HoroscopeProfileMatchController::class, 'horoscopeMatchedRefresh'])->name('horoscope.match.refresh');
+        Route::get('/horoscope-matched-profiles', function() {
+            return redirect()->route('my_matched_profiles');
+        })->name('horoscope_matched_profiles');
+        Route::get('/horoscope-matched-refresh', function() {
+            return redirect()->route('match.refresh');
+        })->name('horoscope.match.refresh');
     });
 });
 

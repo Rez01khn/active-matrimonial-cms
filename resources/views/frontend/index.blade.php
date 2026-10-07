@@ -940,14 +940,14 @@
     </section>
 
     <!-- 6. Real People. Real Connections. Real Stories. -->
-    <section class="py-6 bg-mat-section position-relative">
+    <section class="py-6 bg-mat-cream home-story-section position-relative">
         <div class="container position-relative px-4 px-md-5">
             <!-- Symmetrically Positioned Prev / Next Arrow Navigation Controls -->
-            <button type="button" class="story-nav-btn prev-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-prev-btn" aria-label="Previous Story">
-                <i class="las la-angle-left" style="color: var(--mat-maroon-dark); font-size: 20px;"></i>
+            <button type="button" class="story-nav-btn prev-btn" id="story-prev-btn" aria-label="Previous Story">
+                <i class="las la-angle-left"></i>
             </button>
-            <button type="button" class="story-nav-btn next-btn w-11 h-11 bg-white shadow-md rounded-full flex items-center justify-center cursor-pointer hover:bg-stone-50 transition" id="story-next-btn" aria-label="Next Story">
-                <i class="las la-angle-right" style="color: var(--mat-maroon-dark); font-size: 20px;"></i>
+            <button type="button" class="story-nav-btn next-btn" id="story-next-btn" aria-label="Next Story">
+                <i class="las la-angle-right"></i>
             </button>
 
             <!-- Carousel Slider Wrapper (slidesPerView: 1) -->
@@ -963,125 +963,89 @@
                 data-autoplay="true"
                 data-infinite="true">
 
-                <!-- Slide Item 1 -->
-                <div class="carousel-box">
-                    <div class="row align-items-center">
-                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
-                        <div class="col-lg-6 mb-4 mb-lg-0">
-                            <div class="story-collage-grid row gutters-10">
-                                <!-- Primary Couple Portrait -->
-                                <div class="col-7">
-                                    <div class="story-img-card main-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Rahim & Nusrat" class="story-img">
+                @if(isset($happy_stories) && $happy_stories->count() > 0)
+                    @foreach($happy_stories as $story)
+                        @php
+                            $storyPhotos = !empty($story->photos) ? explode(',', $story->photos) : [];
+                            $photo1 = isset($storyPhotos[0]) ? (is_numeric($storyPhotos[0]) ? uploaded_asset($storyPhotos[0]) : static_asset($storyPhotos[0])) : static_asset('assets/img/custom/story_couple.jpg');
+                            $photo2 = isset($storyPhotos[1]) ? (is_numeric($storyPhotos[1]) ? uploaded_asset($storyPhotos[1]) : static_asset($storyPhotos[1])) : static_asset('assets/img/custom/story_wedding_reception.jpg');
+                            $photo3 = isset($storyPhotos[2]) ? (is_numeric($storyPhotos[2]) ? uploaded_asset($storyPhotos[2]) : static_asset($storyPhotos[2])) : static_asset('assets/img/custom/story_wedding_rings.jpg');
+                        @endphp
+                        <div class="carousel-box">
+                            <div class="row align-items-center">
+                                <!-- Left Side Multi-Image Collage (No Video Elements) -->
+                                <div class="col-lg-6 mb-4 mb-lg-0">
+                                    <div class="story-collage-grid row gutters-10">
+                                        <!-- Primary Couple Portrait -->
+                                        <div class="col-7">
+                                            <div class="story-img-card main-img-card">
+                                                <img src="{{ $photo1 }}" alt="{{ $story->title }}" class="story-img">
+                                            </div>
+                                        </div>
+                                        <!-- Stacked Accent Photos -->
+                                        <div class="col-5 d-flex flex-column justify-content-between">
+                                            <div class="story-img-card accent-img-card mb-2">
+                                                <img src="{{ $photo2 }}" alt="{{ $story->title }} Reception" class="story-img">
+                                            </div>
+                                            <div class="story-img-card accent-img-card">
+                                                <img src="{{ $photo3 }}" alt="{{ $story->title }} Rings" class="story-img">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- Stacked Accent Photos -->
-                                <div class="col-5 d-flex flex-column justify-content-between">
-                                    <div class="story-img-card accent-img-card mb-2">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
-                                    </div>
-                                    <div class="story-img-card accent-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
-                                    </div>
+
+                                <!-- Right Side Quote Content -->
+                                <div class="col-lg-6 pl-lg-5">
+                                    <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">{{ translate('Real People. Real Connections. Real Stories.') }}</h2>
+                                    <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
+                                        &ldquo;{{ Str::limit(strip_tags($story->details), 160) }}&rdquo;
+                                    </blockquote>
+                                    <div class="fw-700 fs-16 text-mat-maroon">&mdash; {{ $story->title }}</div>
+                                    <div class="fs-13 text-muted mb-4">{{ $story->created_at ? translate('Married in ') . $story->created_at->format('Y') : translate('Verified Match') }}</div>
+                                    <a href="{{ route('story_details', $story->id) }}" class="story-read-btn">
+                                        <span>{{ translate('Read Their Story') }}</span>
+                                        <i class="las la-arrow-right fs-16"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Right Side Quote Content -->
-                        <div class="col-lg-6 pl-lg-5">
-                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
-                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
-                                "We joined looking for someone compatible with our values. We never expected that a simple profile would lead us to each other."
-                            </blockquote>
-                            <div class="fw-700 fs-16 text-mat-maroon">— Rahim & Nusrat</div>
-                            <div class="fs-13 text-muted mb-4">Married in 2024</div>
-                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
-                                <span>Read Their Story</span>
-                                <i class="las la-arrow-right fs-16"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide Item 2 -->
-                <div class="carousel-box">
-                    <div class="row align-items-center">
-                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
-                        <div class="col-lg-6 mb-4 mb-lg-0">
-                            <div class="story-collage-grid row gutters-10">
-                                <!-- Primary Couple Portrait -->
-                                <div class="col-7">
-                                    <div class="story-img-card main-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Tariq & Aisha" class="story-img">
+                    @endforeach
+                @else
+                    <!-- Fallback Slide 1 -->
+                    <div class="carousel-box">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6 mb-4 mb-lg-0">
+                                <div class="story-collage-grid row gutters-10">
+                                    <div class="col-7">
+                                        <div class="story-img-card main-img-card">
+                                            <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Rahim & Nusrat" class="story-img">
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- Stacked Accent Photos -->
-                                <div class="col-5 d-flex flex-column justify-content-between">
-                                    <div class="story-img-card accent-img-card mb-2">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
-                                    </div>
-                                    <div class="story-img-card accent-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
+                                    <div class="col-5 d-flex flex-column justify-content-between">
+                                        <div class="story-img-card accent-img-card mb-2">
+                                            <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
+                                        </div>
+                                        <div class="story-img-card accent-img-card">
+                                            <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Right Side Quote Content -->
-                        <div class="col-lg-6 pl-lg-5">
-                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
-                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
-                                "Finding a partner who shares your beliefs and life goals can be tough. Active Matrimonial made it feel effortless and natural."
-                            </blockquote>
-                            <div class="fw-700 fs-16 text-mat-maroon">— Tariq & Aisha</div>
-                            <div class="fs-13 text-muted mb-4">Married in 2023</div>
-                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
-                                <span>Read Their Story</span>
-                                <i class="las la-arrow-right fs-16"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide Item 3 -->
-                <div class="carousel-box">
-                    <div class="row align-items-center">
-                        <!-- Left Side Multi-Image Collage (No Video Elements) -->
-                        <div class="col-lg-6 mb-4 mb-lg-0">
-                            <div class="story-collage-grid row gutters-10">
-                                <!-- Primary Couple Portrait -->
-                                <div class="col-7">
-                                    <div class="story-img-card main-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_couple.jpg') }}" alt="Imran & Farhana" class="story-img">
-                                    </div>
-                                </div>
-                                <!-- Stacked Accent Photos -->
-                                <div class="col-5 d-flex flex-column justify-content-between">
-                                    <div class="story-img-card accent-img-card mb-2">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_reception.jpg') }}" alt="Wedding Reception" class="story-img">
-                                    </div>
-                                    <div class="story-img-card accent-img-card">
-                                        <img src="{{ static_asset('assets/img/custom/story_wedding_rings.jpg') }}" alt="Ring Exchange" class="story-img">
-                                    </div>
-                                </div>
+                            <div class="col-lg-6 pl-lg-5">
+                                <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">{{ translate('Real People. Real Connections. Real Stories.') }}</h2>
+                                <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
+                                    &ldquo;{{ translate('We joined looking for someone compatible with our values. We never expected that a simple profile would lead us to each other.') }}&rdquo;
+                                </blockquote>
+                                <div class="fw-700 fs-16 text-mat-maroon">&mdash; Rahim &amp; Nusrat</div>
+                                <div class="fs-13 text-muted mb-4">{{ translate('Married in 2024') }}</div>
+                                <a href="{{ route('happy_stories') }}" class="story-read-btn">
+                                    <span>{{ translate('Read Their Story') }}</span>
+                                    <i class="las la-arrow-right fs-16"></i>
+                                </a>
                             </div>
                         </div>
-
-                        <!-- Right Side Quote Content -->
-                        <div class="col-lg-6 pl-lg-5">
-                            <h2 class="font-serif fw-700 text-mat-maroon fs-34 mb-4">Real People. Real Connections. Real Stories.</h2>
-                            <blockquote class="font-serif italic fs-18 text-dark mb-4 lh-1-6">
-                                "Our families connected instantly, and so did we. Thank you for helping us find our lifelong happiness together!"
-                            </blockquote>
-                            <div class="fw-700 fs-16 text-mat-maroon">— Imran & Farhana</div>
-                            <div class="fs-13 text-muted mb-4">Married in 2024</div>
-                            <a href="{{ route('happy_stories') }}" class="story-read-btn">
-                                <span>Read Their Story</span>
-                                <i class="las la-arrow-right fs-16"></i>
-                            </a>
-                        </div>
                     </div>
-                </div>
+                @endif
 
             </div>
         </div>

@@ -24,6 +24,8 @@ use App\Models\RegistrationVerificationCode;
 use App\Models\Religion;
 use App\Models\City;
 use App\Models\State;
+use App\Models\ExpressInterest;
+use App\Models\Shortlist;
 use App\Utility\EmailUtility;
 use App\Utility\SmsUtility;
 use Notification;
@@ -123,7 +125,9 @@ class HomeController extends Controller
             $current_start = $current_end + 1;
         }
 
-        return view('frontend.index', compact('premium_members', 'new_members', 'religions', 'cities', 'genders', 'age_ranges'));
+        $happy_stories = HappyStory::where('approved', 1)->latest()->take(6)->get();
+
+        return view('frontend.index', compact('premium_members', 'new_members', 'religions', 'cities', 'genders', 'age_ranges', 'happy_stories'));
     }
 
 
@@ -190,25 +194,30 @@ class HomeController extends Controller
                 ->where('match_percentage', '>=', 50)
                 ->limit(20);
 
-            $similar_horoscope_profiles = HoroscopeProfileMatch::orderBy('match_count', 'desc')
-                ->where('user_id', $user->id)
-                ->where('match_count', '>=', 18)
-                ->limit(20);
-
             $ignored_to = IgnoredUser::where('ignored_by', $user->id)->pluck('user_id')->toArray();
             if (count($ignored_to) > 0) {
                 $similar_profiles = $similar_profiles->whereNotIn('match_id', $ignored_to);
-                $similar_horoscope_profiles = $similar_horoscope_profiles->whereNotIn('match_id', $ignored_to);
             }
             $ignored_by_ids = IgnoredUser::where('user_id', $user->id)->pluck('ignored_by')->toArray();
             if (count($ignored_by_ids) > 0) {
                 $similar_profiles = $similar_profiles->whereNotIn('match_id', $ignored_by_ids);
-                $similar_horoscope_profiles = $similar_horoscope_profiles->whereNotIn('match_id', $ignored_by_ids);
             }
             $similar_profiles = $similar_profiles->get();
-            $similar_horoscope_profiles = $similar_horoscope_profiles->get();
 
-            return view('frontend.member.dashboard', compact('similar_profiles', 'similar_horoscope_profiles'));
+            $sent_interests_count = ExpressInterest::where('interested_by', $user->id)->count();
+            $received_interests_count = ExpressInterest::where('user_id', $user->id)->count();
+            $accepted_interests_count = ExpressInterest::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)->orWhere('interested_by', $user->id);
+            })->where('status', 1)->count();
+            $shortlists_count = Shortlist::where('user_id', $user->id)->count();
+
+            return view('frontend.member.dashboard', compact(
+                'similar_profiles',
+                'sent_interests_count',
+                'received_interests_count',
+                'accepted_interests_count',
+                'shortlists_count'
+            ));
         } else {
             abort(404);
         }
@@ -233,8 +242,9 @@ class HomeController extends Controller
 
     public function story_details($id)
     {
-        $happy_story = HappyStory::findOrFail($id);
-        return view('frontend.happy_stories.story_details', compact('happy_story'));
+        $happy_story = HappyStory::where('approved', 1)->findOrFail($id);
+        $related_stories = HappyStory::where('approved', 1)->where('id', '!=', $id)->latest()->take(3)->get();
+        return view('frontend.happy_stories.story_details', compact('happy_story', 'related_stories'));
     }
 
     public function member_listing(Request $request)

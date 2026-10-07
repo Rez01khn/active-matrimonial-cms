@@ -17,11 +17,17 @@
 
             <!-- Center: Pure Text Running Marquee Ticker (Strictly ONE single message, zero emojis) -->
             <div class="topbar-center-marquee flex-grow-1 overflow-hidden whitespace-nowrap mr-3 position-relative" style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent);">
-                <a href="{{ route('register') }}" class="topbar-marquee-track text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer; display: inline-block;">
-                    <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
-                        {{ $ticker_text }}
+                @if(Auth::check())
+                    <span class="text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
+                        {{ translate('Welcome back,') }} <strong class="text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</strong> &middot; {{ translate('Member ID: #') . (Auth::user()->code ?: Auth::user()->id) }} @if(Auth::user()->membership == 2) <span class="badge badge-warning text-dark ml-1" style="font-size: 10px;">{{ translate('PREMIUM') }}</span> @endif
                     </span>
-                </a>
+                @else
+                    <a href="{{ route('register') }}" class="topbar-marquee-track text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer; display: inline-block;">
+                        <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
+                            {{ $ticker_text }}
+                        </span>
+                    </a>
+                @endif
             </div>
 
             <!-- Right: Dynamic Contact & Social Links -->
@@ -61,7 +67,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <!-- Brand Logo -->
             <a href="{{ route('home') }}" class="d-flex align-items-center text-decoration-none">
-                @if(get_setting('header_logo') != null)
+                @if(get_setting('header_logo') != null && uploaded_asset(get_setting('header_logo')))
                     <img src="{{ uploaded_asset(get_setting('header_logo')) }}" alt="{{ env('APP_NAME') }}" class="h-40px">
                 @else
                     <div class="d-flex align-items-center">

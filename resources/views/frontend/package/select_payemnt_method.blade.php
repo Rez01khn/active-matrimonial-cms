@@ -53,15 +53,6 @@
                                         {{ translate('Show Auto Profile Match') }}
                                     @endif
                                 </li>
-                                <li class="list-group-item py-2 text-line-through">
-                                    @if ($package->auto_horoscope_profile_match == 0)
-                                        <i class="las la-times text-danger mr-2"></i>
-                                        <del class="opacity-60">{{ translate('Show Auto Horoscope Profile Match') }}</del>
-                                    @else
-                                        <i class="las la-check text-success mr-2"></i>
-                                        {{ translate('Show Auto Horoscope Profile Match') }}
-                                    @endif
-                                </li>
                             </ul>
                             <div class="mb-5 text-dark text-center">
                                 @php
@@ -110,6 +101,33 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-xxl-8 col-xl-10 mx-auto">
+                                        @php
+                                            $hasAnyPayment = (get_setting('paypal_payment_activation') == 1) ||
+                                                             (get_setting('stripe_payment_activation') == 1) ||
+                                                             (get_setting('instamojo_payment_activation') == 1) ||
+                                                             (get_setting('razorpay_payment_activation') == 1) ||
+                                                             (get_setting('paystack_payment_activation') == 1) ||
+                                                             (get_setting('paytm_payment_activation') == 1) ||
+                                                             (get_setting('aamarpay_payment_activation') == 1) ||
+                                                             (get_setting('sslcommerz_payment_activation') == 1) ||
+                                                             (get_setting('phonepe_payment_activation') == 1) ||
+                                                             (get_setting('wallet_system') == 1) ||
+                                                             (isset($manual_payments) && count($manual_payments) > 0);
+                                        @endphp
+                                        @if(!$hasAnyPayment)
+                                            <div class="col-12 text-center py-4">
+                                                <div class="p-4 rounded border-warning bg-soft-warning">
+                                                    <i class="las la-wallet fs-36 text-warning mb-2 d-block"></i>
+                                                    <h5 class="fw-700 text-dark mb-2">{{ translate('Online Payment Under Upgrade') }}</h5>
+                                                    <p class="fs-14 text-muted mb-2">
+                                                        {{ translate('Payment systems are temporarily paused for integration of Bangladeshi payment gateways (bKash, Nagad, SSLCommerz).') }}
+                                                    </p>
+                                                    <p class="fs-13 text-muted mb-0">
+                                                        {{ translate('Please use the test premium account or contact admin to activate membership.') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endif
                                         <div class="row gutters-10">
                                             @if (get_setting('paypal_payment_activation') == 1)
                                                 <div class="col-6 col-md-4">

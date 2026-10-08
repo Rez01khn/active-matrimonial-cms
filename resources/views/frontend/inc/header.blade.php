@@ -120,7 +120,7 @@
 
             <!-- User Auth / Action Button -->
             <div class="d-flex align-items-center">
-                @if (Auth::check())
+                @auth
                     <!-- Notifications & User Profile -->
                     <div class="d-flex align-items-center">
                         <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-reset mr-3">
@@ -131,17 +131,24 @@
                                 {{ Auth::user()->first_name }}
                             </span>
                         </a>
-                        <a href="{{ route('user.logout') }}" class="btn btn-mat-maroon btn-sm py-2 px-3">
+                        <a href="{{ route('user.logout') }}" class="btn btn-mat-maroon btn-sm py-2 px-3 rounded-pill">
                             <i class="las la-sign-out-alt"></i>
                             <span class="d-none d-md-inline">{{ translate('Logout') }}</span>
                         </a>
                     </div>
-                @else
-                    <a href="{{ route('register') }}" class="btn btn-mat-maroon">
-                        <i class="las la-user-plus fs-16"></i>
-                        <span>{{ translate('Register Free') }}</span>
-                    </a>
-                @endif
+                @endauth
+                @guest
+                    <div class="d-flex align-items-center gap-3" style="gap: 12px;">
+                        <a href="{{ route('login') }}" class="btn btn-outline-mat-maroon rounded-pill">
+                            <i class="las la-sign-in-alt fs-16"></i>
+                            <span>{{ translate('Login') }}</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="btn btn-mat-maroon rounded-pill">
+                            <i class="las la-user-plus fs-16"></i>
+                            <span>{{ translate('Register Free') }}</span>
+                        </a>
+                    </div>
+                @endguest
 
                 <!-- Mobile Menu Button -->
                 <button class="navbar-toggler d-lg-none ml-2 border-0 text-mat-maroon" type="button" data-toggle="collapse" data-target="#mobileNav">
@@ -159,11 +166,11 @@
                 <li class="nav-item"><a href="{{ url('/happy-stories') }}" class="nav-link nav-link-matrimony py-2">{{ translate('Success Stories') }}</a></li>
                 <li class="nav-item"><a href="{{ url('/custom-page/about-us') }}" class="nav-link nav-link-matrimony py-2">{{ translate('About Us') }}</a></li>
                 <li class="nav-item"><a href="{{ url('/blog') }}" class="nav-link nav-link-matrimony py-2">{{ translate('Blog') }}</a></li>
-                @if(!Auth::check())
+                @guest
                     <li class="nav-item pt-2 border-top">
                         <a href="{{ route('login') }}" class="nav-link nav-link-matrimony py-2 font-weight-bold">{{ translate('Log In') }}</a>
                     </li>
-                @endif
+                @endguest
             </ul>
         </div>
     </div>

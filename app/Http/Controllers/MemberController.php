@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AdditionalAttribute;
 use App\Models\Address;
 use App\Models\AnnualSalaryRange;
-use App\Models\Astrology;
 use App\Models\Attitude;
 use App\Models\Career;
 use Illuminate\Http\Request;
@@ -250,7 +249,6 @@ class MemberController extends Controller
                 $member->remaining_profile_image_view   = $package->profile_image_view;
                 $member->remaining_gallery_image_view   = $package->gallery_image_view;
                 $member->auto_profile_match             = $package->auto_profile_match;
-                $member->auto_horoscope_profile_match             = $package->auto_horoscope_profile_match;
                 $member->package_validity               = Date('Y-m-d', strtotime($package->validity . " days"));
                 $membership                             = $package->id == 1 ? 1 : 2;
                 $member->save();
@@ -588,7 +586,6 @@ class MemberController extends Controller
         $user->attitude()->delete();
         $user->recidency()->delete();
         $user->lifestyles()->delete();
-        $user->astrologies()->delete();
         $user->families()->delete();
         $user->partner_expectations()->delete();
         $user->spiritual_backgrounds()->delete();
@@ -623,7 +620,6 @@ class MemberController extends Controller
         $user->attitude()->withTrashed()->restore();
         $user->recidency()->withTrashed()->restore();
         $user->lifestyles()->withTrashed()->restore();
-        $user->astrologies()->withTrashed()->restore();
         $user->families()->withTrashed()->restore();
         $user->partner_expectations()->withTrashed()->restore();
         $user->spiritual_backgrounds()->withTrashed()->restore();
@@ -668,7 +664,6 @@ class MemberController extends Controller
         $user->attitude()->withTrashed()->forcedelete();
         $user->recidency()->withTrashed()->forcedelete();
         $user->lifestyles()->withTrashed()->forcedelete();
-        $user->astrologies()->withTrashed()->forcedelete();
         $user->families()->withTrashed()->forcedelete();
         $user->partner_expectations()->withTrashed()->forcedelete();
         $user->spiritual_backgrounds()->withTrashed()->forcedelete();
@@ -725,7 +720,6 @@ class MemberController extends Controller
         $member->remaining_gallery_image_view   = $member->remaining_gallery_image_view + $package->gallery_image_view;
 
         $member->auto_profile_match         = $package->auto_profile_match;
-        $member->auto_horoscope_profile_match         = $package->auto_horoscope_profile_match;
         $member->package_validity           = date('Y-m-d', strtotime($member->package_validity . ' +' . $package->validity . 'days'));
         $membership                         = $package->id == 1 ? 1 : 2;
 
@@ -905,7 +899,6 @@ class MemberController extends Controller
             Attitude::where('user_id', $user->id)->delete();
             Recidency::where('user_id', $user->id)->delete();
             Lifestyle::where('user_id', $user->id)->delete();
-            Astrology::where('user_id', $user->id)->delete();
             Family::where('user_id', $user->id)->delete();
             PartnerExpectation::where('user_id', $user->id)->delete();
             SpiritualBackground::where('user_id', $user->id)->delete();

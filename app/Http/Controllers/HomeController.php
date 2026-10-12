@@ -16,7 +16,6 @@ use App\Models\SpiritualBackground;
 use App\Models\Career;
 use App\Models\Address;
 use App\Models\HappyStory;
-use App\Models\HoroscopeProfileMatch;
 use App\Models\IgnoredUser;
 use App\Models\ProfileMatch;
 use App\Models\ProfileViewer;
@@ -33,6 +32,8 @@ use Hash;
 use Artisan;
 use Mail;
 use Auth;
+use PDF;
+use App\Models\Upload;
 
 
 class HomeController extends Controller
@@ -463,25 +464,16 @@ class HomeController extends Controller
             ->where('match_percentage', '>=', 50)
             ->limit(20);
 
-        $similar_horoscope_profiles = HoroscopeProfileMatch::orderBy('match_count', 'desc')
-            ->where('user_id', $authUser->id)
-            ->where('match_id', '!=', $id)
-            ->where('match_count', '>=', 18)
-            ->limit(20);
-
         $ignored_to = IgnoredUser::where('ignored_by', $authUser->id)->pluck('user_id')->toArray();
         if (count($ignored_to) > 0) {
             $similar_profiles = $similar_profiles->whereNotIn('match_id', $ignored_to);
-            $similar_horoscope_profiles = $similar_horoscope_profiles->whereNotIn('match_id', $ignored_to);
         }
 
         $ignored_by_ids = IgnoredUser::where('user_id', $authUser->id)->pluck('ignored_by')->toArray();
         if (count($ignored_by_ids) > 0) {
             $similar_profiles = $similar_profiles->whereNotIn('match_id', $ignored_by_ids);
-            $similar_horoscope_profiles = $similar_horoscope_profiles->whereNotIn('match_id', $ignored_by_ids);
         }
         $similar_profiles = $similar_profiles->get();
-        $similar_horoscope_profiles = $similar_horoscope_profiles->get();
 
         $user = User::findOrFail($id);
 
@@ -524,7 +516,93 @@ class HomeController extends Controller
         
         $additional_attributes  = AdditionalAttribute::where('status', 1)->get();
 
-        return view('frontend.member.public_profile.index', compact('user', 'similar_profiles', 'additional_attributes', 'similar_horoscope_profiles'));
+        return view('frontend.member.public_profile.index', compact('user', 'similar_profiles', 'additional_attributes'));
+    }
+
+    public function download_member_biodata_pdf($id)
+    {
+        $authUser = Auth::user();
+
+        if ($authUser && $authUser->user_type == 'member' && ($authUser->id != $id) && !is_paid_member($authUser->id)) {
+            flash(translate('Please upgrade to a premium package to view complete biodata and profile details.'))->warning();
+            return redirect()->route('packages');
+        }
+
+        $user = User::with([
+            'member',
+            'physical_attributes',
+            'spiritual_backgrounds.religion',
+            'spiritual_backgrounds.caste',
+            'spiritual_backgrounds.sub_caste',
+            'spiritual_backgrounds.family_value',
+            'addresses.country',
+            'addresses.state',
+            'addresses.city',
+            'education',
+            'career',
+            'families',
+            'lifestyles',
+            'partner_expectations'
+        ])->findOrFail($id);
+
+        $present_address = $user->addresses->firstWhere('type', 'present');
+        $permanent_address = $user->addresses->firstWhere('type', 'permanent');
+
+        $photo_path = null;
+        if (show_profile_picture($user) && $user->photo) {
+            $upload = Upload::find($user->photo);
+            if ($upload) {
+                if (file_exists(public_path($upload->file_name))) {
+                    $photo_path = public_path($upload->file_name);
+                } elseif (file_exists(public_path('uploads/all/' . $upload->file_name))) {
+                    $photo_path = public_path('uploads/all/' . $upload->file_name);
+                }
+            }
+        }
+        if (!$photo_path) {
+            $avatar = ($user->member && $user->member->gender == 2)
+                ? 'assets/img/female-avatar-place.png'
+                : 'assets/img/avatar-place.png';
+            if (file_exists(public_path($avatar))) {
+                $photo_path = public_path($avatar);
+            }
+        }
+
+        $logo_path = null;
+        $logo_id = get_setting('header_logo');
+        if ($logo_id) {
+            $logo_upload = Upload::find($logo_id);
+            if ($logo_upload && file_exists(public_path('uploads/all/' . $logo_upload->file_name))) {
+                $logo_path = public_path('uploads/all/' . $logo_upload->file_name);
+            }
+        }
+
+        $fileName = 'Biodata-' . ($user->code ?? $user->id) . '-' . Str::slug($user->first_name . '-' . $user->last_name) . '.pdf';
+
+        $pdf = PDF::loadView('frontend.member.biodata_pdf', [
+            'user' => $user,
+            'present_address' => $present_address,
+            'permanent_address' => $permanent_address,
+            'photo_path' => $photo_path,
+            'logo_path' => $logo_path,
+        ], [], [
+            'format' => 'A4',
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ]);
+
+        $pdfContent = $pdf->output();
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Length' => strlen($pdfContent),
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
     }
 
     // Ajax call

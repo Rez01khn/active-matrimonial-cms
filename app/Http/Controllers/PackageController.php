@@ -95,11 +95,6 @@ class PackageController extends Controller
         } else {
             $package->auto_profile_match = 0;
         }
-        if ($request->auto_horoscope_profile_match != null) {
-            $package->auto_horoscope_profile_match = 1;
-        } else {
-            $package->auto_horoscope_profile_match = 0;
-        }
         $package->validity          = filter_min_value($request->validity);
         $package->image             = $request->package_image;
 
@@ -166,11 +161,6 @@ class PackageController extends Controller
             $package->auto_profile_match = 1;
         } else {
             $package->auto_profile_match = 0;
-        }
-        if ($request->auto_horoscope_profile_match != null) {
-            $package->auto_horoscope_profile_match = 1;
-        } else {
-            $package->auto_horoscope_profile_match = 0;
         }
         $package->validity          = filter_min_value($request->validity);
         $package->image             = $request->package_image;

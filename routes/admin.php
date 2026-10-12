@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\CasteController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
@@ -318,4 +319,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function 
     // Manual Payment
     Route::resource('manual_payment_methods', ManualPaymentMethodController::class)->except(['destroy']);
     Route::get('/manual_payment_methods/destroy/{id}', [ManualPaymentMethodController::class, 'destroy'])->name('manual_payment_methods.destroy');
+
+    // Matchmaker Consultations
+    Route::controller(ConsultationController::class)->group(function () {
+        Route::get('/consultations', 'admin_index')->name('admin.consultations.index');
+        Route::post('/consultations/update/{id}', 'admin_update')->name('admin.consultations.update');
+        Route::get('/consultations/destroy/{id}', 'admin_destroy')->name('admin.consultations.destroy');
+    });
 });

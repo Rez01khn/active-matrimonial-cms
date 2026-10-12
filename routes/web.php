@@ -3,7 +3,6 @@
 use App\Http\Controllers\AdditionalMemberInfoController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AizUploadController;
-use App\Http\Controllers\AstrologyController;
 use App\Http\Controllers\AttitudeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\VerificationController;
@@ -12,6 +11,7 @@ use App\Http\Controllers\CareerController;
 use App\Http\Controllers\CasteController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DemoController;
@@ -22,7 +22,6 @@ use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\HappyStoryController;
 use App\Http\Controllers\HobbyController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HoroscopeProfileMatchController;
 use App\Http\Controllers\IgnoredUserController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LifestyleController;
@@ -141,6 +140,7 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
         Route::post('/new-user-verification', 'new_verify')->name('user.new.verify');
 
         Route::get('/member-profile/{id}', 'view_member_profile')->name('member_profile');
+        Route::get('/member-profile/{id}/biodata-pdf', 'download_member_biodata_pdf')->name('member.biodata.pdf');
 
         Route::post('/user/remaining_package_value', 'user_remaining_package_value')->name('user.remaining_package_value');
     });
@@ -238,15 +238,15 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
             Route::post('/happy-story/store', 'store')->name('happy_story.store');
         });
 
+        // Matchmaker Consultation
+        Route::controller(ConsultationController::class)->group(function () {
+            Route::get('/consultations', 'index')->name('consultations.index');
+            Route::post('/consultations', 'store')->name('consultations.store');
+        });
+
         Route::resource('profile-viewers', ProfileViewerController::class);
         Route::get('/matched-profiles', [ProfileMatchController::class, 'myMatchedProfiles'])->name('my_matched_profiles');
         Route::get('/matched-refresh', [ProfileMatchController::class, 'matchedRefresh'])->name('match.refresh');
-        Route::get('/horoscope-matched-profiles', function() {
-            return redirect()->route('my_matched_profiles');
-        })->name('horoscope_matched_profiles');
-        Route::get('/horoscope-matched-refresh', function() {
-            return redirect()->route('match.refresh');
-        })->name('horoscope.match.refresh');
     });
 });
 
@@ -286,7 +286,6 @@ Route::group(['middleware' => ['auth','activated']], function () {
     Route::resource('/attitudes', AttitudeController::class);
     Route::resource('/recidencies', RecidencyController::class);
     Route::resource('/lifestyles', LifestyleController::class);
-    Route::resource('/astrologies', AstrologyController::class);
     Route::resource('/families', FamilyController::class);
     Route::resource('/spiritual_backgrounds', SpiritualBackgroundController::class);
     Route::resource('/partner_expectations', PartnerExpectationController::class);
@@ -363,9 +362,6 @@ Route::get('/check_for_package_invalid', 'PackageController@check_for_package_in
 
 Route::get('/match_profiles', 'ProfileMatchController@match_profiles')->name('match_profiles');
 Route::get('/migrate/profiles/', 'ProfileMatchController@migrate_profiles');
-
-Route::get('/match_profiles', 'HoroscopeProfileMatchController@match_profiles')->name('horoscope_match_profiles');
-Route::get('/migrate/profiles/', 'HoroscopeProfileMatchController@migrate_profiles');
 
 
 require __DIR__.'/auth.php';

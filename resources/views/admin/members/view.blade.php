@@ -470,32 +470,7 @@
                 </div>
             @endif
 
-            <!-- Astronomic Information  -->
-            @if (get_setting('member_astronomic_information_section') == 'on')
-                <div class="card">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0 h6">{{ translate('Astronomic Information') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <tr>
-                                <th>{{ translate('Sun Sign') }}</th>
-                                <td>{{ $member->astrologies->sun_sign ?? '' }}</td>
 
-                                <th>{{ translate('Moon Sign') }}</th>
-                                <td>{{ $member->astrologies->moon_sign ?? '' }}</td>
-                            </tr>
-                            <tr>
-                                <th>{{ translate('Time Of Birth') }}</th>
-                                <td>{{ $member->astrologies->time_of_birth ?? '' }}</td>
-
-                                <th>{{ translate('City Of Birth') }}</th>
-                                <td>{{ $member->astrologies->city_of_birth ?? '' }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            @endif
 
             <!-- Permanent Address -->
             @if (get_setting('member_permanent_address_section') == 'on')

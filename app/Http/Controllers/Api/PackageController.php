@@ -161,7 +161,6 @@ class PackageController extends Controller
         $member->remaining_profile_image_view   = $member->remaining_profile_image_view + $package->profile_image_view;
         $member->remaining_gallery_image_view   = $member->remaining_gallery_image_view + $package->gallery_image_view;
         $member->auto_profile_match             = $package->auto_profile_match;
-        $member->auto_horoscope_profile_match   = $package->auto_horoscope_profile_match;
         $member->package_validity               = date('Y-m-d', strtotime($member->package_validity . ' +' . $package->validity . 'days'));
 
         // Package Payment Store Notification for member

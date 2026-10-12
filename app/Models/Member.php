@@ -10,7 +10,7 @@ class Member extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'user_id','gender','birthday','on_behalves_id','current_package_id','remaining_interest','remaining_contact_view','remaining_photo_gallery','auto_profile_match','auto_horoscope_profile_match','package_validity'
+        'user_id','gender','birthday','on_behalves_id','current_package_id','remaining_interest','remaining_contact_view','remaining_photo_gallery','auto_profile_match','package_validity'
     ];
 
     public function user()
@@ -29,6 +29,11 @@ class Member extends Model
     public function package()
     {
         return $this->belongsTo(Package::class,'current_package_id')->withTrashed();
+    }
+
+    public function current_package()
+    {
+        return $this->package();
     }
 
     public function mothereTongue()

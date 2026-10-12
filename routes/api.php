@@ -248,9 +248,6 @@ Route::group(['middleware' => ['app_language']], function () {
                 Route::post('/spiritual-background/update', 'spiritual_background_update');
                 Route::get('/life-style', 'life_style');
                 Route::post('/life-style/update', 'life_style_update');
-                Route::get('/astronomic', 'astronomic_info');
-                Route::post('/astronomic/update', 'astronomic_info_update');
-                Route::get('/astronomic/dropdowns', 'astrologic_dropdowns');
                 Route::get('/family-info', 'family_info');
                 Route::post('/family-info/update', 'family_info_update');
                 Route::get('/partner-expectation', 'partner_expectation');
@@ -261,7 +258,6 @@ Route::group(['middleware' => ['app_language']], function () {
                 Route::post('/account/delete', 'account_delete');
                 Route::post('/view-contact-store', 'store_view_contact');
                 Route::get('/matched-profile', 'matched_profile');
-                Route::get('/horoscope-matched-profile', 'horoscope_matched_profile');
             });
 
             Route::controller(EducationController::class)->group(function () {

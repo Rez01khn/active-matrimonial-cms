@@ -103,16 +103,7 @@
                                     for="life_style">{{ translate('Life Style') }}</label>
                             </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <div class="custom-control custom-checkbox">
-                                <input type="hidden" name="types[]" value="member_astronomic_information_section">
-                                <input type="checkbox" name="member_astronomic_information_section"
-                                    class="custom-control-input" id="astronomic_information"
-                                    @if (get_setting('member_astronomic_information_section') == 'on') Checked @endif>
-                                <label class="custom-control-label"
-                                    for="astronomic_information">{{ translate('Astronomic Information') }}</label>
-                            </div>
-                        </div>
+
                         <div class="form-group mb-3">
                             <div class="custom-control custom-checkbox">
                                 <input type="hidden" name="types[]" value="member_permanent_address_section">

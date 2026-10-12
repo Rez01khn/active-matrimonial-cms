@@ -12,7 +12,6 @@ use App\Models\Member;
 use App\Models\Address;
 use App\Models\Package;
 use App\Models\Attitude;
-use App\Models\Astrology;
 use App\Models\Education;
 use App\Models\Lifestyle;
 use App\Models\Recidency;
@@ -279,7 +278,6 @@ class LoginController extends Controller
             Attitude::where('user_id', $auth_user->id)->delete();
             Recidency::where('user_id', $auth_user->id)->delete();
             Lifestyle::where('user_id', $auth_user->id)->delete();
-            Astrology::where('user_id', $auth_user->id)->delete();
             Family::where('user_id', $auth_user->id)->delete();
             PartnerExpectation::where('user_id', $auth_user->id)->delete();
             SpiritualBackground::where('user_id', $auth_user->id)->delete();

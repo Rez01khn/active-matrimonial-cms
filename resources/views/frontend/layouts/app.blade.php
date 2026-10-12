@@ -177,12 +177,22 @@ $lang = \App\Models\Language::where('code', $locale)->first();
     <div
         class="aiz-main-wrapper d-flex flex-column position-relative bg-white">
 
-        @include('frontend.inc.header')
+        @hasSection('portal_header')
+            @yield('portal_header')
+        @else
+            @include('frontend.inc.header')
+        @endif
 
         @yield('content')
 
         @include('frontend.inc.footer')
     </div>
+
+    {{-- Floating Sticky Consultation CTA Button --}}
+    @if (!Route::is('consultations.index'))
+        @include('frontend.inc.floating_consultation')
+    @endif
+
 
     @if (get_setting('show_cookies_agreement') == 'on')
         <div class="aiz-cookie-alert shadow-xl">

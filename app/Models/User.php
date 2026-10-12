@@ -10,7 +10,6 @@ use App\Models\Hobby;
 use App\Models\Attitude;
 use App\Models\Recidency;
 use App\Models\Lifestyle;
-use App\Models\Astrology;
 use App\Models\Family;
 use App\Models\PartnerExpectation;
 use App\Models\SpiritualBackground;
@@ -23,6 +22,7 @@ use App\Models\Staff;
 use App\Models\GalleryImage;
 use App\Models\ExpressInterest;
 use App\Models\ProfileMatch;
+use App\Models\Consultation;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,6 +72,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function getNameAttribute()
+    {
+        return trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? '')) ?: ($this->first_name ?? '');
+    }
+
     public function member()
     {
         return $this->hasOne(Member::class);
@@ -115,11 +120,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function lifestyles()
     {
         return $this->hasOne(Lifestyle::class);
-    }
-
-    public function astrologies()
-    {
-        return $this->hasOne(Astrology::class);
     }
 
     public function families()
@@ -186,5 +186,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function profile_views(){
         return $this->hasMany(ProfileView::class);
+    }
+
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
     }
 }

@@ -6,60 +6,38 @@
                 <div class="col-xl-8 offset-xl-4">
                     <div class="px-3 row align-items-center">
                         <div class="col-md-8 col-xxl-9">
-                            <h1 class="fs-24 fw-600">
-                                {{ $user->first_name . ' ' . $user->last_name }}
-                                @php
-                                    $present_address = \App\Models\Address::where('user_id', $user->id)
-                                        ->where('type', 'present')
-                                        ->first();
-                                @endphp
-                                <span class="fs-20 fw-600">
-                                    @php
-                                        $profile_match = \App\Models\ProfileMatch::where('user_id', Auth::user()->id)
-                                            ->where('match_id', $user->id)
-                                            ->first();
-                                        if (!empty($profile_match) && Auth::user()->member->auto_profile_match == 1) {
-                                            echo '(' .
-                                                translate('Matched') .
-                                                ' - ' .
-                                                $profile_match->match_percentage .
-                                                '%)';
-                                        }
+                            @php
+                                $present_address = \App\Models\Address::where('user_id', $user->id)
+                                    ->where('type', 'present')
+                                    ->first();
+                            @endphp
 
-                                    @endphp
-                                </span>
+                            <!-- Member Name -->
+                            <h1 class="profile-hero-name mb-2">
+                                {{ $user->first_name . ' ' . $user->last_name }}
                             </h1>
-                            <div class="fs-12">
-                                <span class="opacity-60">{{ translate('Member ID: ') }}</span>
-                                <span class="ml-2">{{ $user->code }}</span>
+
+                            <!-- Line 1: Member ID (No On Behalf) -->
+                            <div class="profile-hero-meta d-flex align-items-center flex-wrap mb-2">
+                                <i class="las la-id-badge fs-16 mr-1 profile-hero-gold-icon"></i>
+                                <span>{{ translate('Member ID') }}: {{ $user->code ?: $user->id }}</span>
                             </div>
-                            <hr class="border-gray-500">
-                            <table class="w-100">
-                                <tbody>
-                                    <tr>
-                                        <td width="50%">
-                                            {{ !empty($user->member->birthday) ? \Carbon\Carbon::parse($user->member->birthday)->age : '' }}
-                                            {{ translate('yrs') }}
-                                            {{ !empty($user->physical_attributes->height) ? ', ' . $user->physical_attributes->height : '' }}
-                                        </td>
-                                        <td width="50%">
-                                            {{ !empty($user->member->marital_status->name) ? $user->member->marital_status->name : '' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            {{ $user->spiritual_backgrounds->religion->name ?? '' }}
-                                            {{ !empty($user->spiritual_backgrounds->caste->name) ? ', ' . $user->spiritual_backgrounds->caste->name : '' }}
-                                        </td>
-                                        @if (!empty($present_address->country->name))
-                                            <td>
-                                                {{ translate('Lives in') }}
-                                                {{ $present_address->country->name ?? '' }}
-                                            </td>
-                                        @endif
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                            <!-- Line 2: Age, Height & Lives in Location -->
+                            <div class="profile-hero-meta d-flex align-items-center flex-wrap mb-3">
+                                <i class="lar la-star fs-15 mr-1 profile-hero-gold-icon"></i>
+                                <span>
+                                    @if (!empty($user->member->birthday)){{ \Carbon\Carbon::parse($user->member->birthday)->age }} {{ translate('yrs') }}@endif{{ !empty($user->member->birthday) && !empty($user->physical_attributes->height) ? ', ' : '' }}{{ !empty($user->physical_attributes->height) ? $user->physical_attributes->height : '' }}
+                                </span>
+                                <span class="mx-2 profile-hero-divider">|</span>
+                                <i class="las la-map-marker-alt fs-15 mr-1 profile-hero-gold-icon"></i>
+                                <span>{{ translate('Lives in') }} {{ $present_address->country->name ?? translate('Bangladesh') }}</span>
+                            </div>
+
+                            <!-- Line 3: Quote / Bio in Italic Serif -->
+                            <div class="profile-hero-quote font-italic">
+                                “{{ !empty($user->member->introduction) ? $user->member->introduction : 'A good life is built with the right person, not just the right plans.' }}”
+                            </div>
                         </div>
                         <div class="col-md-4 col-xxl-3">
                             @php
@@ -81,31 +59,30 @@
                                     $interest_onclick = 'do_response';
                                     $interest_text =
                                         $received_expressed_interest->status == 0
-                                            ? translate('Response to Interest')
-                                            : translate('You Accepted Interest');
+                                        ? translate('Response to Interest')
+                                        : translate('You Accepted Interest');
                                 } else {
                                     $interest_onclick = 0;
                                     $interest_text =
                                         $do_expressed_interest->status == 0
-                                            ? translate('Interest Expressed')
-                                            : translate('Interest Accepted');
+                                        ? translate('Interest Expressed')
+                                        : translate('Interest Accepted');
                                 }
                             @endphp
 
                             @if (Auth::user()->id != $user->id)
                                 <div class="py-4 text-center border-md-left border-gray-600">
                                     @if (
-                                        (empty($do_expressed_interest) && empty($received_expressed_interest)) ||
-                                            !empty($received_expressed_interest && $received_expressed_interest->status == 0))
+                                            (empty($do_expressed_interest) && empty($received_expressed_interest)) ||
+                                            !empty($received_expressed_interest && $received_expressed_interest->status == 0)
+                                        )
                                         <div class="fs-18 fw-500">{{ translate('Like this Profile ?') }}</div>
                                     @endif
                                     <a @if ($interest_onclick == 1) onclick="express_interest({{ $user->id }})"
-                                    @elseif($interest_onclick == 'do_response')
-                                        href="{{ route('interest_requests') }}" @endif
+                                    @elseif($interest_onclick == 'do_response') href="{{ route('interest_requests') }}" @endif
                                         class="btn btn-block text-white">
                                         <i class="la la-heart-o la-2x border rounded-circle p-2 border-width-2 mb-2"></i>
-                                        <span id="interest_id_{{ $user->id }}"
-                                            class="d-block fs-13 {{ $interest_class }}">
+                                        <span id="interest_id_{{ $user->id }}" class="d-block fs-13 {{ $interest_class }}">
                                             {{ $interest_text }}
                                         </span>
                                     </a>
@@ -114,14 +91,14 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <div class="nav nav-tabs aiz-nav-tabs bottom-bordered active-white border-0">
-                            <a class="text-black-50 d-inline-block fw-600 fs-15 px-3 py-2 active" data-toggle="tab"
+                        <div class="nav nav-tabs aiz-nav-tabs bottom-bordered border-0">
+                            <a class="profile-nav-tab-item d-inline-block px-3 py-2 active" data-toggle="tab"
                                 href="#profile">{{ translate('Detailed Profile') }}</a>
                             @if (get_setting('member_partner_expectation_section') == 'on')
-                                <a class="text-black-50 d-inline-block fw-600 fs-15 px-3 py-2" data-toggle="tab"
+                                <a class="profile-nav-tab-item d-inline-block px-3 py-2" data-toggle="tab"
                                     href="#preference">{{ translate('Partner Preference') }}</a>
                             @endif
-                            <a class="text-black-50 d-inline-block fw-600 fs-15 px-3 py-2" data-toggle="tab"
+                            <a class="profile-nav-tab-item d-inline-block px-3 py-2" data-toggle="tab"
                                 href="#gallery">{{ translate('Photo Gallery') }}</a>
                         </div>
                     </div>
@@ -151,28 +128,28 @@
                                     ->first();
                                 $avatar_image =
                                     $user->member->gender == 1
-                                        ? 'assets/img/avatar-place.png'
-                                        : 'assets/img/female-avatar-place.png';
+                                    ? 'assets/img/avatar-place.png'
+                                    : 'assets/img/female-avatar-place.png';
                                 $profile_picture_show = show_profile_picture($user);
                             @endphp
-                            <img @if ($profile_picture_show) src="{{ uploaded_asset($user->photo) }}"
-                                @else
-                                src="{{ static_asset($avatar_image) }}" @endif
+                            <img @if ($profile_picture_show) src="{{ uploaded_asset($user->photo) }}" @else
+                            src="{{ static_asset($avatar_image) }}" @endif
                                 onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
                                 class="img-fit w-100 h-320px overflow-hidden" style="object-position: center">
                             @if (!$profile_picture_show)
                                 <div
                                     class="absolute-full d-flex justify-content-center align-items-center bg-soft-dark text-white">
-                                    <i class="las la-lock la-3x"></i></div>
+                                    <i class="las la-lock la-3x"></i>
+                                </div>
                             @endif
                             @if (
-                                $user->photo != null &&
+                                    $user->photo != null &&
                                     $user->photo_approved == 1 &&
                                     $profile_pic_privacy == 'only_me' &&
-                                    ($photo_view_request == null || ($photo_view_request && $photo_view_request->status == 0)))
-                                <button
-                                    @if ($photo_view_request == null) onclick="profile_pic_view_request({{ $user->id }})" @endif
-                                    class="btn btn-block btn-primary position-relative z-1">
+                                    ($photo_view_request == null || ($photo_view_request && $photo_view_request->status == 0))
+                                )
+                                <button @if ($photo_view_request == null) onclick="profile_pic_view_request({{ $user->id }})"
+                                @endif class="btn btn-block btn-primary position-relative z-1">
                                     @if ($photo_view_request == null)
                                         {{ translate('Send Photo View Request') }}
                                     @elseif($photo_view_request && $photo_view_request->status == 0)
@@ -180,10 +157,11 @@
                                     @endif
                                 </button>
                             @elseif(
-                                $user->photo != null &&
+                                    $user->photo != null &&
                                     $user->photo_approved == 1 &&
                                     $profile_pic_privacy == 'premium_members' &&
-                                    $auth_user->membership == 1)
+                                    $auth_user->membership == 1
+                                )
                                 <a href="{{ route('packages') }}" class="btn btn-block btn-primary position-relative z-1">
                                     {{ translate('Update Your Package to See The Member Profile Picture.') }}
                                 </a>
@@ -192,11 +170,21 @@
 
 
                         <div class="mb-4 p-4 border rounded border-gray-200 d-none d-xl-block">
-                            <div class="fs-12">
-                                <span class="opacity-60">{{ translate('Member ID: ') }}</span>
-                                <span class="ml-1 text-primary">{{ $user->code }}</span>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="fs-12">
+                                    <span class="opacity-60">{{ translate('Member ID: ') }}</span>
+                                    <span class="ml-1 text-primary fw-600">#{{ $user->code }}</span>
+                                </div>
                             </div>
-                            <h2 class="fs-20 fw-500">{{ $user->first_name . ' ' . $user->last_name }}</h2>
+                            <h2 class="fs-20 fw-500 mb-3">{{ $user->first_name . ' ' . $user->last_name }}</h2>
+                            <div class="mb-3">
+                                <a href="{{ route('member.biodata.pdf', $user->id) }}"
+                                    class="btn btn-block btn-biodata-pdf py-2 shadow-sm d-flex align-items-center justify-content-center text-white"
+                                    download="Biodata-{{ $user->code }}.pdf">
+                                    <i class="las la-file-download fs-18 mr-2 text-white"></i>
+                                    <span class="fw-700 fs-13">{{ translate('Download Biodata (PDF)') }}</span>
+                                </a>
+                            </div>
 
                             @if (Auth::user()->id != $user->id)
                                 <div class="mb-2 mt-4">
@@ -212,10 +200,9 @@
                                             $shortlist_text = translate('Shortlisted');
                                         }
                                     @endphp
-                                    <a href="avascript:void(0);" id="shortlist_a_id_{{ $user->id }}"
-                                        @if ($shortlist_onclick == 1) onclick="do_shortlist({{ $user->id }})"
-                                        @else
-                                            onclick="remove_shortlist({{ $user->id }})" @endif
+                                    <a href="avascript:void(0);" id="shortlist_a_id_{{ $user->id }}" @if ($shortlist_onclick == 1)
+                                    onclick="do_shortlist({{ $user->id }})" @else
+                                        onclick="remove_shortlist({{ $user->id }})" @endif
                                         class="btn btn-block btn-primary text-left">
                                         <i class="las la-list d-block la-2x"></i>
                                         <span id="shortlist_id_{{ $user->id }}">{{ $shortlist_text }}</span>
@@ -242,8 +229,8 @@
                                                 $report_text = translate('Reported');
                                             }
                                         @endphp
-                                        <a href="avascript:void(0);" id="report_a_id_{{ $user->id }}"
-                                            @if ($report_onclick == 1) onclick="report_member({{ $user->id }})" @endif
+                                        <a href="avascript:void(0);" id="report_a_id_{{ $user->id }}" @if ($report_onclick == 1)
+                                        onclick="report_member({{ $user->id }})" @endif
                                             class="btn btn-block btn-primary text-left">
                                             <i class="las la-info-circle d-block la-2x"></i>
                                             <span id="report_id_{{ $user->id }}">{{ $report_text }}
@@ -266,15 +253,15 @@
                                                     @php
                                                         $avatar_image =
                                                             $similar_profile->user->member->gender == 1
-                                                                ? 'assets/img/avatar-place.png'
-                                                                : 'assets/img/female-avatar-place.png';
+                                                            ? 'assets/img/avatar-place.png'
+                                                            : 'assets/img/female-avatar-place.png';
                                                         $profile_picture_show = show_profile_picture(
                                                             $similar_profile->user,
                                                         );
                                                     @endphp
 
-                                                    <img @if ($profile_picture_show) src="{{ uploaded_asset($similar_profile->user->photo) }}"
-                                                        @else
+                                                    <img @if ($profile_picture_show)
+                                                    src="{{ uploaded_asset($similar_profile->user->photo) }}" @else
                                                         src="{{ static_asset($avatar_image) }}" @endif
                                                         onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
                                                         class="img-fit w-100 size-120px">
@@ -333,23 +320,22 @@
                 </div>
                 <div class="col-xl-8 offset-xxl-1">
                     <div class="overflow-hidden rounded shadow-lg mb-4 bg-white d-xl-none position-relative">
-                        <img @if ($profile_picture_show) src="{{ uploaded_asset($user->photo) }}"
-                            @else
-                            src="{{ static_asset($avatar_image) }}" @endif
+                        <img @if ($profile_picture_show) src="{{ uploaded_asset($user->photo) }}" @else
+                        src="{{ static_asset($avatar_image) }}" @endif
                             onerror="this.onerror=null;this.src='{{ static_asset($avatar_image) }}';"
                             class="img-fluid w-100">
                         @if (!$profile_picture_show)
-                            <div
-                                class="absolute-full d-flex justify-content-center align-items-center bg-soft-dark text-white">
-                                <i class="las la-lock la-3x"></i></div>
+                            <div class="absolute-full d-flex justify-content-center align-items-center bg-soft-dark text-white">
+                                <i class="las la-lock la-3x"></i>
+                            </div>
                         @endif
                         @if (
-                            $user->photo != null &&
+                                $user->photo != null &&
                                 $user->photo_approved == 1 &&
                                 $profile_pic_privacy == 'only_me' &&
-                                ($photo_view_request == null || ($photo_view_request && $photo_view_request->status == 0)))
-                            <button
-                                @if ($photo_view_request == null) onclick="profile_pic_view_request({{ $user->id }})" @endif
+                                ($photo_view_request == null || ($photo_view_request && $photo_view_request->status == 0))
+                            )
+                            <button @if ($photo_view_request == null) onclick="profile_pic_view_request({{ $user->id }})" @endif
                                 class="btn btn-block btn-primary position-relative z-1">
                                 @if ($photo_view_request == null)
                                     {{ translate('Send Photo View Request') }}
@@ -358,10 +344,11 @@
                                 @endif
                             </button>
                         @elseif(
-                            $user->photo != null &&
+                                $user->photo != null &&
                                 $user->photo_approved == 1 &&
                                 $profile_pic_privacy == 'premium_members' &&
-                                $auth_user->membership == 1)
+                                $auth_user->membership == 1
+                            )
                             <a href="{{ route('packages') }}" class="btn btn-block btn-primary position-relative z-1">
                                 {{ translate('Update Your Package to See The Member Profile Picture.') }}
                             </a>
@@ -369,9 +356,17 @@
                     </div>
 
                     <div class="mb-4 p-4 border rounded border-gray-200 d-xl-none">
-                        <div class="fs-12">
-                            <span class="opacity-60">{{ translate('Member ID: ') }}</span>
-                            <span class="ml-1 text-primary">{{ $user->code }}</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fs-12">
+                                <span class="opacity-60">{{ translate('Member ID: ') }}</span>
+                                <span class="ml-1 text-primary fw-600">#{{ $user->code }}</span>
+                            </div>
+                            <a href="{{ route('member.biodata.pdf', $user->id) }}"
+                                class="btn btn-sm btn-biodata-pdf py-1 px-2 d-inline-flex align-items-center text-white"
+                                download="Biodata-{{ $user->code }}.pdf">
+                                <i class="las la-file-download mr-1 text-white"></i>
+                                <span class="fs-12 fw-700">{{ translate('Download PDF') }}</span>
+                            </a>
                         </div>
                         <h2 class="fs-20 fw-500 mb-4">{{ $user->first_name . ' ' . $user->last_name }}</h2>
 
@@ -389,11 +384,9 @@
                                         $shortlist_text = translate('Shortlisted');
                                     }
                                 @endphp
-                                <a href="avascript:void(0);" id="shortlist_a_id_{{ $user->id }}"
-                                    @if ($shortlist_onclick == 1) onclick="do_shortlist({{ $user->id }})"
-                                @else
-                                    onclick="remove_shortlist({{ $user->id }})" @endif
-                                    class="btn btn-block btn-primary text-left">
+                                <a href="avascript:void(0);" id="shortlist_a_id_{{ $user->id }}" @if ($shortlist_onclick == 1)
+                                onclick="do_shortlist({{ $user->id }})" @else onclick="remove_shortlist({{ $user->id }})"
+                                    @endif class="btn btn-block btn-primary text-left">
                                     <i class="las la-list d-block la-2x"></i>
                                     <span id="shortlist_id_{{ $user->id }}">{{ $shortlist_text }}</span>
                                 </a>
@@ -419,8 +412,8 @@
                                             $report_text = translate('Reported');
                                         }
                                     @endphp
-                                    <a href="avascript:void(0);" id="report_a_id_{{ $user->id }}"
-                                        @if ($report_onclick == 1) onclick="report_member({{ $user->id }})" @endif
+                                    <a href="avascript:void(0);" id="report_a_id_{{ $user->id }}" @if ($report_onclick == 1)
+                                    onclick="report_member({{ $user->id }})" @endif
                                         class="btn btn-block btn-primary text-left">
                                         <i class="las la-info-circle d-block la-2x"></i>
                                         <span id="report_id_{{ $user->id }}">{{ $report_text }}
@@ -435,8 +428,7 @@
                                 <defs>
                                     <linearGradient id="primary-gradient" x1="0.5" x2="0.5" y2="1"
                                         gradientUnits="objectBoundingBox">
-                                        <stop offset="0"
-                                            stop-color="{{ get_setting('secondary_color', '#FD655B') }}" />
+                                        <stop offset="0" stop-color="{{ get_setting('secondary_color', '#FD655B') }}" />
                                         <stop offset="1" stop-color="{{ get_setting('base_color', '#FD655B') }}" />
                                     </linearGradient>
                                 </defs>
@@ -465,8 +457,6 @@
                                             <span class="fs-11 fw-400">
                                                 <span>{{ translate('Member ID: ') }} {{ $user->code }}</span>
                                                 <span class="mx-2">|</span>
-                                                <span>{{ translate('On Behalf:') }}
-                                                    {{ $user->member->on_behalves->name ?? '' }}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -499,8 +489,7 @@
                                             <span class="fs-18 fw-600 d-block">{{ translate('Basic Information') }}</span>
                                         </div>
                                     </div>
-                                    <div id="basic-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                        >
+                                    <div id="basic-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                         <div class="border p-3">
                                             <div class="row no-gutters">
                                                 <div class="col-sm-6">
@@ -514,7 +503,8 @@
                                                             </tr>
                                                             <tr>
                                                                 <td class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Gender') }}</td>
+                                                                    {{ translate('Gender') }}
+                                                                </td>
                                                                 <td class="py-1">
                                                                     @if ($user->member->gender == 1)
                                                                         {{ translate('Male') }}
@@ -525,14 +515,16 @@
                                                             </tr>
                                                             <tr>
                                                                 <td class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Age') }}</td>
+                                                                    {{ translate('Age') }}
+                                                                </td>
                                                                 <td class="py-1">
                                                                     {{ \Carbon\Carbon::parse($user->member->birthday)->age ?? '' }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <th class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Religion') }}</th>
+                                                                    {{ translate('Religion') }}
+                                                                </th>
                                                                 <td class="py-1">
                                                                     {{ $user->spiritual_backgrounds->religion->name ?? '' }}
                                                                 </td>
@@ -552,7 +544,7 @@
                                                                     {{ translate('Annual Salary') }}
                                                                 </td>
                                                                 <td class="py-1">
-                                                                    {{ $user->member->annualSalaryRange != null ? single_price($user->member->annualSalaryRange->min_salary).' - '.single_price($user->member->annualSalaryRange->max_salary) : '' }}
+                                                                    {{ $user->member->annualSalaryRange != null ? single_price($user->member->annualSalaryRange->min_salary) . ' - ' . single_price($user->member->annualSalaryRange->max_salary) : '' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -563,12 +555,14 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Last Name') }}</td>
+                                                                    {{ translate('Last Name') }}
+                                                                </td>
                                                                 <td class="py-1">{{ $user->last_name }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Height') }}</td>
+                                                                    {{ translate('Height') }}
+                                                                </td>
                                                                 <td class="py-1">
                                                                     {{ $user->physical_attributes->height ?? '' }}
                                                                 </td>
@@ -583,7 +577,8 @@
                                                             </tr>
                                                             <tr>
                                                                 <th class="py-1 fw-600" style="width:55%">
-                                                                    {{ translate('Caste') }}</th>
+                                                                    {{ translate('Caste') }}
+                                                                </th>
                                                                 <td class="py-1">
                                                                     {{ $user->spiritual_backgrounds->caste->name ?? '' }}
                                                                 </td>
@@ -620,9 +615,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.017"
-                                                    height="24.064" viewBox="0 0 24.017 24.064"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.017" height="24.064"
+                                                    viewBox="0 0 24.017 24.064" class="fill-primary-grad">
                                                     <g transform="translate(-1078.993 -1084.468)">
                                                         <path
                                                             d="M5.629,9.617A3.992,3.992,0,0,0,9.617,13.6a.938.938,0,0,1,0,1.876A5.864,5.864,0,1,1,15.48,9.617a.938.938,0,0,1-1.876,0,3.987,3.987,0,1,0-7.975,0Zm.737,8.3C3.959,15.279,1.88,13,1.877,9.608a7.74,7.74,0,0,1,15.48,0,.938.938,0,0,0,.938.937h0a.938.938,0,0,0,.937-.939A9.616,9.616,0,0,0,2.821,2.813,9.555,9.555,0,0,0,0,9.607,10.047,10.047,0,0,0,1.588,14.97a28.549,28.549,0,0,0,3.393,4.21,32.029,32.029,0,0,1,3.561,4.4.938.938,0,1,0,1.586-1,33.476,33.476,0,0,0-3.762-4.664Zm17.405.45a.938.938,0,0,1-1.325.059l-.118-.107v3.1a2.645,2.645,0,0,1-2.641,2.643H14.416a2.645,2.645,0,0,1-2.641-2.643V18.36l-.071.064a.938.938,0,1,1-1.266-1.385l4.842-4.427a2.647,2.647,0,0,1,3.59,0l3.1,2.837a.938.938,0,0,1,.1.088l1.643,1.5a.938.938,0,0,1,.059,1.325ZM20.453,16.6,17.6,14a.78.78,0,0,0-1.058,0l-2.9,2.647v4.777a.767.767,0,0,0,.765.767h5.272a.767.767,0,0,0,.765-.767Zm0,0"
@@ -635,12 +629,10 @@
                                                 </svg>
                                             </span>
                                             <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Present Address') }}</span>
+                                                <span class="fs-18 fw-600 d-block">{{ translate('Present Address') }}</span>
                                             </div>
                                         </div>
-                                        <div id="present-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="present-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="border p-3">
@@ -720,8 +712,7 @@
                                             <span class="fs-18 fw-600 d-block">{{ translate('Contact Details') }}</span>
                                         </div>
                                     </div>
-                                    <div id="contact-details" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                        >
+                                    <div id="contact-details" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="border p-3">
@@ -747,7 +738,8 @@
                                                                 <i class="las la-envelope text-primary la-2x mr-3"></i>
                                                                 <div>
                                                                     <div class="fs-15 fw-600 mb-1">
-                                                                        {{ translate('Email ID') }}</div>
+                                                                        {{ translate('Email ID') }}
+                                                                    </div>
                                                                     @if (empty($view_contact))
                                                                         <div class="fw-400">xxxxx@xxx.xx</div>
                                                                     @else
@@ -771,7 +763,8 @@
                                                             <i class="las la-phone text-primary la-2x mr-3"></i>
                                                             <div>
                                                                 <div class="fs-15 fw-600 mb-1">
-                                                                    {{ translate('Contact Number') }}</div>
+                                                                    {{ translate('Contact Number') }}
+                                                                </div>
                                                                 <div class="fw-400">{{ $user->phone }}</div>
                                                             </div>
                                                         </div>
@@ -799,14 +792,12 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.971"
-                                                    height="20.838" viewBox="0 0 24.971 20.838"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.971" height="20.838"
+                                                    viewBox="0 0 24.971 20.838" class="fill-primary-grad">
                                                     <g transform="translate(-2.499 -3.917)">
                                                         <path
                                                             d="M5.565,15.1V18.46a2.4,2.4,0,0,0,1.242,2.1l5.972,3.261a2.371,2.371,0,0,0,2.293,0l5.972-3.261a2.4,2.4,0,0,0,1.242-2.1V15.1l-7.214,3.941a2.371,2.371,0,0,1-2.293,0ZM12.779,3.567,2.711,9.061a1.2,1.2,0,0,0,0,2.1l10.068,5.494a2.371,2.371,0,0,0,2.293,0l9.6-5.243v7.059a1.194,1.194,0,0,0,2.389,0V10.816a1.2,1.2,0,0,0-.621-1.051l-11.37-6.2a2.436,2.436,0,0,0-2.293,0Z"
-                                                            transform="translate(0.407 0.637)"
-                                                            fill="url(#primary-gradient)" />
+                                                            transform="translate(0.407 0.637)" fill="url(#primary-gradient)" />
                                                         <path
                                                             d="M5.565,15.1V18.46a2.4,2.4,0,0,0,1.242,2.1l5.972,3.261a2.371,2.371,0,0,0,2.293,0l5.972-3.261a2.4,2.4,0,0,0,1.242-2.1V15.1l-7.214,3.941C14.355,19.439,13.5,19.439,5.565,15.1Z"
                                                             transform="translate(0.407 0.637)" class="fill-dark" />
@@ -817,8 +808,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Education') }}</span>
                                             </div>
                                         </div>
-                                        <div id="education" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                          >
+                                        <div id="education" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <table class="table table-borderless border table-responsive">
                                                 <tbody>
                                                     <tr>
@@ -837,9 +827,11 @@
                                                             <td>{{ $education->end }}</td>
                                                             <td>
                                                                 @if ($education->present == 1)
-                                                                    <span class="badge badge-inline badge-success">{{ translate('Running') }}</span>
+                                                                    <span
+                                                                        class="badge badge-inline badge-success">{{ translate('Running') }}</span>
                                                                 @else
-                                                                    <span class="badge badge-inline badge-danger">{{ translate('Completed') }}</span>
+                                                                    <span
+                                                                        class="badge badge-inline badge-danger">{{ translate('Completed') }}</span>
                                                                 @endif
                                                             </td>
                                                         </tr>
@@ -868,8 +860,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Career') }}</span>
                                             </div>
                                         </div>
-                                        <div id="career" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                            >
+                                        <div id="career" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <table class="table table-borderless border table-responsive">
                                                 <tbody>
                                                     <tr>
@@ -888,7 +879,8 @@
                                                             <td>{{ $career->end }}</td>
                                                             <td>
                                                                 @if ($career->present == 1)
-                                                                    <span class="badge badge-inline badge-success">{{ translate('Running') }}</span>
+                                                                    <span
+                                                                        class="badge badge-inline badge-success">{{ translate('Running') }}</span>
                                                                 @endif
                                                             </td>
                                                         </tr>
@@ -907,14 +899,12 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="20.998"
-                                                    height="21.121" viewBox="0 0 20.998 21.121"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="20.998" height="21.121"
+                                                    viewBox="0 0 20.998 21.121" class="fill-primary-grad">
                                                     <g transform="translate(-1082.003 -1774.616)">
                                                         <g transform="translate(1055.402 1769.616)">
                                                             <circle cx="2.142" cy="2.142" r="2.142"
-                                                                transform="translate(36.031 5)"
-                                                                fill="url(#primary-gradient)" />
+                                                                transform="translate(36.031 5)" fill="url(#primary-gradient)" />
                                                             <path
                                                                 d="M40.373,25.972h-4.4A1.375,1.375,0,0,0,34.6,27.347v4.968a1.376,1.376,0,0,0,1.375,1.376h.334v7.244a1.06,1.06,0,0,0,1.06,1.06h1.612a1.06,1.06,0,0,0,1.06-1.06V33.691h.334a1.376,1.376,0,0,0,1.375-1.376V27.347A1.375,1.375,0,0,0,40.373,25.972Z"
                                                                 transform="translate(0 -16.104)"
@@ -923,18 +913,16 @@
                                                         <path
                                                             d="M-15510,17.738l.549-.549,2.444,2.444V18.415h0V1.487l-2.44,2.444-.549-.549,3.379-3.383,3.382,3.383-.549.549-2.444-2.444V19.634l2.444-2.444.549.549-3.382,3.383Z"
                                                             transform="translate(16592 1774.616)" class="fill-dark" />
-                                                        <rect width="3" height="21"
-                                                            transform="translate(1100.001 1774.616)" class="fill-dark" />
+                                                        <rect width="3" height="21" transform="translate(1100.001 1774.616)"
+                                                            class="fill-dark" />
                                                     </g>
                                                 </svg>
                                             </span>
                                             <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Physical Attributes') }}</span>
+                                                <span class="fs-18 fw-600 d-block">{{ translate('Physical Attributes') }}</span>
                                             </div>
                                         </div>
-                                        <div id="physical-attributes" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="physical-attributes" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-sm-6">
@@ -990,7 +978,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td class="py-1 fw-600">
-                                                                        {{ translate('Hair Color') }}</td>
+                                                                        {{ translate('Hair Color') }}
+                                                                    </td>
                                                                     <td class="py-1">
                                                                         {{ $user->physical_attributes->hair_color ?? '' }}
                                                                     </td>
@@ -1027,9 +1016,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="26.953"
-                                                    height="26.953" viewBox="0 0 26.953 26.953"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="26.953" height="26.953"
+                                                    viewBox="0 0 26.953 26.953" class="fill-primary-grad">
                                                     <g transform="translate(0)">
                                                         <path
                                                             d="M13.476,0A13.492,13.492,0,0,1,26.953,13.477a13.316,13.316,0,0,1-2.1,7.224l2.042,5.1A.842.842,0,0,1,25.8,26.893l-5.1-2.042a13.316,13.316,0,0,1-7.223,2.1A13.477,13.477,0,0,1,13.476,0Zm0,25.269a11.625,11.625,0,0,0,6.647-2.057.834.834,0,0,1,.478-.15.843.843,0,0,1,.313.061L24.6,24.6l-1.476-3.683a.844.844,0,0,1,.089-.792,11.626,11.626,0,0,0,2.057-6.647A11.792,11.792,0,1,0,13.476,25.269Z"
@@ -1051,8 +1039,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Language') }}</span>
                                             </div>
                                         </div>
-                                        <div id="language" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                            >
+                                        <div id="language" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="border p-3">
@@ -1093,8 +1080,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.534"
-                                                    height="17.71" viewBox="0 0 24.534 17.71" class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.534" height="17.71"
+                                                    viewBox="0 0 24.534 17.71" class="fill-primary-grad">
                                                     <g transform="translate(-1078.174 -2016.025)">
                                                         <path
                                                             d="M3.674,3.457a1.455,1.455,0,0,1,2.2-1.25L18.3,9.6a1.454,1.454,0,0,1,0,2.5L5.873,19.5a1.455,1.455,0,0,1-2.2-1.25Z"
@@ -1107,12 +1094,10 @@
                                                 </svg>
                                             </span>
                                             <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Hobbies & Interest') }}</span>
+                                                <span class="fs-18 fw-600 d-block">{{ translate('Hobbies & Interest') }}</span>
                                             </div>
                                         </div>
-                                        <div id="hobby" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                          >
+                                        <div id="hobby" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1174,14 +1159,16 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Fitness Activities') }}</th>
+                                                                        {{ translate('Fitness Activities') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->hobbies->fitness_activities ?? '' }}
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Dress Styles') }}</th>
+                                                                        {{ translate('Dress Styles') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->hobbies->dress_styles ?? '' }}
                                                                     </td>
@@ -1203,9 +1190,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="23.306"
-                                                    height="26.808" viewBox="0 0 23.306 26.808"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="23.306" height="26.808"
+                                                    viewBox="0 0 23.306 26.808" class="fill-primary-grad">
                                                     <g transform="translate(-0.5)">
                                                         <path
                                                             d="M122.448,136.226a.785.785,0,0,0-.555-.23h-4.206a.785.785,0,0,0,0,1.571H120l-4.052,4.052-2.419-2.419a.786.786,0,0,0-1.111,0l-2.974,2.974a.785.785,0,1,0,1.111,1.111l2.419-2.419,2.419,2.419a.785.785,0,0,0,1.111,0l4.608-4.608v2.31a.785.785,0,1,0,1.571,0v-4.206A.785.785,0,0,0,122.448,136.226Zm0,0"
@@ -1221,8 +1207,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Personal Attitude & Behavior') }}</span>
                                             </div>
                                         </div>
-                                        <div id="personal-attitude" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                            >
+                                        <div id="personal-attitude" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1237,7 +1222,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Political Views') }}</th>
+                                                                        {{ translate('Political Views') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->attitude->political_views ?? '' }}
                                                                     </td>
@@ -1256,7 +1242,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Religious Service') }}</th>
+                                                                        {{ translate('Religious Service') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->attitude->religious_service ?? '' }}
                                                                     </td>
@@ -1278,9 +1265,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="28.394"
-                                                    height="27.785" viewBox="0 0 28.394 27.785"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="28.394" height="27.785"
+                                                    viewBox="0 0 28.394 27.785" class="fill-primary-grad">
                                                     <g transform="translate(-1076.803 -2260.108)">
                                                         <path
                                                             d="M28.066,14.1a1.109,1.109,0,0,1-1.569,0l-.877-.883v4.038a1.109,1.109,0,1,1-2.218,0V10.976L14.967,2.485a1.108,1.108,0,0,0-1.439,0L4.99,11c0,.011,0,.021,0,.032V22.793a2.221,2.221,0,0,0,2.218,2.218H8.6a1.109,1.109,0,0,1,0,2.218H7.209a4.441,4.441,0,0,1-4.437-4.437V13.217l-.88.878a1.109,1.109,0,1,1-1.567-1.57L11.987.886l.046-.043a3.325,3.325,0,0,1,4.436.009L16.515.9,28.071,12.528a1.109,1.109,0,0,1,0,1.568Zm-3.555,7.587A1.109,1.109,0,0,0,23.4,22.793a2.221,2.221,0,0,1-2.218,2.218H19.8a1.109,1.109,0,1,0,0,2.218h1.386a4.441,4.441,0,0,0,4.437-4.437A1.109,1.109,0,0,0,24.512,21.684Zm-3.327-4.056c0,2.97-1.769,4.879-3.478,6.726a20.583,20.583,0,0,0-2.382,2.914,1.109,1.109,0,0,1-.938.516h-.381a1.109,1.109,0,0,1-.938-.516,20.583,20.583,0,0,0-2.382-2.914C8.979,22.507,7.212,20.6,7.209,17.63a6.988,6.988,0,0,1,13.975,0Zm-2.218,0a4.769,4.769,0,0,0-9.539,0c0,2.1,1.276,3.474,2.888,5.217.633.683,1.28,1.383,1.882,2.168.6-.785,1.249-1.485,1.882-2.168,1.612-1.743,2.886-3.119,2.888-5.219Zm-4.819-3.042a3.05,3.05,0,1,0,0,6.1,1.109,1.109,0,1,0,0-2.218.832.832,0,1,1,.832-.832,1.109,1.109,0,1,0,2.218,0A3.053,3.053,0,0,0,14.147,14.586Zm0,0"
@@ -1297,8 +1283,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Residency Information') }}</span>
                                             </div>
                                         </div>
-                                        <div id="residency-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="residency-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1306,7 +1291,8 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Birth Country') }}</th>
+                                                                        {{ translate('Birth Country') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         @if (!empty($user->recidency->birth_country_id))
                                                                             {{ App\Models\Country::where('id', $user->recidency->birth_country_id)->first()->name }}
@@ -1315,7 +1301,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Grow Up Country') }}</th>
+                                                                        {{ translate('Grow Up Country') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         @if (!empty($user->recidency->growup_country_id))
                                                                             {{ App\Models\Country::where('id', $user->recidency->growup_country_id)->first()->name }}
@@ -1330,7 +1317,8 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Residency Country') }}</th>
+                                                                        {{ translate('Residency Country') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         @if (!empty($user->recidency->recidency_country_id))
                                                                             {{ App\Models\Country::where('id', $user->recidency->recidency_country_id)->first()->name }}
@@ -1339,7 +1327,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Immigration Status') }}</th>
+                                                                        {{ translate('Immigration Status') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ !empty($user->recidency->immigration_status) ? $user->recidency->immigration_status : '' }}
                                                                     </td>
@@ -1361,9 +1350,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="21.754"
-                                                    height="20.248" viewBox="0 0 21.754 20.248"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="21.754" height="20.248"
+                                                    viewBox="0 0 21.754 20.248" class="fill-primary-grad">
                                                     <g transform="translate(0 -17.721)">
                                                         <path
                                                             d="M126.787,17.722a1.055,1.055,0,0,0-1.039.9l-1.361,10.665a.636.636,0,0,1-.231.414l-1.343,1.088,2.357,2.395,2.378-2.378a.976.976,0,0,0,.288-.695V18.772a1.051,1.051,0,0,0-1.05-1.05Z"
@@ -1374,8 +1362,7 @@
                                                             transform="translate(0 -292.444)" class="fill-dark" />
                                                         <path
                                                             d="M275.985,30.785,274.642,29.7a.636.636,0,0,1-.231-.414l-1.361-10.665a1.05,1.05,0,0,0-2.089.152V30.107a.976.976,0,0,0,.288.695l2.378,2.378Z"
-                                                            transform="translate(-259.449)"
-                                                            fill="url(#primary-gradient)" />
+                                                            transform="translate(-259.449)" fill="url(#primary-gradient)" />
                                                         <path
                                                             d="M340.766,323.142l-4.1,4.167,2.884,2.915a.636.636,0,0,0,.918-.014l3.478-3.742a.636.636,0,0,0-.077-.936Z"
                                                             transform="translate(-322.359 -292.444)" class="fill-dark" />
@@ -1387,8 +1374,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Spiritual & Social Background') }}</span>
                                             </div>
                                         </div>
-                                        <div id="spiritual-social" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                            >
+                                        <div id="spiritual-social" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1410,14 +1396,16 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Personal Value') }}</th>
+                                                                        {{ translate('Personal Value') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->spiritual_backgrounds->personal_value ?? '' }}
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Community Value') }}</th>
+                                                                        {{ translate('Community Value') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->spiritual_backgrounds->community_value ?? '' }}
                                                                     </td>
@@ -1443,7 +1431,8 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">
-                                                                        {{ translate('Family Value') }}</th>
+                                                                        {{ translate('Family Value') }}
+                                                                    </th>
                                                                     <td class="py-1">
                                                                         {{ $user->spiritual_backgrounds->family_value->name ?? '' }}
                                                                     </td>
@@ -1465,21 +1454,19 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.514"
-                                                    height="19.98" viewBox="0 0 24.514 19.98" class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.514" height="19.98"
+                                                    viewBox="0 0 24.514 19.98" class="fill-primary-grad">
                                                     <g transform="translate(1 1)">
                                                         <path
                                                             d="M11.291,6.46A11.257,11.257,0,0,0,.034,17.717H22.548A11.257,11.257,0,0,0,11.291,6.46Z"
                                                             transform="translate(-0.034 -3.802)"
                                                             fill="url(#primary-gradient)" />
                                                         <path d="M.034,39.126H22.548" transform="translate(-0.034 -21.146)"
-                                                            stroke="#4d4d4d" stroke-linecap="round"
-                                                            stroke-linejoin="round" stroke-width="2"
-                                                            fill="url(#primary-gradient)" />
+                                                            stroke="#4d4d4d" stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" fill="url(#primary-gradient)" />
                                                         <path d="M24.034.793V3.451" transform="translate(-12.777 -0.793)"
-                                                            stroke="#4d4d4d" stroke-linecap="round"
-                                                            stroke-linejoin="round" stroke-width="2"
-                                                            fill="url(#primary-gradient)" />
+                                                            stroke="#4d4d4d" stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" fill="url(#primary-gradient)" />
                                                     </g>
                                                 </svg>
                                             </span>
@@ -1487,8 +1474,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Life Style') }}</span>
                                             </div>
                                         </div>
-                                        <div id="life-style" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="life-style" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1534,79 +1520,7 @@
                                     </div>
                                 @endif
 
-                                @if (get_setting('member_astronomic_information_section') == 'on')
-                                    <!-- Astronomic Information  -->
-                                    <div class="pb-4 accordion-item">
-                                        <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#astronomic">
-                                            <span
-                                                class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="23.856"
-                                                    height="23.857" viewBox="0 0 23.856 23.857"
-                                                    class="fill-primary-grad">
-                                                    <path
-                                                        d="M11.928,0A11.928,11.928,0,1,0,23.856,11.928,11.928,11.928,0,0,0,11.928,0Zm9.8,11.333-5.375-1.24,2.923-4.677A9.739,9.739,0,0,1,21.733,11.333ZM18.44,4.574,13.763,7.5l-1.24-5.374A9.738,9.738,0,0,1,18.44,4.574ZM11.333,2.123,10.093,7.5,5.416,4.574A9.739,9.739,0,0,1,11.333,2.123ZM4.574,5.416,7.5,10.093l-5.375,1.24A9.738,9.738,0,0,1,4.574,5.416ZM2.123,12.523,7.5,13.763,4.574,18.44A9.739,9.739,0,0,1,2.123,12.523Zm3.292,6.759,4.677-2.923,1.24,5.375A9.738,9.738,0,0,1,5.416,19.282Zm4.2-7.354a2.805,2.805,0,0,1,4.617-2.143,2.173,2.173,0,0,0,0,4.285,2.8,2.8,0,0,1-4.617-2.143Zm2.9,9.8,1.24-5.375,4.677,2.923A9.739,9.739,0,0,1,12.523,21.733Zm6.759-3.292-2.923-4.677,5.375-1.24A9.738,9.738,0,0,1,19.282,18.44Z"
-                                                        fill="url(#primary-gradient)" />
-                                                    <path
-                                                        d="M-15498.071,23.857a11.847,11.847,0,0,1-8.435-3.494,11.855,11.855,0,0,1-3.492-8.437,11.849,11.849,0,0,1,3.492-8.433A11.848,11.848,0,0,1-15498.071,0a11.849,11.849,0,0,1,8.434,3.494,11.847,11.847,0,0,1,3.493,8.433,11.852,11.852,0,0,1-3.493,8.437A11.848,11.848,0,0,1-15498.071,23.857ZM-15498,2a10.011,10.011,0,0,0-10,10,10.011,10.011,0,0,0,10,10,10.011,10.011,0,0,0,10-10A10.011,10.011,0,0,0-15498,2Z"
-                                                        transform="translate(15510)" class="fill-dark" />
-                                                </svg>
-                                            </span>
-                                            <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Astronomic Information') }}</span>
-                                            </div>
-                                        </div>
-                                        <div id="astronomic" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
-                                            <div class="border p-3">
-                                                <div class="row no-gutters">
-                                                    <div class="col-md-6">
-                                                        <table class="w-100">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Sun Sign') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->astrologies->sun_sign ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Time Of Birth') }}</th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->astrologies->time_of_birth ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="col-sm-6 border-sm-left ">
-                                                        <table class="w-100 ml-sm-4">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Moon Sign') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->astrologies->moon_sign ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('City Of Birth') }}</th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->astrologies->city_of_birth ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+
 
                                 <!-- Permanent Address -->
                                 @if (get_setting('member_permanent_address_section') == 'on')
@@ -1616,9 +1530,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.659"
-                                                    height="19.623" viewBox="0 0 24.659 19.623"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24.659" height="19.623"
+                                                    viewBox="0 0 24.659 19.623" class="fill-primary-grad">
                                                     <g transform="translate(-1078.67 -2909.649)">
                                                         <path
                                                             d="M111.028,264.3v7.342a.992.992,0,0,1-.979.979h-5.873V266.75h-3.915v5.873H94.387a.992.992,0,0,1-.979-.979V264.3a.209.209,0,0,1,.008-.046.209.209,0,0,0,.008-.046l8.795-7.25,8.795,7.25A.213.213,0,0,1,111.028,264.3Zm3.411-1.055-.948,1.132a.52.52,0,0,1-.321.168h-.046a.47.47,0,0,1-.321-.107l-10.584-8.825-10.584,8.825a.569.569,0,0,1-.367.107.52.52,0,0,1-.321-.168L90,263.248a.5.5,0,0,1-.107-.359.444.444,0,0,1,.168-.329l11-9.162a1.9,1.9,0,0,1,2.325,0l3.732,3.12v-2.983a.471.471,0,0,1,.489-.489h2.937a.471.471,0,0,1,.489.489v6.24l3.35,2.784a.444.444,0,0,1,.168.329A.5.5,0,0,1,114.439,263.248Z"
@@ -1631,12 +1544,10 @@
                                                 </svg>
                                             </span>
                                             <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Permanent Address') }}</span>
+                                                <span class="fs-18 fw-600 d-block">{{ translate('Permanent Address') }}</span>
                                             </div>
                                         </div>
-                                        <div id="permanent-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="permanent-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
 
                                             @php
                                                 $permanent_address = \App\Models\Address::where('user_id', $user->id)
@@ -1697,9 +1608,8 @@
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="28.145"
-                                                    height="23.875" viewBox="0 0 28.145 23.875"
-                                                    class="fill-primary-grad">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="28.145" height="23.875"
+                                                    viewBox="0 0 28.145 23.875" class="fill-primary-grad">
                                                     <g transform="translate(9.187 0)">
                                                         <path
                                                             d="M-8182.819-3893.283a2.421,2.421,0,0,0,.14-.813v-8.226a5.652,5.652,0,0,0-.344-1.946h2.176a4.067,4.067,0,0,1,4.063,4.063v4.485a2.442,2.442,0,0,1-2.438,2.438Zm-19.671,0a2.441,2.441,0,0,1-2.437-2.438v-4.485a4.067,4.067,0,0,1,4.063-4.063h2.177a5.64,5.64,0,0,0-.344,1.946v8.226a2.47,2.47,0,0,0,.14.813Zm18.774-12.31a3.657,3.657,0,0,1-1.783-1.641,3.627,3.627,0,0,1-.431-1.715,3.659,3.659,0,0,1,3.655-3.655,3.658,3.658,0,0,1,3.653,3.655,3.657,3.657,0,0,1-3.653,3.653A3.617,3.617,0,0,1-8183.716-3905.592Zm-19.373-3.356a3.656,3.656,0,0,1,3.652-3.655,3.657,3.657,0,0,1,3.653,3.655,3.62,3.62,0,0,1-.429,1.715,3.649,3.649,0,0,1-1.785,1.641,3.607,3.607,0,0,1-1.439.3A3.656,3.656,0,0,1-8203.089-3908.949Z"
@@ -1715,12 +1625,10 @@
                                                 </svg>
                                             </span>
                                             <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Family Information') }}</span>
+                                                <span class="fs-18 fw-600 d-block">{{ translate('Family Information') }}</span>
                                             </div>
                                         </div>
-                                        <div id="family-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                           >
+                                        <div id="family-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-12">
@@ -1752,25 +1660,37 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('No. of Brother') }}</th>
-                                                                    <td class="py-1">{{ $user->families->no_of_brothers ?? '' }}</td>
+                                                                    <td class="py-1">{{ $user->families->no_of_brothers ?? '' }}
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('No. of Sisters') }}</th>
-                                                                    <td class="py-1">{{ $user->families->no_of_sisters ?? '' }}</td>
+                                                                    <td class="py-1">{{ $user->families->no_of_sisters ?? '' }}
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('About Parents') }}</th>
-                                                                    <td width="70%"><p class="mt-2">{{ $user->families->about_parents ?? translate('N/A ')}}</p></td>
+                                                                    <td width="70%">
+                                                                        <p class="mt-2">
+                                                                            {{ $user->families->about_parents ?? translate('N/A ')}}
+                                                                        </p>
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('About Siblings') }}</th>
-                                                                    <td width="70%"><p>{{ $user->families->about_siblings ?? translate('N/A') }}</p></td>
+                                                                    <td width="70%">
+                                                                        <p>{{ $user->families->about_siblings ?? translate('N/A') }}
+                                                                        </p>
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('About Relatives') }}</th>
-                                                                    <td width="70%"><p>{{ $user->families->about_relatives ?? translate('N/A') }}</p></td>
+                                                                    <td width="70%">
+                                                                        <p>{{ $user->families->about_relatives ?? translate('N/A') }}
+                                                                        </p>
+                                                                    </td>
                                                                 </tr>
-                                                                
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -1787,7 +1707,8 @@
                                             data-toggle="collapse" data-target="#additional_profile_attributes">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
-                                                <img src="{{ uploaded_asset(get_setting('additional_profile_section_icon')) }}" alt="" height="30" class="w-auto">
+                                                <img src="{{ uploaded_asset(get_setting('additional_profile_section_icon')) }}"
+                                                    alt="" height="30" class="w-auto">
                                             </span>
                                             <div class="ml-4">
                                                 <span
@@ -1795,16 +1716,17 @@
                                             </div>
                                         </div>
                                         <div id="additional_profile_attributes"
-                                            class="collapse accordion-body ml-3 ml-md-5 pl-25px"
-                                            >
+                                            class="collapse accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="row">
-                                                        @foreach($additional_attributes as $key=>$attribute)
+                                                        @foreach($additional_attributes as $key => $attribute)
                                                             <div class="col-md-6 mb-3">
                                                                 <div class="row">
                                                                     <div class="col-6 fs-13 fw-700">{{ $attribute->title }}</div>
-                                                                    <div class="col-6 fs-13">{{ $attribute->additional_member_info()->where('user_id', $user->id)->first()->value ?? null}}</div>
+                                                                    <div class="col-6 fs-13">
+                                                                        {{ $attribute->additional_member_info()->where('user_id', $user->id)->first()->value ?? null}}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         @endforeach
@@ -1820,7 +1742,8 @@
                             <div class="tab-pane fade" id="preference">
                                 <!-- Partner Expectation -->
                                 <h2 class="text-primary fs-24 mb-5 pb-4 border-bottom">
-                                    {{ translate('Partner Expectation') }}</h2>
+                                    {{ translate('Partner Expectation') }}
+                                </h2>
                                 <div class="">
                                     <table class="table table-responsive">
                                         <tr>
@@ -1996,46 +1919,50 @@
                                                 alt="{{ translate('photo') }}">
                                             <div class="overlay">
                                                 <a href="javascript:void(0);"
-                                                class="text-white absolute-full d-flex justify-content-center align-items-center"
-                                                title="View"
-                                                data-toggle="modal"
-                                                data-target="#galleryImageModal"
-                                                data-image="{{ uploaded_asset($gallery_image->image) }}">
-                                                <i class="las la-search-plus la-2x"></i>
-                                             </a>
-                                             
-                                             
+                                                    class="text-white absolute-full d-flex justify-content-center align-items-center"
+                                                    title="View" data-toggle="modal" data-target="#galleryImageModal"
+                                                    data-image="{{ uploaded_asset($gallery_image->image) }}">
+                                                    <i class="las la-search-plus la-2x"></i>
+                                                </a>
+
+
                                             </div>
                                         @else
-                                            <img src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                                class="card-img" alt="{{ translate('photo') }}">
+                                            <img src="{{ static_asset('assets/img/placeholder-rect.jpg') }}" class="card-img"
+                                                alt="{{ translate('photo') }}">
                                             <div
                                                 class="absolute-full d-flex justify-content-center align-items-center bg-soft-dark text-white">
-                                                <i class="las la-lock la-3x"></i></div>
+                                                <i class="las la-lock la-3x"></i>
+                                            </div>
                                         @endif
                                     </div>
                                 @endforeach
-<!-- Gallery Image Modal -->
-<div class="modal fade" id="galleryImageModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content position-relative">
-            <div class="modal-body p-0 text-center">
-                <button type="button" class="btn btn-secondary position-absolute" id="prevImageBtn" style="top:50%; left:10px; transform:translateY(-50%); z-index:10;">
-                    <i class="las la-arrow-left"></i>
-                </button>
-                <img src="" id="galleryImageModalSrc" class="w-100" alt="Gallery Image">
-                <button type="button" class="btn btn-secondary position-absolute" id="nextImageBtn" style="top:50%; right:10px; transform:translateY(-50%); z-index:10;">
-                    <i class="las la-arrow-right"></i>
-                </button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    {{ translate('Close') }}
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+                                <!-- Gallery Image Modal -->
+                                <div class="modal fade" id="galleryImageModal" tabindex="-1" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                        <div class="modal-content position-relative">
+                                            <div class="modal-body p-0 text-center">
+                                                <button type="button" class="btn btn-secondary position-absolute"
+                                                    id="prevImageBtn"
+                                                    style="top:50%; left:10px; transform:translateY(-50%); z-index:10;">
+                                                    <i class="las la-arrow-left"></i>
+                                                </button>
+                                                <img src="" id="galleryImageModalSrc" class="w-100" alt="Gallery Image">
+                                                <button type="button" class="btn btn-secondary position-absolute"
+                                                    id="nextImageBtn"
+                                                    style="top:50%; right:10px; transform:translateY(-50%); z-index:10;">
+                                                    <i class="las la-arrow-right"></i>
+                                                </button>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    {{ translate('Close') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
                                 @php
@@ -2048,13 +1975,15 @@
                                         ->first();
                                 @endphp
 
-                                @if (count($gallery_images) > 0 &&
+                                @if (
+                                        count($gallery_images) > 0 &&
                                         $gallery_image_privacy == 'only_me' &&
                                         ($gallery_photo_view_request == null ||
-                                            ($gallery_photo_view_request && $gallery_photo_view_request->status == 0)))
+                                            ($gallery_photo_view_request && $gallery_photo_view_request->status == 0))
+                                    )
                                     <div class="absolute-full d-flex justify-content-center align-items-center">
-                                        <button
-                                            @if ($gallery_photo_view_request == null) onclick="gallery_image_view_request({{ $user->id }})" @endif
+                                        <button @if ($gallery_photo_view_request == null)
+                                        onclick="gallery_image_view_request({{ $user->id }})" @endif
                                             class="btn btn-primary">
                                             @if ($gallery_photo_view_request == null)
                                                 {{ translate('Send Gallery Photo View Request') }}
@@ -2095,8 +2024,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">{{ translate('Close') }}</button>
-                    <button type="submit" class="btn btn-primary"
-                        id="ignore_button">{{ translate('Ignore') }}</button>
+                    <button type="submit" class="btn btn-primary" id="ignore_button">{{ translate('Ignore') }}</button>
                 </div>
             </div>
         </div>
@@ -2118,15 +2046,14 @@
                             <label class="col-md-3 col-form-label">{{ translate('Report Reason') }}<span
                                     class="text-danger">*</span></label>
                             <div class="col-md-9">
-                                <textarea name="reason" rows="4" class="form-control" placeholder="{{ translate('Report Reason') }}"
-                                    required></textarea>
+                                <textarea name="reason" rows="4" class="form-control"
+                                    placeholder="{{ translate('Report Reason') }}" required></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light"
-                        data-dismiss="modal">{{ translate('Cancel') }}</button>
+                    <button type="button" class="btn btn-light" data-dismiss="modal">{{ translate('Cancel') }}</button>
                     <button type="button" class="btn btn-primary"
                         onclick="submitReport()">{{ translate('Report') }}</button>
                 </div>
@@ -2144,11 +2071,11 @@
         // View Contact details
         function view_contact(id) {
             $.post('{{ route('user.remaining_package_value') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: user_id,
-                    colmn_name: 'remaining_contact_view'
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: user_id,
+                colmn_name: 'remaining_contact_view'
+            },
+                function (data) {
                     var remaining_contact_view = data;
                     if (!package_validity || remaining_contact_view < 1) {
                         $('.package_update_alert_modal').modal('show');
@@ -2170,10 +2097,10 @@
             $('.confirm_modal').modal('hide');
             $(".view_contact").removeAttr("onclick");
             $.post('{{ route('view_contacts.store') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data) {
                         $('.contact_info').removeClass('d-none');
                         $('.view_contact').addClass('d-none');
@@ -2200,10 +2127,10 @@
             $("#interest_id_" + id).html("{{ translate('Sending...') }}");
 
             $.post('{{ route('express-interest.store') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1 || (data && data.result)) {
                         $("#interest_id_" + id).html("{{ translate('Interest Sent') }}");
                         $("#interest_id_" + id).attr("class", "d-block fs-13 text-white");
@@ -2221,7 +2148,7 @@
                         AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{ translate('Something went wrong') }}');
                     }
                 }
-            ).fail(function() {
+            ).fail(function () {
                 $("#interest_id_" + id).html("{{ translate('Interest') }}");
                 $("#interest_a_id_" + id).attr("onclick", "express_interest(" + id + ")");
                 AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
@@ -2233,10 +2160,10 @@
             $("#shortlist_a_id_" + id).removeAttr("onclick");
             $("#shortlist_id_" + id).html("{{ translate('Shortlisting') }}..");
             $.post('{{ route('member.add_to_shortlist') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1) {
                         $("#shortlist_id_" + id).html("{{ translate('Shortlisted') }}");
                         $("#shortlist_a_id_" + id).attr("onclick", "remove_shortlist(" + id + ")");
@@ -2253,10 +2180,10 @@
             $("#shortlist_a_id_" + id).removeAttr("onclick");
             $("#shortlist_id_" + id).html("{{ translate('Removing') }}..");
             $.post('{{ route('member.remove_from_shortlist') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1) {
                         $("#shortlist_id_" + id).html("{{ translate('Shortlist') }}");
                         $("#shortlist_a_id_" + id).attr("onclick", "do_shortlist(" + id + ")");
@@ -2277,10 +2204,10 @@
 
         function do_ignore(id) {
             $.post('{{ route('member.add_to_ignore_list') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1) {
                         $("#block_id_" + id).hide();
                         $('.ignore_member_modal').modal('toggle');
@@ -2303,7 +2230,7 @@
         }
 
         var remaining_profile_image_view =
-            {{ get_remaining_package_value(Auth::user()->id, 'remaining_profile_image_view') }};
+                                    {{ get_remaining_package_value(Auth::user()->id, 'remaining_profile_image_view') }};
 
         function profile_pic_view_request(id) {
             if (!package_validity || remaining_profile_image_view < 1) {
@@ -2322,10 +2249,10 @@
         function send_profile_pic_view_request(id) {
             $('.confirm_modal').modal('toggle');
             $.post('{{ route('profile-picture-view-request.store') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1) {
                         AIZ.plugins.notify('success',
                             '{{ translate('Profile Picture view request sent successfully.') }}');
@@ -2338,7 +2265,7 @@
         }
 
         var remaining_gallery_image_view =
-            {{ get_remaining_package_value(Auth::user()->id, 'remaining_gallery_image_view') }};
+                                    {{ get_remaining_package_value(Auth::user()->id, 'remaining_gallery_image_view') }};
 
         function gallery_image_view_request(id) {
             if (!package_validity || remaining_profile_image_view < 1) {
@@ -2357,10 +2284,10 @@
         function send_gallery_image_view_request(id) {
             $('.confirm_modal').modal('hide');
             $.post('{{ route('gallery-image-view-request.store') }}', {
-                    _token: '{{ csrf_token() }}',
-                    id: id
-                },
-                function(data) {
+                _token: '{{ csrf_token() }}',
+                id: id
+            },
+                function (data) {
                     if (data == 1) {
                         AIZ.plugins.notify('success',
                             '{{ translate('gallery image view request sent successfully.') }}');
@@ -2378,46 +2305,46 @@
 
 
 
-<script>
-    $(document).ready(function () {
-        var galleryImages = [];
-        var currentIndex = 0;
-    
-        // Collect all gallery image URLs into an array
-        $('.card.hov-overlay [data-image]').each(function () {
-            galleryImages.push($(this).data('image'));
+    <script>
+        $(document).ready(function () {
+            var galleryImages = [];
+            var currentIndex = 0;
+
+            // Collect all gallery image URLs into an array
+            $('.card.hov-overlay [data-image]').each(function () {
+                galleryImages.push($(this).data('image'));
+            });
+
+            // Open modal with selected image
+            $('#galleryImageModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var imageSrc = button.data('image');
+                currentIndex = galleryImages.indexOf(imageSrc);
+
+                updateModalImage();
+            });
+
+            // Update image in modal
+            function updateModalImage() {
+                $('#galleryImageModalSrc').attr('src', galleryImages[currentIndex]);
+            }
+
+            // Next button
+            $('#nextImageBtn').click(function () {
+                currentIndex = (currentIndex + 1) % galleryImages.length;
+                updateModalImage();
+            });
+
+            // Prev button
+            $('#prevImageBtn').click(function () {
+                currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                updateModalImage();
+            });
+
+            // Optional: Clear on close
+            $('#galleryImageModal').on('hidden.bs.modal', function () {
+                $('#galleryImageModalSrc').attr('src', '');
+            });
         });
-    
-        // Open modal with selected image
-        $('#galleryImageModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var imageSrc = button.data('image');
-            currentIndex = galleryImages.indexOf(imageSrc);
-    
-            updateModalImage();
-        });
-    
-        // Update image in modal
-        function updateModalImage() {
-            $('#galleryImageModalSrc').attr('src', galleryImages[currentIndex]);
-        }
-    
-        // Next button
-        $('#nextImageBtn').click(function () {
-            currentIndex = (currentIndex + 1) % galleryImages.length;
-            updateModalImage();
-        });
-    
-        // Prev button
-        $('#prevImageBtn').click(function () {
-            currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-            updateModalImage();
-        });
-    
-        // Optional: Clear on close
-        $('#galleryImageModal').on('hidden.bs.modal', function () {
-            $('#galleryImageModalSrc').attr('src', '');
-        });
-    });
     </script>
 @endsection

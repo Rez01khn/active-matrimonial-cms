@@ -4,19 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\Controller;
 use App\Http\Controllers\ProfileMatchController;
-use App\Http\Requests\AstrologyRequest;
 use App\Http\Requests\PartnerExpectationRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Resources\CareerResource;
 use App\Http\Resources\EducationResource;
 use App\Http\Resources\GalleryImage\RequestedGalleryImage;
 use App\Http\Resources\GalleryImageResource;
-use App\Http\Resources\HoroscopeMatchedProfileResource;
 use App\Http\Resources\MatchedProfileResource;
 use App\Http\Resources\Profile\LanguageResource;
 use App\Http\Resources\PublicProfile\AboutUser;
 use App\Http\Resources\PublicProfile\AddressResource;
-use App\Http\Resources\PublicProfile\AstronomicInformation;
 use App\Http\Resources\PublicProfile\AttitudesBehaviors;
 use App\Http\Resources\PublicProfile\BasicInformation;
 use App\Http\Resources\PublicProfile\FamilyInformation;
@@ -27,7 +24,6 @@ use App\Http\Resources\PublicProfile\PhysicalAttributes;
 use App\Http\Resources\PublicProfile\ResidenceInformation;
 use App\Http\Resources\PublicProfile\SpiritualSocialBackground;
 use App\Models\Address;
-use App\Models\Astrology;
 use App\Models\Attitude;
 use App\Models\Career;
 use App\Models\Caste;
@@ -41,7 +37,6 @@ use App\Models\FamilyValue;
 use App\Models\GalleryImage;
 use App\Models\HappyStory;
 use App\Models\Hobby;
-use App\Models\HoroscopeProfileMatch;
 use App\Models\IgnoredUser;
 use App\Models\Lifestyle;
 use App\Models\MaritalStatus;
@@ -401,98 +396,6 @@ class ProfileController extends Controller
         $lifestyle->save();
         return $this->success_message('Lifestyle info has been updated successfully');
     }
-    public function astronomic_info()
-    {
-        if (auth()->user()->astrologies) {
-            return (new AstronomicInformation(auth()->user()->astrologies))->additional([
-                'result' => true
-            ]);
-        } else {
-            // return $this->failure_message('No Data Found!!');
-            return $this->failure_data(auth()->user()->astrologies);
-        }
-    }
-
-    public function astronomic_info_update(AstrologyRequest $request)
-    {
-        $user = auth()->user();
-        $astrologies = Astrology::where('user_id', auth()->id())->first();
-        if (empty($astrologies)) {
-            $astrologies           = new Astrology;
-            $astrologies->user_id  = auth()->id();
-        }
-        $astrologies->sun_sign         = $request->sun_sign;
-        $astrologies->moon_sign        = $request->moon_sign;
-        $astrologies->time_of_birth    = $request->time_of_birth;
-        $astrologies->city_of_birth    = $request->city_of_birth;
-        $astrologies->nakshatra = $request->nakshatra;
-        $astrologies->gana      = $request->gana;
-        $astrologies->nadi      = $request->nadi;
-        $astrologies->manglik   = $request->manglik;
-
-        $astrologies->save();
-
-        if ($user->member->auto_horoscope_profile_match == 1) {
-            $ProfileMatchController = new HoroscopeProfileMatchController;
-            $ProfileMatchController->match_profiles($user->id);
-        }
-
-        return $this->success_message('Astronomic Info has been updated successfully');
-    }
-
-    public function astrologic_dropdowns()
-    {
-        $sun_signs = [
-            ['value' => 'aries', 'label' => 'Aries (Mar 21 – Apr 19)'],
-            ['value' => 'taurus', 'label' => 'Taurus (Apr 20 – May 20)'],
-            ['value' => 'gemini', 'label' => 'Gemini (May 21 – Jun 20)'],
-            ['value' => 'cancer', 'label' => 'Cancer (Jun 21 – Jul 22)'],
-            ['value' => 'leo', 'label' => 'Leo (Jul 23 – Aug 22)'],
-            ['value' => 'virgo', 'label' => 'Virgo (Aug 23 – Sep 22)'],
-            ['value' => 'libra', 'label' => 'Libra (Sep 23 – Oct 22)'],
-            ['value' => 'scorpio', 'label' => 'Scorpio (Oct 23 – Nov 21)'],
-            ['value' => 'sagittarius', 'label' => 'Sagittarius (Nov 22 – Dec 21)'],
-            ['value' => 'capricorn', 'label' => 'Capricorn (Dec 22 – Jan 19)'],
-            ['value' => 'aquarius', 'label' => 'Aquarius (Jan 20 – Feb 18)'],
-            ['value' => 'pisces', 'label' => 'Pisces (Feb 19 – Mar 20)'],
-        ];
-
-        $moon_signs = [
-            ['value' => 'aries', 'label' => 'Aries (Mesha)'],
-            ['value' => 'taurus', 'label' => 'Taurus (Vrishabha)'],
-            ['value' => 'gemini', 'label' => 'Gemini (Mithuna)'],
-            ['value' => 'cancer', 'label' => 'Cancer (Karka)'],
-            ['value' => 'leo', 'label' => 'Leo (Simha)'],
-            ['value' => 'virgo', 'label' => 'Virgo (Kanya)'],
-            ['value' => 'libra', 'label' => 'Libra (Tula)'],
-            ['value' => 'scorpio', 'label' => 'Scorpio (Vrishchika)'],
-            ['value' => 'sagittarius', 'label' => 'Sagittarius (Dhanu)'],
-            ['value' => 'capricorn', 'label' => 'Capricorn (Makara)'],
-            ['value' => 'aquarius', 'label' => 'Aquarius (Kumbha)'],
-            ['value' => 'pisces', 'label' => 'Pisces (Meena)'],
-        ];
-
-        $nakshatras = [
-            'anuradha','ardra','ashlesha','ashwini','bharani','chitra','dhanishta','hasta','jyeshtha',
-            'krittika','magha','mrigashira','mula','punarvasu','purva_ashadha','purva_bhadrapada',
-            'purva_phalguni','pushya','revati','rohini','shatabhisha','shravana','swati','uttara_ashadha',
-            'uttara_bhadrapada','uttara_phalguni','vishakha'
-        ];
-
-        $gana = ['deva','manushya','rakshasa'];
-        $nadi = ['aadi','madhya','antya'];
-        $manglik = ['yes','no'];
-
-        return response()->json([
-            'result' => true,
-            'sun_signs' => $sun_signs,
-            'moon_signs' => $moon_signs,
-            'nakshatras' => $nakshatras,
-            'gana' => $gana,
-            'nadi' => $nadi,
-            'manglik' => $manglik
-        ]);
-    }
 
     public function family_info()
     {
@@ -637,7 +540,6 @@ class ProfileController extends Controller
             $data['residence_info'] = $user->recidency ? new ResidenceInformation($user->recidency) : null;
             $data['spiritual_backgrounds'] = $user->spiritual_backgrounds ? new SpiritualSocialBackground($user->spiritual_backgrounds) : null;
             $data['lifestyles'] = $user->lifestyles ? new LifeStyleResource($user->lifestyles) : null;
-            $data['astrologies'] = $user->astrologies ? new AstronomicInformation($user->astrologies) : null;
             $data['permanent_address'] = Address::where('user_id', $id)->where('type', 'permanent')->first() ? new AddressResource(Address::where('user_id', $id)->where('type', 'permanent')->first()) : null;
             $data['families_information'] = $user->families ? new FamilyInformation($user->families) : null;
             $data['partner_expectation'] = $user->partner_expectations ? new PartnerExpectationResource($user->partner_expectations) : null;
@@ -795,27 +697,6 @@ class ProfileController extends Controller
         return MatchedProfileResource::collection($matched_profiles);
     }
 
-    public function horoscope_matched_profile()
-    {
-        $matched_profiles = [];
-        $user = auth()->user();
-        if ($user->member->auto_horoscope_profile_match == 1) {
-            $matched_profiles = HoroscopeProfileMatch::orderBy('match_count', 'desc')
-                ->where('user_id', $user->id)
-                ->where('match_count', '>=', 18);
-            $ignored_to = IgnoredUser::where('ignored_by', $user->id)->pluck('user_id')->toArray();
-            if (count($ignored_to) > 0) {
-                $matched_profiles = $matched_profiles->whereNotIn('match_id', $ignored_to);
-            }
-            $ignored_by_ids = IgnoredUser::where('user_id', $user->id)->pluck('ignored_by')->toArray();
-            if (count($ignored_by_ids) > 0) {
-                $matched_profiles = $matched_profiles->whereNotIn('match_id', $ignored_by_ids);
-            }
-            $matched_profiles = $matched_profiles->limit(20)->get();
-        }
-        return HoroscopeMatchedProfileResource::collection($matched_profiles);
-    }
-
     public function account_delete(Request $request)
     {
         $user = auth()->user();
@@ -829,7 +710,6 @@ class ProfileController extends Controller
             Attitude::where('user_id', $user->id)->delete();
             Recidency::where('user_id', $user->id)->delete();
             Lifestyle::where('user_id', $user->id)->delete();
-            Astrology::where('user_id', $user->id)->delete();
             Family::where('user_id', $user->id)->delete();
             PartnerExpectation::where('user_id', $user->id)->delete();
             SpiritualBackground::where('user_id', $user->id)->delete();

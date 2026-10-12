@@ -204,7 +204,7 @@
                     <div class="row gutters-5">
                         <div class="col-sm-6 mb-2 mb-sm-0">
                             <a href="{{ route('member_profile', $user->id) }}" target="_blank" class="btn btn-luxury-outline btn-block btn-sm py-2">
-                                <i class="las la-file-download mr-1"></i>{{ translate('Download Biodata / PDF') }}
+                                <i class="las la-eye mr-1"></i>{{ translate('View Biodata') }}
                             </a>
                         </div>
                         <div class="col-sm-6">

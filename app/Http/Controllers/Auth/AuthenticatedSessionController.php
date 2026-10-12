@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\HoroscopeProfileMatchController;
 use App\Http\Controllers\ProfileMatchController;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\Astrology;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,11 +40,6 @@ class AuthenticatedSessionController extends Controller
             }
             
             $user  = User::where('id',Auth::user()->id)->first();
-    
-            if($user->member->auto_horoscope_profile_match ==  1){
-              $HoroscopeProfileMatchController = new HoroscopeProfileMatchController;
-              $HoroscopeProfileMatchController->match_profiles($user->id);
-            }
     
             if($user->member->auto_profile_match ==  1){
               $ProfileMatchController = new ProfileMatchController;

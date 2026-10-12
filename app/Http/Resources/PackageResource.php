@@ -25,7 +25,6 @@ class PackageResource extends JsonResource
             'profile_image_view'   => $this->profile_image_view,
             'gallery_image_view'   => $this->gallery_image_view,
             'auto_profile_match'   => $this->auto_profile_match,
-            'auto_horoscope_profile_match'   => $this->auto_horoscope_profile_match,
             'price'                => $this->price,
             'price_text'                => single_price($this->price),
             'validity'             => $this->validity

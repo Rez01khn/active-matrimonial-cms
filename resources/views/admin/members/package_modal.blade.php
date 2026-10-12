@@ -44,16 +44,7 @@
                   @endif
                 </td>
             </tr>
-            <tr>
-                <th>{{translate('Auto Horoscope Profile Match Show')}}</th>
-                <td>
-                  @if($member->auto_horoscope_profile_match == 1)
-                      <span class="badge badge-inline badge-success">{{translate('On')}}</span>
-                  @else
-                      <span class="badge badge-inline badge-danger">{{translate('Off')}}</span>
-                  @endif
-                </td>
-            </tr>
+
             <tr>
                 <th>{{translate('Validity')}}</th>
                 <td>

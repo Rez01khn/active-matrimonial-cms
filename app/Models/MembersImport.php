@@ -44,7 +44,6 @@ class MembersImport implements ToCollection
                         'remaining_contact_view'  => $package->contact,
                         'remaining_photo_gallery' => $package->photo_gallery,
                         'auto_profile_match'      => $package->auto_profile_match,
-                        'auto_horoscope_profile_match'      => $package->auto_horoscope_profile_match,
                         'package_validity'        => Date('Y-m-d', strtotime($package->validity." days")),
                     ]);
                 }

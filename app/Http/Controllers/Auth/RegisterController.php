@@ -19,6 +19,17 @@ use Illuminate\Support\Facades\Validator;
 use App\Notifications\DbStoreNotification;
 use App\Facades\FirebaseNotificationService as Larafirebase;
 use App\Http\Controllers\OTPVerificationController;
+use App\Models\OnBehalf;
+use App\Models\MaritalStatus;
+use App\Models\Religion;
+use App\Models\State;
+use App\Models\City;
+use App\Models\SpiritualBackground;
+use App\Models\PhysicalAttribute;
+use App\Models\Address;
+use App\Models\Career;
+use App\Models\PartnerExpectation;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -60,7 +71,12 @@ class RegisterController extends Controller
 
     public function showRegistrationForm()
     {
-        return view('frontend.user_registration');
+        $on_behalves = OnBehalf::all();
+        $marital_statuses = MaritalStatus::all();
+        $religions = Religion::all();
+        $states = State::all();
+        $cities = City::all();
+        return view('frontend.user_registration', compact('on_behalves', 'marital_statuses', 'religions', 'states', 'cities'));
     }
 
     protected function validator(array $data)
@@ -78,6 +94,19 @@ class RegisterController extends Controller
                 Rule::when(get_setting('google_recaptcha_activation') == 1 && get_setting('recaptcha_user_register') == 1 , ['required', new RecaptchaRule()], ['sometimes'])
             ],
             'checkbox_example_1'   => ['required', 'string'],
+            'marital_status_id'    => 'nullable|integer',
+            'religion_id'          => 'nullable|integer',
+            'height'               => 'nullable|numeric',
+            'state_id'             => 'nullable|integer',
+            'city_id'              => 'nullable|integer',
+            'profession'           => 'nullable|string|max:255',
+            'partner_marital_status_id' => 'nullable|integer',
+            'partner_religion_id'       => 'nullable|integer',
+            'partner_state_id'          => 'nullable|integer',
+            'partner_height'            => 'nullable|numeric',
+            'partner_profession'        => 'nullable|string|max:255',
+            'partner_age_min'           => 'nullable|integer',
+            'partner_age_max'           => 'nullable|integer',
         ],
         [
             //'on_behalf.required' => translate('on_behalf is required'),
@@ -107,60 +136,123 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $approval = get_setting('member_verification') == 1 ? 0 : 1;
-        if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $user = User::create([
-                'first_name'  => $data['first_name'],
-                'last_name'   => $data['last_name'],
-                'membership'  => 0,
-                'email'       => $data['email'],
-                'password'    => Hash::make($data['password']),
-                'code'        => unique_code(),
-                'approved'    => $approval,
-            ]);
-        } else {
-            if (addon_activation('otp_system')) {
-                $cleanPhone = preg_replace('/\D+/', '', $data['phone']);
+        return DB::transaction(function () use ($data) {
+            $approval = get_setting('member_verification') == 1 ? 0 : 1;
+            if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
                 $user = User::create([
                     'first_name'  => $data['first_name'],
                     'last_name'   => $data['last_name'],
                     'membership'  => 0,
-                    'phone'       => '+' . $data['country_code'] . $cleanPhone,
+                    'email'       => $data['email'],
                     'password'    => Hash::make($data['password']),
                     'code'        => unique_code(),
                     'approved'    => $approval,
-                    'verification_code' => rand(100000, 999999)
                 ]);
+            } else {
+                if (addon_activation('otp_system')) {
+                    $cleanPhone = preg_replace('/\D+/', '', $data['phone']);
+                    $user = User::create([
+                        'first_name'  => $data['first_name'],
+                        'last_name'   => $data['last_name'],
+                        'membership'  => 0,
+                        'phone'       => '+' . $data['country_code'] . $cleanPhone,
+                        'password'    => Hash::make($data['password']),
+                        'code'        => unique_code(),
+                        'approved'    => $approval,
+                        'verification_code' => rand(100000, 999999)
+                    ]);
+                }
             }
-        }
-        if (addon_activation('referral_system') && $data['referral_code'] != null) {
-            $reffered_user = User::where('code', '!=', null)->where('code', $data['referral_code'])->first();
-            if ($reffered_user != null) {
-                $user->referred_by = $reffered_user->id;
-                $user->save();
+
+            if (addon_activation('referral_system') && !empty($data['referral_code'])) {
+                $reffered_user = User::where('code', '!=', null)->where('code', $data['referral_code'])->first();
+                if ($reffered_user != null) {
+                    $user->referred_by = $reffered_user->id;
+                    $user->save();
+                }
             }
-        }
 
-        $member                             = new Member;
-        $member->user_id                    = $user->id;
-        $member->save();
-
-        $member->gender                     = $data['gender'];
-        $member->on_behalves_id             = $data['on_behalf'] ?? null;
-        $member->birthday                   = date('Y-m-d', strtotime($data['date_of_birth']));
-
-        $member->save();
-
-
-        // Account opening Email to member
-        if ($data['email'] != null  && env('MAIL_USERNAME') != null) {
-            $account_oppening_email = EmailTemplate::where('identifier', 'account_oppening_email')->first();
-            if ($account_oppening_email->status == 1) {
-                EmailUtility::account_oppening_email($user->id, $data['password']);
+            $member                 = new Member;
+            $member->user_id        = $user->id;
+            $member->gender         = $data['gender'];
+            $member->on_behalves_id = $data['on_behalf'] ?? null;
+            $member->birthday       = date('Y-m-d', strtotime($data['date_of_birth']));
+            if (!empty($data['marital_status_id'])) {
+                $member->marital_status_id = $data['marital_status_id'];
             }
-        }
+            $member->save();
 
-        return $user;
+            // Step 2: Spiritual / Religion
+            if (!empty($data['religion_id']) || !empty($data['caste_id'])) {
+                $spiritual = new SpiritualBackground;
+                $spiritual->user_id = $user->id;
+                $spiritual->religion_id = $data['religion_id'] ?? null;
+                $spiritual->caste_id = $data['caste_id'] ?? null;
+                $spiritual->save();
+            }
+
+            // Step 2: Physical Attribute (Height)
+            if (!empty($data['height'])) {
+                $physical = new PhysicalAttribute;
+                $physical->user_id = $user->id;
+                $physical->height = $data['height'];
+                $physical->save();
+            }
+
+            // Step 2: Present Address
+            if (!empty($data['state_id']) || !empty($data['city_id'])) {
+                $address = new Address;
+                $address->user_id = $user->id;
+                $address->type = 'present';
+                $address->country_id = 18; // Bangladesh default
+                $address->state_id = $data['state_id'] ?? null;
+                $address->city_id = $data['city_id'] ?? null;
+                $address->save();
+            }
+
+            // Step 2: Career / Profession
+            if (!empty($data['profession'])) {
+                $career = new Career;
+                $career->user_id = $user->id;
+                $career->designation = $data['profession'];
+                $career->save();
+            }
+
+            // Step 3: Partner Expectations
+            $partner = new PartnerExpectation;
+            $partner->user_id = $user->id;
+            if (!empty($data['partner_marital_status_id'])) {
+                $partner->marital_status_id = $data['partner_marital_status_id'];
+            }
+            if (!empty($data['partner_religion_id'])) {
+                $partner->religion_id = $data['partner_religion_id'];
+            }
+            if (!empty($data['partner_state_id'])) {
+                $partner->preferred_state_id = $data['partner_state_id'];
+            }
+            if (!empty($data['partner_height'])) {
+                $partner->height = $data['partner_height'];
+            }
+            if (!empty($data['partner_profession'])) {
+                $partner->profession = $data['partner_profession'];
+            }
+            if (!empty($data['partner_age_min']) || !empty($data['partner_age_max'])) {
+                $age_min = $data['partner_age_min'] ?? '18';
+                $age_max = $data['partner_age_max'] ?? '45';
+                $partner->general = 'Age: ' . $age_min . ' - ' . $age_max;
+            }
+            $partner->save();
+
+            // Account opening Email to member
+            if ($data['email'] != null && env('MAIL_USERNAME') != null) {
+                $account_oppening_email = EmailTemplate::where('identifier', 'account_oppening_email')->first();
+                if ($account_oppening_email && $account_oppening_email->status == 1) {
+                    EmailUtility::account_oppening_email($user->id, $data['password']);
+                }
+            }
+
+            return $user;
+        });
     }
 
     public function register(Request $request)

@@ -239,6 +239,15 @@
                     </ul>
                 </li>
 
+                <!-- Consultations & Meetings -->
+                <li class="aiz-side-nav-item">
+                    <a href="{{ route('admin.consultations.index') }}"
+                        class="aiz-side-nav-link {{ areActiveRoutes(['admin.consultations.index']) }}">
+                        <i class="las la-video aiz-side-nav-icon"></i>
+                        <span class="aiz-side-nav-text">{{ translate('Consultations') }}</span>
+                    </a>
+                </li>
+
                 <!-- Premium Packages -->
                 @can('show_packages')
                 <li class="aiz-side-nav-item">

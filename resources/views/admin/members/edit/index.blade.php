@@ -67,11 +67,6 @@
                                         role="tab" aria-controls="v-pills-settings"
                                         aria-selected="false">{{ translate('Life Style') }}</a>
                                 @endif
-                                @if (get_setting('member_astronomic_information_section') == 'on')
-                                    <a class="nav-link" id="v-pills-tab-13" data-toggle="pill"
-                                        href="#astronomic_information" role="tab" aria-controls="v-pills-settings"
-                                        aria-selected="false">{{ translate('Astronomic & Horoscope Information') }}</a>
-                                @endif
                                 @if (get_setting('member_permanent_address_section') == 'on')
                                     <a class="nav-link" id="v-pills-tab-14" data-toggle="pill" href="#permanent_address"
                                         role="tab" aria-controls="v-pills-settings"
@@ -184,12 +179,6 @@
                                     aria-labelledby="v-pills-settings-tab">
                                     <div class="card">
                                         @include('admin.members.edit.lifestyle')
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="astronomic_information" role="tabpanel"
-                                    aria-labelledby="v-pills-settings-tab">
-                                    <div class="card">
-                                        @include('admin.members.edit.astronomic_information')
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="permanent_address" role="tabpanel"

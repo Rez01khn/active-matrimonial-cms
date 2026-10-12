@@ -133,15 +133,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-md-3 col-form-label">{{translate('Auto Horoscope Profile Matching Show')}}</label>
-                            <div class="col-md-8 mt-3">
-                                <label class="aiz-switch aiz-switch-success mb-0">
-                                    <input type="checkbox" checked="checked" name="auto_horoscope_profile_match">
-                                    <span></span>
-                                </label>
-                            </div>
-                        </div>
+
 
                         <div class="form-group mb-3 text-right">
                             <button type="submit" class="btn btn-primary">{{translate('Add New Package')}}</button>

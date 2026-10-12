@@ -1,59 +1,95 @@
 <!-- Top Bar -->
 @php
-    $ticker_raw = get_setting('topbar_ticker_text') ?: 'Register Today & Get 4 Free Proposals!';
-    $ticker_text = trim(preg_replace('/[\x{1F300}-\x{1FAD6}\x{2600}-\x{27BF}]/u', '', $ticker_raw));
-    if (empty($ticker_text)) {
-        $ticker_text = 'Register Today & Get 4 Free Proposals!';
-    }
     $helpline = get_setting('header_helpline', get_setting('contact_phone', get_setting('header_helpline_no', '+01 112 352 566')));
     $helpline_clean = preg_replace('/[^0-9+]/', '', $helpline);
-    $facebook_link = get_setting('facebook_link') ?: '#';
-    $instagram_link = get_setting('instagram_link') ?: '#';
-    $youtube_link = get_setting('youtube_link') ?: '#';
+    $facebook_link = get_setting('facebook_link');
+    $instagram_link = get_setting('instagram_link');
+    $youtube_link = get_setting('youtube_link');
+    $has_any_social = !empty($facebook_link) || !empty($instagram_link) || !empty($youtube_link);
 @endphp
-<div class="top-navbar-matrimony" style="background-color: var(--mat-maroon-dark); color: #FFFFFF; font-size: 12px; height: 38px; line-height: 38px; overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-    <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-100">
-        <div class="d-flex align-items-center justify-content-between h-100">
+<div class="top-navbar-matrimony">
+    <div class="container h-100 topbar-container">
+        <div class="d-flex align-items-center justify-content-between h-100 text-xs">
 
-            <!-- Center: Pure Text Running Marquee Ticker (Strictly ONE single message, zero emojis) -->
-            <div class="topbar-center-marquee flex-grow-1 overflow-hidden whitespace-nowrap mr-3 position-relative" style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 1.5%, black 98.5%, transparent);">
-                @if(Auth::check())
-                    <span class="text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
-                        {{ translate('Welcome back,') }} <strong class="text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</strong> &middot; {{ translate('Member ID: #') . (Auth::user()->code ?: Auth::user()->id) }} @if(Auth::user()->membership == 2) <span class="badge badge-warning text-dark ml-1" style="font-size: 10px;">{{ translate('PREMIUM') }}</span> @endif
-                    </span>
-                @else
-                    <a href="{{ route('register') }}" class="topbar-marquee-track text-decoration-none hover:[animation-play-state:paused]" style="white-space: nowrap; text-decoration: none; cursor: pointer; display: inline-block;">
-                        <span class="topbar-marquee-item text-amber-200 text-xs font-medium tracking-wide" style="color: #FDE68A; font-size: 12px; font-weight: 500; letter-spacing: 0.025em;">
-                            {{ $ticker_text }}
+            @auth
+                <!-- Scenario B: Authenticated Member Identity (Centered in Middle) -->
+                <div class="topbar-auth-left d-none d-lg-flex align-items-center flex-shrink-0">
+                    <!-- Clean balance spacer -->
+                </div>
+
+                <div class="topbar-center-identity">
+                    <div class="topbar-member-identity d-flex align-items-center flex-shrink-0">
+                        <span class="topbar-member-greeting">
+                            <span class="topbar-prefix-text">{{ get_setting('topbar_member_prefix', 'Welcome back') }},</span>
+                            <strong class="font-weight-600 ml-1">{{ Auth::user()->name ?: Auth::user()->first_name }}</strong>
                         </span>
-                    </a>
-                @endif
-            </div>
+                        <span class="topbar-sep-dot">&middot;</span>
+                        <span class="topbar-member-code">
+                            ID: #{{ Auth::user()->code ?? Auth::id() }}
+                        </span>
+                        <span class="topbar-package-badge">
+                            [ {{ Auth::user()->member->current_package->name ?? (Auth::user()->member->package->name ?? translate('Free Member')) }} ]
+                        </span>
+                    </div>
+                </div>
 
-            <!-- Right: Dynamic Contact & Social Links -->
-            <div class="topbar-right d-flex align-items-center flex-shrink-0" style="gap: 12px;">
+                <div class="topbar-spacer d-none d-lg-block"></div>
+            @endauth
+
+            @guest
+                <!-- Scenario A: Visitor / Guest View - Left Balanced Spacer / Welcome -->
+                <div class="topbar-guest-left d-none d-lg-flex align-items-center flex-shrink-0">
+                    <span>{{ translate('Welcome to Matrimony') }}</span>
+                </div>
+
+                <!-- Scenario A: Dedicated Marquee Ticker (Strictly ONE single message, pure typography) -->
+                @php
+                    $ticker_raw = get_setting('topbar_ticker_text', 'Register Today & Get 4 Free Proposals!');
+                    $ticker_text = is_string($ticker_raw) ? trim(preg_replace('/[\x{1F300}-\x{1FAD6}\x{2600}-\x{27BF}]/u', '', $ticker_raw)) : '';
+                @endphp
+                @if(!empty($ticker_text))
+                    <div class="topbar-ticker-container">
+                        <div class="topbar-single-marquee">
+                            <span class="topbar-single-ticker-text">
+                                {{ $ticker_text }}
+                            </span>
+                        </div>
+                    </div>
+                @else
+                    <div class="topbar-spacer"></div>
+                @endif
+            @endguest
+
+            <!-- Right: Dynamic Contact & Social Links (Zero Collision) -->
+            <div class="topbar-right d-flex align-items-center flex-shrink-0">
                 @if(!empty($helpline))
-                    <!-- Helpline Phone -->
-                    <a href="tel:{{ $helpline_clean }}" class="d-flex align-items-center text-white text-decoration-none topbar-phone-link" style="color: #FFFFFF; text-decoration: none; font-size: 12px; font-weight: 500; transition: color 0.2s ease;">
-                        <span class="mr-1.5" style="margin-right: 6px; font-size: 12px;">{{ translate('Helpline') }}:</span>
-                        <span class="d-inline">{{ $helpline }}</span>
+                    <a href="tel:{{ $helpline_clean }}" class="d-flex align-items-center topbar-phone-link">
+                        <i class="las la-phone topbar-phone-icon fs-13"></i>
+                        <span class="d-none d-sm-inline topbar-phone-label">{{ translate('Helpline') }}:</span>
+                        <span class="font-weight-600">{{ $helpline }}</span>
                     </a>
                 @endif
 
-                <!-- Subtle 1px Divider -->
-                <span class="h-3.5 w-px bg-white/20 mx-3 d-inline-block" style="height: 14px; width: 1px; background-color: rgba(255, 255, 255, 0.2); margin-left: 12px; margin-right: 12px;"></span>
+                <!-- Vertical Divider -->
+                <span class="topbar-divider"></span>
 
-                <!-- Dynamic Social Media Icons (Always visible with fallback) -->
-                <div class="topbar-social-icons d-flex align-items-center" style="gap: 10px;">
-                    <a href="{{ $facebook_link }}" target="{{ $facebook_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="Facebook">
-                        <i class="lab la-facebook-f" style="font-size: 13px;"></i>
-                    </a>
-                    <a href="{{ $instagram_link }}" target="{{ $instagram_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="Instagram">
-                        <i class="lab la-instagram" style="font-size: 13px;"></i>
-                    </a>
-                    <a href="{{ $youtube_link }}" target="{{ $youtube_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="text-white topbar-social-link" style="color: #FFFFFF; opacity: 0.9; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;" title="YouTube">
-                        <i class="lab la-youtube" style="font-size: 13px;"></i>
-                    </a>
+                <!-- Dynamic Social Media Icons -->
+                <div class="topbar-social-icons d-flex align-items-center">
+                    @if(!empty($facebook_link) || !$has_any_social)
+                        <a href="{{ $facebook_link ?: '#' }}" target="{{ !empty($facebook_link) && $facebook_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="topbar-social-link" title="Facebook">
+                            <i class="lab la-facebook-f"></i>
+                        </a>
+                    @endif
+                    @if(!empty($instagram_link) || !$has_any_social)
+                        <a href="{{ $instagram_link ?: '#' }}" target="{{ !empty($instagram_link) && $instagram_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="topbar-social-link" title="Instagram">
+                            <i class="lab la-instagram"></i>
+                        </a>
+                    @endif
+                    @if(!empty($youtube_link) || !$has_any_social)
+                        <a href="{{ $youtube_link ?: '#' }}" target="{{ !empty($youtube_link) && $youtube_link != '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" class="topbar-social-link" title="YouTube">
+                            <i class="lab la-youtube"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
 

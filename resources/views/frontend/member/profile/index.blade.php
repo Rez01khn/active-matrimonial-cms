@@ -119,11 +119,6 @@
       @include('frontend.member.profile.lifestyle')
     @endif
 
-    <!-- Astronomic Information  -->
-    @if(get_setting('member_astronomic_information_section') == 'on')
-      @include('frontend.member.profile.astronomic_information')
-    @endif
-
     <!-- Permanent Address -->
     @php
         $permanent_address      = \App\Models\Address::where('type','permanent')->where('user_id',$member->id)->first();

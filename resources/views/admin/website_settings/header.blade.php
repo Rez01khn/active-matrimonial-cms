@@ -50,11 +50,19 @@
               </div>
           </div>
 					<div class="form-group row">
-              <label class="col-md-3 col-from-label">{{translate('Topbar Running Text (Ticker)')}}</label>
+              <label class="col-md-3 col-from-label">{{translate('Visitor Topbar Running Offer Text (Guest View)')}}</label>
               <div class="col-md-8">
                   <input type="hidden" name="types[]" value="topbar_ticker_text">
-                  <input type="text" name="topbar_ticker_text" class="form-control" placeholder="{{ translate('e.g., ✨ Register Today & Get 4 Free Proposals!') }}" value="{{ get_setting('topbar_ticker_text') }}">
-                  <small class="form-text text-muted">{{ translate('This text will scroll horizontally in the top bar marquee. Leave empty for default text.') }}</small>
+                  <input type="text" name="topbar_ticker_text" class="form-control" placeholder="{{ translate('e.g., Register Today & Get 4 Free Proposals!') }}" value="{{ get_setting('topbar_ticker_text') }}">
+                  <small class="form-text text-muted">{{ translate('This text will scroll horizontally in the top bar marquee for visitors/guests. Leave empty to hide.') }}</small>
+              </div>
+          </div>
+					<div class="form-group row">
+              <label class="col-md-3 col-from-label">{{translate('Member Welcome Prefix (Logged-in View)')}}</label>
+              <div class="col-md-8">
+                  <input type="hidden" name="types[]" value="topbar_member_prefix">
+                  <input type="text" name="topbar_member_prefix" class="form-control" placeholder="{{ translate('e.g., Welcome back, / Hello,') }}" value="{{ get_setting('topbar_member_prefix', 'Welcome back') }}">
+                  <small class="form-text text-muted">{{ translate('Prefix greeting shown before member name in top bar when logged in.') }}</small>
               </div>
           </div>
 					<div class="form-group row">

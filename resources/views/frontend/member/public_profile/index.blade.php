@@ -27,11 +27,13 @@
                             <div class="profile-hero-meta d-flex align-items-center flex-wrap mb-3">
                                 <i class="lar la-star fs-15 mr-1 profile-hero-gold-icon"></i>
                                 <span>
-                                    @if (!empty($user->member->birthday)){{ \Carbon\Carbon::parse($user->member->birthday)->age }} {{ translate('yrs') }}@endif{{ !empty($user->member->birthday) && !empty($user->physical_attributes->height) ? ', ' : '' }}{{ !empty($user->physical_attributes->height) ? $user->physical_attributes->height : '' }}
+                                    @if (!empty($user->member->birthday)){{ \Carbon\Carbon::parse($user->member->birthday)->age }}
+                                    {{ translate('yrs') }}@endif{{ !empty($user->member->birthday) && !empty($user->physical_attributes->height) ? ', ' : '' }}{{ !empty($user->physical_attributes->height) ? $user->physical_attributes->height : '' }}
                                 </span>
                                 <span class="mx-2 profile-hero-divider">|</span>
                                 <i class="las la-map-marker-alt fs-15 mr-1 profile-hero-gold-icon"></i>
-                                <span>{{ translate('Lives in') }} {{ $present_address->country->name ?? translate('Bangladesh') }}</span>
+                                <span>{{ translate('Lives in') }}
+                                    {{ $present_address->country->name ?? translate('Bangladesh') }}</span>
                             </div>
 
                             <!-- Line 3: Quote / Bio in Italic Serif -->
@@ -460,8 +462,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div id="about" class="collapse show accordion-body ml-3 ml-md-5 pl-25px lh-1-8"
-                                        data-parent="#profile-accordion">
+                                    <div id="about" class="collapse show accordion-body ml-3 ml-md-5 pl-25px lh-1-8">
                                         {{ $user->member->introduction }}
                                     </div>
                                 </div>
@@ -469,7 +470,7 @@
                                 <!-- basic information -->
                                 <div class="pb-4 accordion-item">
                                     <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                        data-toggle="collapse" data-target="#basic-info">
+                                        data-toggle="collapse" data-target="#basic-info" aria-expanded="true">
                                         <span
                                             class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -489,7 +490,7 @@
                                             <span class="fs-18 fw-600 d-block">{{ translate('Basic Information') }}</span>
                                         </div>
                                     </div>
-                                    <div id="basic-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                    <div id="basic-info" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                         <div class="border p-3">
                                             <div class="row no-gutters">
                                                 <div class="col-sm-6">
@@ -611,7 +612,7 @@
                                     <!-- Present Address -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#present-address">
+                                            data-toggle="collapse" data-target="#present-address" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -632,7 +633,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Present Address') }}</span>
                                             </div>
                                         </div>
-                                        <div id="present-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="present-address" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="border p-3">
@@ -691,7 +692,7 @@
                                 <!-- Contact Details -->
                                 <div class="pb-4 accordion-item">
                                     <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                        data-toggle="collapse" data-target="#contact-details">
+                                        data-toggle="collapse" data-target="#contact-details" aria-expanded="true">
                                         <span
                                             class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -712,7 +713,7 @@
                                             <span class="fs-18 fw-600 d-block">{{ translate('Contact Details') }}</span>
                                         </div>
                                     </div>
-                                    <div id="contact-details" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                    <div id="contact-details" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="border p-3">
@@ -788,7 +789,7 @@
                                     <!-- Education -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#education">
+                                            data-toggle="collapse" data-target="#education" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -808,7 +809,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Education') }}</span>
                                             </div>
                                         </div>
-                                        <div id="education" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="education" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <table class="table table-borderless border table-responsive">
                                                 <tbody>
                                                     <tr>
@@ -846,7 +847,7 @@
                                     <!-- Career -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#career">
+                                            data-toggle="collapse" data-target="#career" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="23.094" height="20.532"
@@ -860,7 +861,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Career') }}</span>
                                             </div>
                                         </div>
-                                        <div id="career" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="career" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <table class="table table-borderless border table-responsive">
                                                 <tbody>
                                                     <tr>
@@ -895,7 +896,7 @@
                                     <!-- Physical Attributes -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#physical-attributes">
+                                            data-toggle="collapse" data-target="#physical-attributes" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -922,7 +923,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Physical Attributes') }}</span>
                                             </div>
                                         </div>
-                                        <div id="physical-attributes" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="physical-attributes" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-sm-6">
@@ -1012,7 +1013,7 @@
                                     <!-- Language -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#language">
+                                            data-toggle="collapse" data-target="#language" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1039,7 +1040,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Language') }}</span>
                                             </div>
                                         </div>
-                                        <div id="language" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="language" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="border p-3">
@@ -1076,7 +1077,7 @@
                                     <!-- Hobbies & Interest  -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#hobby">
+                                            data-toggle="collapse" data-target="#hobby" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1097,7 +1098,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Hobbies & Interest') }}</span>
                                             </div>
                                         </div>
-                                        <div id="hobby" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="hobby" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1186,7 +1187,7 @@
                                     <!-- Personal Attitude & Behavior -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#personal-attitude">
+                                            data-toggle="collapse" data-target="#personal-attitude" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1207,7 +1208,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Personal Attitude & Behavior') }}</span>
                                             </div>
                                         </div>
-                                        <div id="personal-attitude" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="personal-attitude" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1261,7 +1262,7 @@
                                     <!-- Residency Information -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#residency-info">
+                                            data-toggle="collapse" data-target="#residency-info" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1283,7 +1284,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Residency Information') }}</span>
                                             </div>
                                         </div>
-                                        <div id="residency-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="residency-info" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1346,7 +1347,7 @@
                                     <!-- Spiritual & Social Background -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#spiritual-social">
+                                            data-toggle="collapse" data-target="#spiritual-social" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1374,7 +1375,7 @@
                                                     class="fs-18 fw-600 d-block">{{ translate('Spiritual & Social Background') }}</span>
                                             </div>
                                         </div>
-                                        <div id="spiritual-social" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="spiritual-social" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1450,7 +1451,7 @@
                                     <!-- Life Style -->
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#life-style">
+                                            data-toggle="collapse" data-target="#life-style" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1474,7 +1475,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Life Style') }}</span>
                                             </div>
                                         </div>
-                                        <div id="life-style" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="life-style" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-6">
@@ -1526,7 +1527,7 @@
                                 @if (get_setting('member_permanent_address_section') == 'on')
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#permanent-address">
+                                            data-toggle="collapse" data-target="#permanent-address" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1547,7 +1548,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Permanent Address') }}</span>
                                             </div>
                                         </div>
-                                        <div id="permanent-address" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="permanent-address" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
 
                                             @php
                                                 $permanent_address = \App\Models\Address::where('user_id', $user->id)
@@ -1604,7 +1605,7 @@
                                 @if (get_setting('member_family_information_section') == 'on')
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#family-info">
+                                            data-toggle="collapse" data-target="#family-info" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1628,7 +1629,7 @@
                                                 <span class="fs-18 fw-600 d-block">{{ translate('Family Information') }}</span>
                                             </div>
                                         </div>
-                                        <div id="family-info" class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                        <div id="family-info" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="col-md-12">
@@ -1704,7 +1705,7 @@
                                 @if (get_setting('additional_profile_section') == 'on')
                                     <div class="pb-4 accordion-item">
                                         <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#additional_profile_attributes">
+                                            data-toggle="collapse" data-target="#additional_profile_attributes" aria-expanded="true">
                                             <span
                                                 class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
                                                 <img src="{{ uploaded_asset(get_setting('additional_profile_section_icon')) }}"
@@ -1716,7 +1717,7 @@
                                             </div>
                                         </div>
                                         <div id="additional_profile_attributes"
-                                            class="collapse accordion-body ml-3 ml-md-5 pl-25px">
+                                            class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
                                             <div class="border p-3">
                                                 <div class="row no-gutters">
                                                     <div class="row">
@@ -2230,7 +2231,7 @@
         }
 
         var remaining_profile_image_view =
-                                    {{ get_remaining_package_value(Auth::user()->id, 'remaining_profile_image_view') }};
+                                        {{ get_remaining_package_value(Auth::user()->id, 'remaining_profile_image_view') }};
 
         function profile_pic_view_request(id) {
             if (!package_validity || remaining_profile_image_view < 1) {
@@ -2265,7 +2266,7 @@
         }
 
         var remaining_gallery_image_view =
-                                    {{ get_remaining_package_value(Auth::user()->id, 'remaining_gallery_image_view') }};
+                                        {{ get_remaining_package_value(Auth::user()->id, 'remaining_gallery_image_view') }};
 
         function gallery_image_view_request(id) {
             if (!package_validity || remaining_profile_image_view < 1) {

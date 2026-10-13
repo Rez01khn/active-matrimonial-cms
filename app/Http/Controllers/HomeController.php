@@ -34,6 +34,8 @@ use Mail;
 use Auth;
 use PDF;
 use App\Models\Upload;
+use App\Models\Chat;
+use App\Models\ChatThread;
 
 
 class HomeController extends Controller
@@ -207,17 +209,27 @@ class HomeController extends Controller
 
             $sent_interests_count = ExpressInterest::where('interested_by', $user->id)->count();
             $received_interests_count = ExpressInterest::where('user_id', $user->id)->count();
+            $new_proposals_count = ExpressInterest::where('user_id', $user->id)->where('status', 0)->count();
             $accepted_interests_count = ExpressInterest::where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)->orWhere('interested_by', $user->id);
             })->where('status', 1)->count();
             $shortlists_count = Shortlist::where('user_id', $user->id)->count();
+            $profile_views_count = ProfileViewer::where('user_id', $user->id)->count();
+            $unread_messages_count = Chat::whereIn('chat_thread_id', function ($q) use ($user) {
+                $q->select('id')->from('chat_threads')->where('sender_user_id', $user->id)->orWhere('receiver_user_id', $user->id);
+            })->where('sender_user_id', '!=', $user->id)->where('seen', 0)->count();
+            $total_interests_count = $sent_interests_count + $received_interests_count;
 
             return view('frontend.member.dashboard', compact(
                 'similar_profiles',
                 'sent_interests_count',
                 'received_interests_count',
+                'new_proposals_count',
                 'accepted_interests_count',
-                'shortlists_count'
+                'shortlists_count',
+                'profile_views_count',
+                'unread_messages_count',
+                'total_interests_count'
             ));
         } else {
             abort(404);

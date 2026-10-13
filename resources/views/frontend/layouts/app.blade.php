@@ -177,19 +177,23 @@ $lang = \App\Models\Language::where('code', $locale)->first();
     <div
         class="aiz-main-wrapper d-flex flex-column position-relative bg-white">
 
-        @hasSection('portal_header')
-            @yield('portal_header')
-        @else
-            @include('frontend.inc.header')
+        @if(!View::hasSection('hide_header'))
+            @hasSection('portal_header')
+                @yield('portal_header')
+            @else
+                @include('frontend.inc.header')
+            @endif
         @endif
 
         @yield('content')
 
-        @include('frontend.inc.footer')
+        @if(!View::hasSection('hide_footer'))
+            @include('frontend.inc.footer')
+        @endif
     </div>
 
     {{-- Floating Sticky Consultation CTA Button --}}
-    @if (!Route::is('consultations.index'))
+    @if (!Route::is('consultations.index') && !View::hasSection('hide_floating_cta'))
         @include('frontend.inc.floating_consultation')
     @endif
 

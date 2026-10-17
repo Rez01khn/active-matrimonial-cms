@@ -73,7 +73,8 @@ class SpiritualBackgroundController extends Controller
      {
          $this->rules = [
              'member_religion_id'   => [ 'required','max:255'],
-             'member_caste_id'      => [ 'required','max:255'],
+             'member_caste_id'      => [ 'nullable','max:255'],
+            'member_sub_caste_id'  => [ 'nullable','max:255'],
              'ethnicity'            => [ 'max:255'],
              'personal_value'       => [ 'max:255'],
              'community_value'      => [ 'max:255'],
@@ -104,8 +105,8 @@ class SpiritualBackgroundController extends Controller
          }
 
          $spiritual_backgrounds->religion_id        = $request->member_religion_id;
-         $spiritual_backgrounds->caste_id           = $request->member_caste_id;
-         $spiritual_backgrounds->sub_caste_id       = $request->member_sub_caste_id;
+         $spiritual_backgrounds->caste_id           = $request->member_caste_id ?: null;
+         $spiritual_backgrounds->sub_caste_id       = $request->member_sub_caste_id ?: null;
          $spiritual_backgrounds->ethnicity	       = $request->ethnicity;
          $spiritual_backgrounds->personal_value	   = $request->personal_value;
          $spiritual_backgrounds->family_value_id	   = $request->family_value_id;

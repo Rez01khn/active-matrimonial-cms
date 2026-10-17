@@ -392,11 +392,19 @@ class MemberController extends Controller
     {
         $member = Member::findOrFail($id);
         $member->introduction = $request->introduction;
-        if ($member->save()) {
-            flash('Member introduction info has been updated successfully')->success();
-            return back();
+        $member->save();
+
+        if ($request->has('expectations')) {
+            $partner_expectations = PartnerExpectation::where('user_id', $member->user_id)->first();
+            if (empty($partner_expectations)) {
+                $partner_expectations = new PartnerExpectation;
+                $partner_expectations->user_id = $member->user_id;
+            }
+            $partner_expectations->general = $request->expectations;
+            $partner_expectations->save();
         }
-        flash('Sorry! Something went wrong.')->error();
+
+        flash('Member additional info has been updated successfully')->success();
         return back();
     }
 
@@ -409,7 +417,7 @@ class MemberController extends Controller
             'date_of_birth' => ['required'],
             'on_behalf'     => ['nullable'],
             'marital_status' => ['required'],
-            'annual_salary_range' => ['required'],
+            'annual_salary_range' => ['nullable'],
         ];
         $this->messages = [
             'first_name.required'             => translate('First Name is required'),
@@ -420,7 +428,6 @@ class MemberController extends Controller
             'date_of_birth.required'          => translate('Date Of Birth is required'),
             // 'on_behalf.required'              => translate('On Behalf is required'),
             'marital_status.required'         => translate('Marital Status is required'),
-            'annual_salary_range.required'         => translate('Marital Status is required'),
         ];
 
         $rules = $this->rules;
@@ -445,6 +452,9 @@ class MemberController extends Controller
         }
         $user->photo        = $request->photo;
         $user->phone        = $request->phone;
+        if ($request->has('email') && !empty($request->email)) {
+            $user->email    = $request->email;
+        }
         $user->save();
 
         $member                     = Member::where('user_id', $request->id)->first();
@@ -453,7 +463,7 @@ class MemberController extends Controller
         $member->birthday           = date('Y-m-d', strtotime($request->date_of_birth));
         $member->marital_status_id  = $request->marital_status;
         $member->children           = $request->children;
-        $member->annual_salary_range_id = $request->annual_salary_range;
+        $member->annual_salary_range_id = $request->annual_salary_range ?: null;
 
         if ($member->save()) {
             flash('Member basic info  has been updated successfully')->success();
@@ -465,11 +475,12 @@ class MemberController extends Controller
 
     public function language_info_update(Request $request, $id)
     {
-        $member                     = Member::where('user_id', $request->id)->first();
-        $member->mothere_tongue     = $request->mothere_tongue;
-        $member->known_languages    = $request->known_languages;
+        $member = Member::where('user_id', $id)->first() ?? Member::where('user_id', $request->id)->first() ?? Member::find($id);
+        if ($member) {
+            $member->mothere_tongue = $request->mothere_tongue;
+            $member->known_languages = is_array($request->known_languages) ? json_encode($request->known_languages) : $request->known_languages;
+            $member->save();
 
-        if ($member->save()) {
             flash('Member language info has been updated successfully')->success();
             return back();
         }

@@ -814,18 +814,20 @@
                                                 <tbody>
                                                     <tr>
                                                         <th>{{ translate('Degree') }}</th>
+                                                        <th>{{ translate('Subject') }}</th>
                                                         <th>{{ translate('Institution') }}</th>
-                                                        <th>{{ translate('Start') }}</th>
-                                                        <th>{{ translate('End') }}</th>
+                                                        <th>{{ translate('Passing / End Year') }}</th>
+                                                        <th>{{ translate('CGPA / Result') }}</th>
                                                         <th>{{ translate('Status') }}</th>
                                                     </tr>
                                                     @php $educations = \App\Models\Education::where('user_id', $user->id)->orderBy('is_highest_degree', 'desc')->get(); @endphp
                                                     @foreach ($educations as $key => $education)
                                                         <tr>
                                                             <td>{{ $education->degree }}</td>
+                                                            <td>{{ $education->subject ?? '—' }}</td>
                                                             <td>{{ $education->institution }}</td>
-                                                            <td>{{ $education->start }}</td>
-                                                            <td>{{ $education->end }}</td>
+                                                            <td>{{ $education->end ?? '—' }}</td>
+                                                            <td>{{ $education->result ?? '—' }}</td>
                                                             <td>
                                                                 @if ($education->present == 1)
                                                                     <span
@@ -1047,10 +1049,10 @@
                                                         <table class="w-100">
                                                             <tbody>
                                                                 <tr>
-                                                                    <th>{{ translate('Mother Tangue') }}</th>
+                                                                    <th>{{ translate('Mother Tongue') }}</th>
                                                                     <td class="py-1">
-                                                                        @if (!empty($user->member->mothere_tongue) && $user->member->mothereTongue != null)
-                                                                            {{ $user->member->mothereTongue->name }}
+                                                                        @if (!empty($user->member->mothere_tongue))
+                                                                            {{ !empty($user->member->mothereTongue) ? $user->member->mothereTongue->name : $user->member->mothere_tongue }}
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -1058,9 +1060,14 @@
                                                                     <th>{{ translate('Known Languages') }}</th>
                                                                     <td class="py-1">
                                                                         @if (!empty($user->member->known_languages))
-                                                                            @foreach (json_decode($user->member->known_languages) as $key => $value)
-                                                                                {{ optional(\App\Models\MemberLanguage::where('id', $value)->first())->name }},
-                                                                            @endforeach
+                                                                            @php $decoded_langs = json_decode($user->member->known_languages, true); @endphp
+                                                                            @if(is_array($decoded_langs))
+                                                                                @foreach ($decoded_langs as $key => $value)
+                                                                                    {{ optional(\App\Models\MemberLanguage::where('id', $value)->first())->name ?? $value }}@if(!$loop->last), @endif
+                                                                                @endforeach
+                                                                            @else
+                                                                                {{ $user->member->known_languages }}
+                                                                            @endif
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -1106,72 +1113,18 @@
                                                             <tr>
                                                                 <th class="py-1">{{ translate('Hobbies') }}</th>
                                                                 <td class="py-1">
-                                                                    {{ $user->hobbies->hobbies ?? '' }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="py-1">{{ translate('Music') }}</th>
-                                                                <td class="py-1">
-                                                                    {{ $user->hobbies->music ?? '' }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="py-1">{{ translate('Movies') }}</th>
-                                                                <td class="py-1">
-                                                                    {{ $user->hobbies->movies ?? '' }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="py-1">{{ translate('Sports') }}</th>
-                                                                <td class="py-1">
-                                                                    {{ $user->hobbies->sports ?? '' }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="py-1">{{ translate('Cuisines') }}</th>
-                                                                <td class="py-1">
-                                                                    {{ $user->hobbies->cuisines ?? '' }}
+                                                                    {{ $user->hobbies->hobbies ?? '—' }}
                                                                 </td>
                                                             </tr>
                                                         </table>
                                                     </div>
-                                                    <div class="col-sm-6 border-sm-left ">
+                                                    <div class="col-sm-6 border-sm-left">
                                                         <table class="w-100 ml-sm-4">
                                                             <tbody>
                                                                 <tr>
-                                                                    <th class="py-1">{{ translate('Interests') }}
-                                                                    </th>
+                                                                    <th class="py-1">{{ translate('Interests') }}</th>
                                                                     <td class="py-1">
-                                                                        {{ $user->hobbies->interests ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Books') }}</th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->hobbies->books ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('TV Shows') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->hobbies->tv_shows ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Fitness Activities') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->hobbies->fitness_activities ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Dress Styles') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->hobbies->dress_styles ?? '' }}
+                                                                        {{ $user->hobbies->interests ?? '—' }}
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -1388,13 +1341,15 @@
                                                                         {{ $user->spiritual_backgrounds->religion->name ?? '' }}
                                                                     </td>
                                                                 </tr>
+                                                                @if (!empty($user->spiritual_backgrounds->sub_caste->name))
                                                                 <tr>
-                                                                    <th class="py-1">{{ translate('Sub Caste') }}
+                                                                    <th class="py-1">{{ (optional($user->spiritual_backgrounds->religion)->name == 'Hinduism') ? translate('Sub-Caste / Gotra') : translate('Sub Caste') }}
                                                                     </th>
                                                                     <td class="py-1">
-                                                                        {{ $user->spiritual_backgrounds->sub_caste->name ?? '' }}
+                                                                        {{ $user->spiritual_backgrounds->sub_caste->name }}
                                                                     </td>
                                                                 </tr>
+                                                                @endif
                                                                 <tr>
                                                                     <th class="py-1">
                                                                         {{ translate('Personal Value') }}
@@ -1417,12 +1372,14 @@
                                                     <div class="col-sm-6 border-sm-left ">
                                                         <table class="w-100 ml-sm-4">
                                                             <tbody>
+                                                                @if (!empty($user->spiritual_backgrounds->caste->name))
                                                                 <tr>
-                                                                    <th class="py-1">{{ translate('Caste') }}</th>
+                                                                    <th class="py-1">{{ (optional($user->spiritual_backgrounds->religion)->name == 'Hinduism') ? translate('Caste') : translate('Denomination / Sect') }}</th>
                                                                     <td class="py-1">
-                                                                        {{ $user->spiritual_backgrounds->caste->name ?? '' }}
+                                                                        {{ $user->spiritual_backgrounds->caste->name }}
                                                                     </td>
                                                                 </tr>
+                                                                @endif
                                                                 <tr>
                                                                     <th class="py-1">{{ translate('Ethnicity') }}
                                                                     </th>

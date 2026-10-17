@@ -3,8 +3,8 @@
         @foreach ($notifications as $key => $notification)
             @php
                 $check = 'done';
-                $notify_data = json_decode($notification->data);
-                $user_data = \App\Models\User::where('id', $notify_data->notify_by)->first();
+                $notify_data = is_array($notification->data) ? (object)$notification->data : json_decode($notification->data);
+                $user_data = !empty($notify_data->notify_by) ? \App\Models\User::where('id', $notify_data->notify_by)->first() : null;
             @endphp
             @if ($notify_data->type == 'express_interest')
                 @php

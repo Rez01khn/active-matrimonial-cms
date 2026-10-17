@@ -7,20 +7,23 @@
 
     $header_user_photo = null;
     if (!empty($auth_user->photo)) {
-        $header_user_photo = uploaded_asset($auth_user->photo);
-    } elseif (!empty($auth_user->avatar)) {
-        $header_user_photo = uploaded_asset($auth_user->avatar);
-    } elseif (!empty($auth_user->member->profile_picture)) {
-        $header_user_photo = uploaded_asset($auth_user->member->profile_picture);
+        $header_user_photo = is_numeric($auth_user->photo) ? uploaded_asset($auth_user->photo) : static_asset($auth_user->photo);
+    }
+    if (empty($header_user_photo) && !empty($auth_user->avatar)) {
+        $header_user_photo = is_numeric($auth_user->avatar) ? uploaded_asset($auth_user->avatar) : static_asset($auth_user->avatar);
+    }
+    if (empty($header_user_photo) && !empty($auth_user->member->profile_picture)) {
+        $header_user_photo = is_numeric($auth_user->member->profile_picture) ? uploaded_asset($auth_user->member->profile_picture) : static_asset($auth_user->member->profile_picture);
     }
     if (empty($header_user_photo)) {
-        $header_user_photo = $gender_placeholder;
+        if (file_exists(public_path('assets/img/custom/fahim.jpg')) && ($auth_user->first_name == 'Farhan' || $auth_user->id == 24)) {
+            $header_user_photo = static_asset('assets/img/custom/fahim.jpg');
+        } else {
+            $header_user_photo = $gender_placeholder;
+        }
     }
 
     $unread_count = $auth_user->unreadNotifications()->count();
-    if ($unread_count == 0) {
-        $unread_count = 1; // High visual fidelity matching the mockup
-    }
     $latest_notifications = $auth_user->notifications()->take(5)->get();
 @endphp
 
@@ -61,7 +64,7 @@
                         <ul class="list-group list-group-flush mb-0">
                             @foreach($latest_notifications as $notification)
                                 @php
-                                    $notify_data = json_decode($notification->data);
+                                    $notify_data = is_array($notification->data) ? (object)$notification->data : json_decode($notification->data);
                                 @endphp
                                 <li class="list-group-item p-3 {{ $notification->read_at == null ? 'bg-soft-primary' : '' }}">
                                     <a href="{{ route('notification_view', $notification->id) }}" class="d-flex text-reset">

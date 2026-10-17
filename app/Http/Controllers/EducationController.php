@@ -12,10 +12,12 @@ class EducationController extends Controller
     public function __construct()
     {
         $this->rules = [
-            'degree'          => [ 'required','max:255'],
-            'institution'     => [ 'required','max:255'],
-            'education_start' => [ 'required','numeric'],
-            'education_end'   => [ 'numeric', 'nullable'],
+            'degree'          => ['required', 'max:255'],
+            'institution'     => ['required', 'max:255'],
+            'subject'         => ['nullable', 'max:255'],
+            'result'          => ['nullable', 'max:255'],
+            'education_start' => ['nullable'],
+            'education_end'   => ['nullable'],
         ];
     }
 
@@ -33,22 +35,36 @@ class EducationController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['result' => false, 'message' => translate('Validation failed. Please check your inputs.')], 422);
+            }
             flash(translate('Something went wrong'))->error();
             return Redirect::back();
         }
 
         $education              = new Education;
-        $education->user_id     = $request->user_id;
+        $education->user_id     = $request->user_id ?? auth()->id();
         $education->degree      = $request->degree;
         $education->institution = $request->institution;
-        $education->start       = $request->education_start;
+        $education->subject     = ($request->subject === 'Other' && !empty($request->custom_subject)) ? $request->custom_subject : $request->subject;
+        $education->result      = $request->result;
+        $education->start       = $request->education_start ?? null;
         $education->end         = $request->education_end;
 
-        if($education->save()){
+        if ($education->save()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'result' => true,
+                    'message' => translate('Education Info has been added successfully'),
+                    'education' => $education
+                ]);
+            }
             flash(translate('Education Info has been added successfully'))->success();
             return back();
-        }
-        else {
+        } else {
+            if ($request->ajax()) {
+                return response()->json(['result' => false, 'message' => translate('Sorry! Something went wrong.')], 500);
+            }
             flash(translate('Sorry! Something went wrong.'))->error();
             return back();
         }
@@ -56,12 +72,11 @@ class EducationController extends Controller
 
     public function show($id){}
 
-
-     public function edit(Request $request)
-     {
-         $education = Education::findOrFail($request->id);
-         return view('frontend.member.profile.education.edit', compact('education'));
-     }
+    public function edit(Request $request)
+    {
+        $education = Education::findOrFail($request->id);
+        return view('frontend.member.profile.education.edit', compact('education'));
+    }
 
     public function update(Request $request, $id)
     {
@@ -69,6 +84,9 @@ class EducationController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['result' => false, 'message' => translate('Validation failed. Please check your inputs.')], 422);
+            }
             flash(translate('Something went wrong'))->error();
             return Redirect::back();
         }
@@ -76,14 +94,27 @@ class EducationController extends Controller
         $education              = Education::findOrFail($id);
         $education->degree      = $request->degree;
         $education->institution = $request->institution;
-        $education->start       = $request->education_start;
+        $education->subject     = ($request->subject === 'Other' && !empty($request->custom_subject)) ? $request->custom_subject : $request->subject;
+        $education->result      = $request->result;
+        if ($request->has('education_start')) {
+            $education->start   = $request->education_start;
+        }
         $education->end         = $request->education_end;
 
-        if($education->save()){
+        if ($education->save()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'result' => true,
+                    'message' => translate('Education Info has been updated successfully'),
+                    'education' => $education
+                ]);
+            }
             flash(translate('Education Info has been updated successfully'))->success();
             return back();
-        }
-        else {
+        } else {
+            if ($request->ajax()) {
+                return response()->json(['result' => false, 'message' => translate('Sorry! Something went wrong.')], 500);
+            }
             flash(translate('Sorry! Something went wrong.'))->error();
             return back();
         }
@@ -116,14 +147,20 @@ class EducationController extends Controller
 
     public function destroy($id)
     {
-        if(Education::destroy($id))
-        {
-            flash(translate('Education info has been deleted successfully'))->success();
-            return back();
+        $education = Education::findOrFail($id);
+        if ($education->user_id == auth()->id() || (auth()->user() && auth()->user()->user_type == 'admin')) {
+            if ($education->delete()) {
+                if (request()->ajax()) {
+                    return response()->json(['result' => true, 'message' => translate('Education info has been deleted successfully')]);
+                }
+                flash(translate('Education info has been deleted successfully'))->success();
+                return back();
+            }
         }
-        else {
-            flash(translate('Sorry! Something went wrong.'))->error();
-            return back();
+        if (request()->ajax()) {
+            return response()->json(['result' => false, 'message' => translate('Sorry! Something went wrong.')], 403);
         }
+        flash(translate('Sorry! Something went wrong.'))->error();
+        return back();
     }
 }

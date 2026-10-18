@@ -864,32 +864,33 @@
                                             </div>
                                         </div>
                                         <div id="career" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
-                                            <table class="table table-borderless border table-responsive">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>{{ translate('designation') }}</th>
-                                                        <th>{{ translate('company') }}</th>
-                                                        <th>{{ translate('Start') }}</th>
-                                                        <th>{{ translate('End') }}</th>
-                                                        <th>{{ translate('Status') }}</th>
-                                                    </tr>
-                                                    @php $careers = \App\Models\Career::where('user_id', $user->id)->orderBy('present', 'desc')->get(); @endphp
-                                                    @foreach ($careers as $key => $career)
+                                            @php $careers = \App\Models\Career::where('user_id', $user->id)->orderBy('present', 'desc')->get(); @endphp
+                                            @if($careers->count() > 0)
+                                                <table class="table table-borderless border table-responsive">
+                                                    <thead>
                                                         <tr>
-                                                            <td>{{ $career->designation }}</td>
-                                                            <td>{{ $career->company }}</td>
-                                                            <td>{{ $career->start }}</td>
-                                                            <td>{{ $career->end }}</td>
-                                                            <td>
-                                                                @if ($career->present == 1)
-                                                                    <span
-                                                                        class="badge badge-inline badge-success">{{ translate('Running') }}</span>
-                                                                @endif
-                                                            </td>
+                                                            <th>{{ translate('Profession / Status') }}</th>
+                                                            <th>{{ translate('Job Type / Sector') }}</th>
+                                                            <th>{{ translate('Occupation') }}</th>
+                                                            <th>{{ translate('Organization / Institution') }}</th>
+                                                            <th>{{ translate('Designation / Role') }}</th>
                                                         </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($careers as $key => $career)
+                                                            <tr>
+                                                                <td><span class="badge badge-inline badge-primary">{{ !empty($career->profession_status) ? translate($career->profession_status) : translate('Job Holder') }}</span></td>
+                                                                <td>{{ $career->job_type ?? '—' }}</td>
+                                                                <td>{{ $career->occupation ?? '—' }}</td>
+                                                                <td>{{ $career->company ?? '—' }}</td>
+                                                                <td>{{ $career->designation ?? '—' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <p class="text-muted mb-0">{{ translate('No career information provided.') }}</p>
+                                            @endif
                                         </div>
                                     </div>
                                 @endif
@@ -1136,80 +1137,7 @@
                                     </div>
                                 @endif
 
-                                @if (get_setting('member_personal_attitude_and_behavior_section') == 'on')
-                                    <!-- Personal Attitude & Behavior -->
-                                    <div class="pb-4 accordion-item">
-                                        <div class="accordion-head c-pointer d-flex align-items-center mb-4"
-                                            data-toggle="collapse" data-target="#personal-attitude" aria-expanded="true">
-                                            <span
-                                                class="size-50px border rounded-circle d-flex align-items-center justify-content-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="23.306" height="26.808"
-                                                    viewBox="0 0 23.306 26.808" class="fill-primary-grad">
-                                                    <g transform="translate(-0.5)">
-                                                        <path
-                                                            d="M122.448,136.226a.785.785,0,0,0-.555-.23h-4.206a.785.785,0,0,0,0,1.571H120l-4.052,4.052-2.419-2.419a.786.786,0,0,0-1.111,0l-2.974,2.974a.785.785,0,1,0,1.111,1.111l2.419-2.419,2.419,2.419a.785.785,0,0,0,1.111,0l4.608-4.608v2.31a.785.785,0,1,0,1.571,0v-4.206A.785.785,0,0,0,122.448,136.226Zm0,0"
-                                                            transform="translate(-103.018 -128.875)" class="fill-dark" />
-                                                        <path
-                                                            d="M12.926,0A10.892,10.892,0,0,0,2.046,10.747l-1.3,3.778a2.838,2.838,0,0,0,.064,2.506,1.226,1.226,0,0,0,1.006.523h.224v1.318A2.892,2.892,0,0,0,4.934,21.76a1.319,1.319,0,0,1,1.318,1.318v.841A2.892,2.892,0,0,0,9.14,26.808h5.889a2.892,2.892,0,0,0,2.888-2.889V20.548A10.88,10.88,0,0,0,12.926,0ZM16.8,19.344a.786.786,0,0,0-.458.714v3.861a1.319,1.319,0,0,1-1.318,1.318H9.14a1.319,1.319,0,0,1-1.318-1.318v-.841A2.892,2.892,0,0,0,4.934,20.19a1.319,1.319,0,0,1-1.318-1.318v-2.1a.785.785,0,0,0-.785-.785H2.075a2.456,2.456,0,0,1,.162-.949l1.337-3.9a.788.788,0,0,0,.042-.255A9.31,9.31,0,1,1,16.8,19.344Zm0,0"
-                                                            fill="url(#primary-gradient)" />
-                                                    </g>
-                                                </svg>
-                                            </span>
-                                            <div class="ml-4">
-                                                <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Personal Attitude & Behavior') }}</span>
-                                            </div>
-                                        </div>
-                                        <div id="personal-attitude" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
-                                            <div class="border p-3">
-                                                <div class="row no-gutters">
-                                                    <div class="col-md-6">
-                                                        <table class="w-100">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Affection') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->attitude->affection ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Political Views') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->attitude->political_views ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="col-sm-6 border-sm-left ">
-                                                        <table class="w-100 ml-sm-4">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Humor') }}</th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->attitude->humor ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Religious Service') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->attitude->religious_service ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+
 
                                 @if (get_setting('member_residency_information_section') == 'on')
                                     <!-- Residency Information -->
@@ -1325,7 +1253,7 @@
                                             </span>
                                             <div class="ml-4">
                                                 <span
-                                                    class="fs-18 fw-600 d-block">{{ translate('Spiritual & Social Background') }}</span>
+                                                    class="fs-18 fw-600 d-block">{{ translate('Religion') }}</span>
                                             </div>
                                         </div>
                                         <div id="spiritual-social" class="collapse show accordion-body ml-3 ml-md-5 pl-25px">
@@ -1350,22 +1278,6 @@
                                                                     </td>
                                                                 </tr>
                                                                 @endif
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Personal Value') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->spiritual_backgrounds->personal_value ?? '' }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th class="py-1">
-                                                                        {{ translate('Community Value') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->spiritual_backgrounds->community_value ?? '' }}
-                                                                    </td>
-                                                                </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -1380,13 +1292,6 @@
                                                                     </td>
                                                                 </tr>
                                                                 @endif
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('Ethnicity') }}
-                                                                    </th>
-                                                                    <td class="py-1">
-                                                                        {{ $user->spiritual_backgrounds->ethnicity ?? '' }}
-                                                                    </td>
-                                                                </tr>
                                                                 <tr>
                                                                     <th class="py-1">
                                                                         {{ translate('Family Value') }}
@@ -1626,28 +1531,25 @@
                                                                     <td class="py-1">{{ $user->families->no_of_sisters ?? '' }}
                                                                     </td>
                                                                 </tr>
+                                                                @php
+                                                                    $sibling_data = !empty(optional($user->families)->about_siblings) ? json_decode($user->families->about_siblings, true) : null;
+                                                                @endphp
+                                                                @if(!empty($sibling_data['brother_status']) && ($user->families->no_of_brothers ?? 0) > 0)
                                                                 <tr>
-                                                                    <th class="py-1">{{ translate('About Parents') }}</th>
-                                                                    <td width="70%">
-                                                                        <p class="mt-2">
-                                                                            {{ $user->families->about_parents ?? translate('N/A ')}}
-                                                                        </p>
+                                                                    <th class="py-1">{{ translate("Brother's Profession") }}</th>
+                                                                    <td class="py-1">
+                                                                        {{ $sibling_data['brother_status'] }}{{ !empty($sibling_data['brother_detail']) ? ' (' . $sibling_data['brother_detail'] . ')' : '' }}
                                                                     </td>
                                                                 </tr>
+                                                                @endif
+                                                                @if(!empty($sibling_data['sister_status']) && ($user->families->no_of_sisters ?? 0) > 0)
                                                                 <tr>
-                                                                    <th class="py-1">{{ translate('About Siblings') }}</th>
-                                                                    <td width="70%">
-                                                                        <p>{{ $user->families->about_siblings ?? translate('N/A') }}
-                                                                        </p>
+                                                                    <th class="py-1">{{ translate("Sister's Profession") }}</th>
+                                                                    <td class="py-1">
+                                                                        {{ $sibling_data['sister_status'] }}{{ !empty($sibling_data['sister_detail']) ? ' (' . $sibling_data['sister_detail'] . ')' : '' }}
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <th class="py-1">{{ translate('About Relatives') }}</th>
-                                                                    <td width="70%">
-                                                                        <p>{{ $user->families->about_relatives ?? translate('N/A') }}
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
+                                                                @endif
 
                                                             </tbody>
                                                         </table>
@@ -1698,145 +1600,249 @@
                         </div>
                         @if (get_setting('member_partner_expectation_section') == 'on')
                             <div class="tab-pane fade" id="preference">
-                                <!-- Partner Expectation -->
-                                <h2 class="text-primary fs-24 mb-5 pb-4 border-bottom">
-                                    {{ translate('Partner Expectation') }}
-                                </h2>
-                                <div class="">
-                                    <table class="table table-responsive">
-                                        <tr>
-                                            <th>{{ translate('General') }}</th>
-                                            <td>{{ $user->partner_expectations->general ?? '' }}
-                                            </td>
+                                @php
+                                    $pe = $user->partner_expectations;
+                                    $residence_country_name = optional(optional($pe)->residence_country)->name;
+                                    $preferred_country_name = optional(optional($pe)->preferred_country)->name;
+                                    $preferred_state_name = optional(optional($pe)->preferred_state)->name;
 
-                                            <th>{{ translate('Residence Country') }}</th>
-                                            <td>
-                                                @php
-                                                    $residence_country =
-                                                        $user->partner_expectations->residence_country_id ?? '';
-                                                    if (!empty($residence_country)) {
-                                                        echo \App\Models\Country::where(
-                                                            'id',
-                                                            $residence_country,
-                                                        )->first()->name;
-                                                    }
-                                                @endphp
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>{{ translate('Height') }}</th>
-                                            <td>{{ $user->partner_expectations->height ?? '' }}
-                                            </td>
+                                    $pe_rel_name = strtolower(optional(optional($pe)->religion)->name ?? '');
+                                    $pe_rel_id = optional($pe)->religion_id;
+                                    $is_pe_hindu = ($pe_rel_name === 'hinduism' || $pe_rel_id == 2);
+                                    $is_pe_islam = ($pe_rel_name === 'islam' || $pe_rel_id == 1);
+                                    $is_pe_christian = ($pe_rel_name === 'christianity' || $pe_rel_id == 3);
+                                    $is_pe_buddhist = ($pe_rel_name === 'buddhism' || $pe_rel_id == 4);
 
-                                            <th>{{ translate('weight') }}</th>
-                                            <td>{{ $user->partner_expectations->weight ?? '' }}
-                                            </td>
-                                        </tr>
+                                    $caste_label = translate('Sect / Mazhab / Caste');
+                                    if ($is_pe_islam) $caste_label = translate('Sect / Mazhab');
+                                    elseif ($is_pe_hindu) $caste_label = translate('Caste');
+                                    elseif ($is_pe_christian) $caste_label = translate('Denomination');
+                                    elseif ($is_pe_buddhist) $caste_label = translate('Sect / Community');
+                                @endphp
 
-                                        <tr>
-                                            <th>{{ translate('Marital Status') }}</th>
-                                            <td>{{ $user->partner_expectations->marital_status->name ?? '' }}
-                                            </td>
+                                <!-- Partner Expectation Header -->
+                                <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+                                    <div>
+                                        <h2 class="text-primary fs-22 fw-700 mb-1">
+                                            {{ translate('Partner Expectation') }}
+                                        </h2>
+                                        <p class="text-muted fs-13 mb-0">{{ translate('Desired qualities and requirements for life partner.') }}</p>
+                                    </div>
+                                    <span class="badge badge-inline badge-soft-primary px-3 py-2 rounded-pill fs-12 font-weight-bold">
+                                        <i class="las la-heart mr-1"></i> {{ translate('Preferences') }}
+                                    </span>
+                                </div>
 
-                                            <th>{{ translate('Children Acceptable') }}</th>
-                                            <td>{{ !empty($user->partner_expectations->children_acceptable) ? attribute_text_format($user->partner_expectations->children_acceptable) : '' }}
-                                            </td>
-                                        </tr>
+                                {{-- Hero General Expectation Note --}}
+                                @if (!empty(optional($pe)->general))
+                                    <div class="mb-4 p-4 rounded-xl position-relative shadow-sm" style="background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%); border: 1px solid #fed7d7; border-radius: 16px;">
+                                        <div class="d-flex align-items-start">
+                                            <span class="mr-3 text-primary fs-28 line-height-1 opacity-70"><i class="las la-quote-left"></i></span>
+                                            <div>
+                                                <h6 class="font-weight-bold text-dark fs-13 mb-1 text-uppercase" style="letter-spacing: 0.5px; color: #9b2c2c;">{{ translate('What I Am Looking For') }}</h6>
+                                                <p class="text-dark font-italic fs-15 mb-0" style="line-height: 1.6; font-family: Georgia, serif;">
+                                                    {{ $pe->general }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
 
-                                        <tr>
-                                            <th>{{ translate('Religion') }}</th>
-                                            <td>{{ $user->partner_expectations->religion->name ?? '' }}
-                                            </td>
+                                {{-- Modular Clean 5 Cards Grid --}}
+                                <div class="row">
+                                    {{-- Card 1: Basic & Physical Requirements --}}
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card border border-stone-200/80 rounded-xl shadow-none h-100 mb-0" style="border-radius: 14px; background: #fff;">
+                                            <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center" style="border-bottom: 1px solid #f1f1f1;">
+                                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center mr-3" style="width: 36px; height: 36px; background: #fff1f2; color: #e11d48; font-size: 18px;">
+                                                    <i class="las la-user-check"></i>
+                                                </span>
+                                                <h6 class="fs-15 fw-700 text-dark mb-0">{{ translate('Basic & Physical Requirements') }}</h6>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Min Height') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ !empty(optional($pe)->height) ? $pe->height . ' ft' : '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Max Weight') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ !empty(optional($pe)->weight) ? $pe->weight . ' kg' : '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Marital Status') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->marital_status)->name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Children Acceptable') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">
+                                                            @if(!empty(optional($pe)->children_acceptable))
+                                                                {{ optional($pe)->children_acceptable == 'dose_not_matter' ? translate('Does Not Matter') : ucfirst(optional($pe)->children_acceptable) }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-sm-0 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Complexion') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional($pe)->complexion ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Body Type') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional($pe)->body_type ?: '—' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                            <th>{{ translate('Caste') }}</th>
-                                            <td>{{ $user->partner_expectations->caste->name ?? '' }}
-                                            </td>
-                                        </tr>
+                                    {{-- Card 2: Religion & Community Preferences --}}
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card border border-stone-200/80 rounded-xl shadow-none h-100 mb-0" style="border-radius: 14px; background: #fff;">
+                                            <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center" style="border-bottom: 1px solid #f1f1f1;">
+                                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center mr-3" style="width: 36px; height: 36px; background: #ecfeff; color: #0891b2; font-size: 18px;">
+                                                    <i class="las la-place-of-worship"></i>
+                                                </span>
+                                                <h6 class="fs-15 fw-700 text-dark mb-0">{{ translate('Religion & Community') }}</h6>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Religion') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->religion)->name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ $caste_label }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->caste)->name ?: '—' }}</span>
+                                                    </div>
+                                                    @if ($is_pe_hindu && !empty(optional(optional($pe)->sub_caste)->name))
+                                                        <div class="col-sm-6 mb-3">
+                                                            <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Sub-Caste / Gotra') }}</span>
+                                                            <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->sub_caste)->name }}</span>
+                                                        </div>
+                                                    @endif
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Language / Mother Tongue') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->member_language)->name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Family Value') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional(optional($pe)->family_value)->name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-sm-0 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Personal Values') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional($pe)->personal_value ?: '—' }}</span>
+                                                    </div>
+                                                    @if ($is_pe_hindu && !empty(optional($pe)->manglik))
+                                                        <div class="col-sm-6">
+                                                            <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Manglik') }}</span>
+                                                            <span class="text-dark fs-14 fw-600">
+                                                                {{ optional($pe)->manglik == 'dose_not_matter' ? translate('Does Not Matter') : ucfirst(optional($pe)->manglik) }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <tr>
-                                            <th>{{ translate('Sub Caste') }}</th>
-                                            <td>{{ $user->partner_expectations->sub_caste->name ?? '' }}
-                                            </td>
+                                    {{-- Card 3: Education & Profession --}}
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card border border-stone-200/80 rounded-xl shadow-none h-100 mb-0" style="border-radius: 14px; background: #fff;">
+                                            <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center" style="border-bottom: 1px solid #f1f1f1;">
+                                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center mr-3" style="width: 36px; height: 36px; background: #f0fdf4; color: #16a34a; font-size: 18px;">
+                                                    <i class="las la-graduation-cap"></i>
+                                                </span>
+                                                <h6 class="fs-15 fw-700 text-dark mb-0">{{ translate('Education & Profession') }}</h6>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-sm-0 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Minimum Education') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional($pe)->education ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Profession / Career') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ optional($pe)->profession ?: '—' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                            <th>{{ translate('Language') }}</th>
-                                            <td>{{ $user->partner_expectations->member_language->name ?? '' }}
-                                            </td>
-                                        </tr>
+                                    {{-- Card 4: Location & Residence Preferences --}}
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card border border-stone-200/80 rounded-xl shadow-none h-100 mb-0" style="border-radius: 14px; background: #fff;">
+                                            <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center" style="border-bottom: 1px solid #f1f1f1;">
+                                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center mr-3" style="width: 36px; height: 36px; background: #fefce8; color: #ca8a04; font-size: 18px;">
+                                                    <i class="las la-map-marker-alt"></i>
+                                                </span>
+                                                <h6 class="fs-15 fw-700 text-dark mb-0">{{ translate('Location Preferences') }}</h6>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Residence Country') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ $residence_country_name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-3">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Preferred Country') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ $preferred_country_name ?: '—' }}</span>
+                                                    </div>
+                                                    <div class="col-sm-12">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Preferred State / Division') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">{{ $preferred_state_name ?: '—' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <tr>
-                                            <th>{{ translate('Education') }}</th>
-                                            <td>{{ $user->partner_expectations->education ?? '' }}
-                                            </td>
-
-                                            <th>{{ translate('Profession') }}</th>
-                                            <td>{{ $user->partner_expectations->profession ?? '' }}
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>{{ translate('Smoking Acceptable') }}</th>
-                                            <td>{{ !empty($user->partner_expectations->smoking_acceptable) ? attribute_text_format($user->partner_expectations->smoking_acceptable) : '' }}
-                                            </td>
-
-                                            <th>{{ translate('Drinking Acceptable') }}</th>
-                                            <td>{{ !empty($user->partner_expectations->drinking_acceptable) ? attribute_text_format($user->partner_expectations->drinking_acceptable) : '' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>{{ translate('Diet') }}</th>
-                                            <td>{{ !empty($user->partner_expectations->diet) ? attribute_text_format($user->partner_expectations->diet) : '' }}
-                                            </td>
-
-                                            <th>{{ translate('Body Type') }}</th>
-                                            <td>{{ $user->partner_expectations->body_type ?? '' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>{{ translate('Personal Value') }}</th>
-                                            <td>{{ $user->partner_expectations->personal_value ?? '' }}
-                                            </td>
-
-                                            <th>{{ translate('Manglik') }}</th>
-                                            <td>{{ !empty($user->partner_expectations->manglik) ? attribute_text_format($user->partner_expectations->manglik) : '' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>{{ translate('Preferred Country') }}</th>
-                                            <td>
-                                                @php
-                                                    $preferred_country =
-                                                        $user->partner_expectations->preferred_country_id ?? '';
-                                                    if (!empty($preferred_country)) {
-                                                        echo \App\Models\Country::where(
-                                                            'id',
-                                                            $preferred_country,
-                                                        )->first()->name;
-                                                    }
-                                                @endphp
-                                            </td>
-
-                                            <th>{{ translate('preferred_state_id') }}</th>
-                                            <td>
-                                                @php
-                                                    $preferred_state =
-                                                        $user->partner_expectations->preferred_state_id ?? '';
-                                                    if (!empty($preferred_state)) {
-                                                        echo \App\Models\State::where('id', $preferred_state)->first()
-                                                            ->name;
-                                                    }
-                                                @endphp
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>{{ translate('Family Value') }}</th>
-                                            <td>{{ $user->partner_expectations->family_value->name ?? '' }}
-                                            </td>
-
-                                            <th>{{ translate('complexion') }}</th>
-                                            <td>{{ $user->partner_expectations->complexion ?? '' }}
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    {{-- Card 5: Lifestyle & Habits --}}
+                                    <div class="col-lg-12 mb-2">
+                                        <div class="card border border-stone-200/80 rounded-xl shadow-none mb-0" style="border-radius: 14px; background: #fff;">
+                                            <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center" style="border-bottom: 1px solid #f1f1f1;">
+                                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center mr-3" style="width: 36px; height: 36px; background: #faf5ff; color: #9333ea; font-size: 18px;">
+                                                    <i class="las la-glass-martini-alt"></i>
+                                                </span>
+                                                <h6 class="fs-15 fw-700 text-dark mb-0">{{ translate('Lifestyle & Habits') }}</h6>
+                                            </div>
+                                            <div class="card-body p-4">
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-3 mb-md-0">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Diet Preference') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">
+                                                            @if(!empty(optional($pe)->diet))
+                                                                {{ optional($pe)->diet == 'dose_not_matter' ? translate('Does Not Matter') : (optional($pe)->diet == 'non_veg' ? translate('Non-Vegetarian') : (optional($pe)->diet == 'veg' ? translate('Vegetarian') : translate('Both'))) }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-4 mb-3 mb-md-0">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Smoking Acceptable') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">
+                                                            @if(!empty(optional($pe)->smoking_acceptable))
+                                                                {{ optional($pe)->smoking_acceptable == 'dose_not_matter' ? translate('Does Not Matter') : ucfirst(optional($pe)->smoking_acceptable) }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <span class="text-muted fs-12 text-uppercase d-block mb-1" style="letter-spacing: 0.5px;">{{ translate('Drinking Acceptable') }}</span>
+                                                        <span class="text-dark fs-14 fw-600">
+                                                            @if(!empty(optional($pe)->drinking_acceptable))
+                                                                {{ optional($pe)->drinking_acceptable == 'dose_not_matter' ? translate('Does Not Matter') : ucfirst(optional($pe)->drinking_acceptable) }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -1845,7 +1851,7 @@
 
                             @php
                                 $gallery_image_show = true;
-                                $gallery_image_privacy = get_setting('gallery_image_privacy');
+                                $gallery_image_privacy = $user->gallery_privacy ?? (get_setting('gallery_image_privacy') ?? 'only_me');
                             @endphp
 
                             @if ($gallery_image_privacy == 'only_me')
@@ -1924,7 +1930,7 @@
 
 
                                 @php
-                                    $gallery_image_privacy = get_setting('gallery_image_privacy');
+                                    $gallery_image_privacy = $user->gallery_privacy ?? (get_setting('gallery_image_privacy') ?? 'only_me');
                                     $gallery_photo_view_request = \App\Models\ViewGalleryImage::where(
                                         'user_id',
                                         $user->id,

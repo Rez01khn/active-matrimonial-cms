@@ -8588,7 +8588,18 @@ a.text-primary:focus {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.profile-data-col-grid.cols-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 991.98px) {
+  .profile-data-col-grid.cols-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 767.98px) {
+  .profile-data-col-grid.cols-5,
   .profile-data-col-grid.cols-4,
   .profile-data-col-grid.cols-3 {
     grid-template-columns: repeat(2, 1fr);
@@ -8596,6 +8607,7 @@ a.text-primary:focus {
 }
 
 @media (max-width: 575.98px) {
+  .profile-data-col-grid.cols-5,
   .profile-data-col-grid.cols-2,
   .profile-data-col-grid.cols-3,
   .profile-data-col-grid.cols-4 {

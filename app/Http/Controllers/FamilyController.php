@@ -73,17 +73,16 @@ class FamilyController extends Controller
      {
         // dd($request->all());
         $this->rules = [
-            'father'                => [ 'max:255'],
-            'father_occupation'     => [ 'max:255'],
-            'mother'                => [ 'max:255'],
-            'mother_occupation'     => [ 'max:255'],
-            'sibling'               => [ 'max:255'],
-            'no_of_brothers'        => [ 'numeric', 'max:30'],
-            'no_of_sisters'         => [ 'numeric', 'max:30'],
-            'about_parents'         => [ 'max:65535'],
-            'about_siblings'        => [ 'max:65535'],
-            'about_relatives'       => [ 'max:65535'],
-            
+            'father'                => [ 'nullable', 'max:255'],
+            'father_occupation'     => [ 'nullable', 'max:255'],
+            'mother'                => [ 'nullable', 'max:255'],
+            'mother_occupation'     => [ 'nullable', 'max:255'],
+            'sibling'               => [ 'nullable', 'max:255'],
+            'no_of_brothers'        => [ 'nullable', 'numeric', 'max:30'],
+            'no_of_sisters'         => [ 'nullable', 'numeric', 'max:30'],
+            'about_parents'         => [ 'nullable', 'max:65535'],
+            'about_siblings'        => [ 'nullable', 'max:65535'],
+            'about_relatives'       => [ 'nullable', 'max:65535'],
         ];
         $this->messages = [
             'father.max'                => translate('Max 255 characters'),
@@ -116,14 +115,69 @@ class FamilyController extends Controller
         }
 
         $family->father                 = $request->father;
-        $family->father_occupation      = $request->father_occupation;
+
+        // Dynamic Father occupation handling with sector & position
+        if ($request->filled('father_sector') || $request->filled('father_position')) {
+            $fSec = trim($request->father_sector ?? '');
+            $fPos = trim($request->father_position ?? '');
+            if ($fSec && $fPos) {
+                $family->father_occupation = $fSec . ' - ' . $fPos;
+            } elseif ($fSec) {
+                $family->father_occupation = $fSec;
+            } else {
+                $family->father_occupation = $fPos;
+            }
+        } elseif ($request->has('father_occupation')) {
+            $family->father_occupation  = $request->father_occupation;
+        }
+
         $family->mother                 = $request->mother;
-        $family->mother_occupation      = $request->mother_occupation;
+
+        // Dynamic Mother occupation handling with sector & position
+        if ($request->filled('mother_sector') || $request->filled('mother_position')) {
+            $mSec = trim($request->mother_sector ?? '');
+            $mPos = trim($request->mother_position ?? '');
+            if ($mSec && $mPos && strtolower($mSec) !== 'homemaker') {
+                $family->mother_occupation = $mSec . ' - ' . $mPos;
+            } elseif ($mSec) {
+                $family->mother_occupation = $mSec;
+            } else {
+                $family->mother_occupation = $mPos;
+            }
+        } elseif ($request->has('mother_occupation')) {
+            $family->mother_occupation  = $request->mother_occupation;
+        }
+
         $family->sibling                = $request->sibling;
-        $family->no_of_sisters          = $request->no_of_sisters;
-        $family->no_of_brothers         = $request->no_of_brothers;
-        $family->about_parents          = $request->about_parents;
-        $family->about_siblings         = $request->about_siblings;
+        $family->no_of_sisters          = $request->no_of_sisters ?? 0;
+        $family->no_of_brothers         = $request->no_of_brothers ?? 0;
+
+        // Structured parent info in about_parents JSON
+        if ($request->has('father_sector') || $request->has('mother_sector')) {
+            $parentData = [
+                'father_sector'   => $request->father_sector ?? '',
+                'father_position' => $request->father_position ?? '',
+                'mother_sector'   => $request->mother_sector ?? '',
+                'mother_position' => $request->mother_position ?? '',
+            ];
+            $family->about_parents = json_encode($parentData);
+        } else {
+            $family->about_parents      = $request->about_parents;
+        }
+
+        // Structured sibling info in about_siblings JSON
+        if ($request->has('brother_status') || $request->has('sister_status')) {
+            $siblingData = [
+                'brother_status' => $request->brother_status ?? '',
+                'brother_detail' => $request->brother_detail ?? '',
+                'sister_status'  => $request->sister_status ?? '',
+                'sister_detail'  => $request->sister_detail ?? '',
+            ];
+            $family->about_siblings = json_encode($siblingData);
+        } else {
+            $family->about_siblings     = $request->about_siblings;
+        }
+
         $family->about_relatives        = $request->about_relatives;
 
         if($family->save()){

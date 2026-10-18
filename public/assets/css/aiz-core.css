@@ -5747,6 +5747,7 @@ div.footable-loader > span.fooicon:after {
     -webkit-box-shadow: 0 5px 20px 0 rgba(38, 45, 58, 0.2);
     padding: 1.25rem 1.25rem;
     font-size: 0.875rem;
+    z-index: 9999 !important;
 }
 [dir="rtl"] .aiz-notify {
     text-align: right !important;

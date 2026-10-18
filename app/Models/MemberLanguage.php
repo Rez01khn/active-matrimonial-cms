@@ -9,6 +9,8 @@ class MemberLanguage extends Model
 {
   use SoftDeletes;
 
+  protected $fillable = ['name'];
+
   public function partner_expectations()
   {
       return $this->hasmany(PartnerExpectation::class)->withTrashed();

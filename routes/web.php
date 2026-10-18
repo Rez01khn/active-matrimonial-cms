@@ -172,6 +172,8 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
         Route::get('/gallery_image/create', [GalleryImageController::class, 'create'])->name('gallery-image_create');
         Route::post('/gallery_image/store', [GalleryImageController::class, 'store'])->name('gallery-image_store');
         Route::get('/gallery_image/destroy/{id}', [GalleryImageController::class, 'destroy'])->name('gallery_image.destroy');
+        Route::post('/gallery_image/set_profile_photo', [GalleryImageController::class, 'set_profile_photo'])->name('gallery_image.set_profile_photo');
+        Route::post('/gallery_image/update_privacy', [GalleryImageController::class, 'update_privacy'])->name('gallery_image.update_privacy');
 
         // Express Interest
         Route::resource('/express-interest', ExpressInterestController::class);

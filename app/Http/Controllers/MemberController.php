@@ -477,8 +477,73 @@ class MemberController extends Controller
     {
         $member = Member::where('user_id', $id)->first() ?? Member::where('user_id', $request->id)->first() ?? Member::find($id);
         if ($member) {
-            $member->mothere_tongue = $request->mothere_tongue;
-            $member->known_languages = is_array($request->known_languages) ? json_encode($request->known_languages) : $request->known_languages;
+            // Process mothere_tongue
+            if (!empty($request->mothere_tongue)) {
+                if (is_numeric($request->mothere_tongue)) {
+                    $member->mothere_tongue = (int)$request->mothere_tongue;
+                } else {
+                    $mothere_lang_name = trim($request->mothere_tongue);
+                    $mothere_lang = MemberLanguage::firstOrCreate(['name' => $mothere_lang_name]);
+                    $member->mothere_tongue = $mothere_lang->id;
+                }
+            } else {
+                $member->mothere_tongue = null;
+            }
+
+            // Process known_languages
+            if (!empty($request->known_languages)) {
+                if (is_array($request->known_languages)) {
+                    $known_ids = [];
+                    foreach ($request->known_languages as $item) {
+                        if (is_numeric($item)) {
+                            $known_ids[] = (string)$item;
+                        } else {
+                            $clean_item = trim($item);
+                            if (!empty($clean_item)) {
+                                $lang_obj = MemberLanguage::firstOrCreate(['name' => $clean_item]);
+                                $known_ids[] = (string)$lang_obj->id;
+                            }
+                        }
+                    }
+                    $member->known_languages = json_encode($known_ids);
+                } else {
+                    $raw_known = trim($request->known_languages);
+                    $decoded = json_decode($raw_known, true);
+                    if (is_array($decoded)) {
+                        $known_ids = [];
+                        foreach ($decoded as $item) {
+                            if (is_numeric($item)) {
+                                $known_ids[] = (string)$item;
+                            } else {
+                                $clean_item = trim($item);
+                                if (!empty($clean_item)) {
+                                    $lang_obj = MemberLanguage::firstOrCreate(['name' => $clean_item]);
+                                    $known_ids[] = (string)$lang_obj->id;
+                                }
+                            }
+                        }
+                        $member->known_languages = json_encode($known_ids);
+                    } else {
+                        $items = explode(',', $raw_known);
+                        $known_ids = [];
+                        foreach ($items as $item) {
+                            $clean_item = trim($item);
+                            if (!empty($clean_item)) {
+                                if (is_numeric($clean_item)) {
+                                    $known_ids[] = (string)$clean_item;
+                                } else {
+                                    $lang_obj = MemberLanguage::firstOrCreate(['name' => $clean_item]);
+                                    $known_ids[] = (string)$lang_obj->id;
+                                }
+                            }
+                        }
+                        $member->known_languages = json_encode($known_ids);
+                    }
+                }
+            } else {
+                $member->known_languages = null;
+            }
+
             $member->save();
 
             flash('Member language info has been updated successfully')->success();

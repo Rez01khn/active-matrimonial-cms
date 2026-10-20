@@ -209,7 +209,8 @@ class HomeController extends Controller
 
             $sent_interests_count = ExpressInterest::where('interested_by', $user->id)->count();
             $received_interests_count = ExpressInterest::where('user_id', $user->id)->count();
-            $new_proposals_count = ExpressInterest::where('user_id', $user->id)->where('status', 0)->count();
+            $new_interests_count = ExpressInterest::where('user_id', $user->id)->where('status', 0)->count();
+            $new_proposals_count = $new_interests_count;
             $accepted_interests_count = ExpressInterest::where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)->orWhere('interested_by', $user->id);
             })->where('status', 1)->count();
@@ -224,6 +225,7 @@ class HomeController extends Controller
                 'similar_profiles',
                 'sent_interests_count',
                 'received_interests_count',
+                'new_interests_count',
                 'new_proposals_count',
                 'accepted_interests_count',
                 'shortlists_count',

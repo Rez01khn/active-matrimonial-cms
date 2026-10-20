@@ -189,7 +189,15 @@
                             </div>
 
                             @if (Auth::user()->id != $user->id)
-                                <div class="mb-2 mt-4">
+                                <div class="mb-3">
+                                    <a href="{{ route('consultations.index', ['target' => $user->id]) }}"
+                                        class="btn btn-block py-2 shadow-sm d-flex align-items-center justify-content-center text-white"
+                                        style="background: linear-gradient(135deg, #800020 0%, #500014 100%); border-radius: 6px; font-weight: 700; font-size: 13px;">
+                                        <i class="las la-handshake fs-18 mr-2 text-warning"></i>
+                                        <span>{{ translate('Arrange Matchmaker Meeting') }}</span>
+                                    </a>
+                                </div>
+                                <div class="mb-2 mt-2">
                                     @php
                                         $shortlist = \App\Models\Shortlist::where('user_id', $user->id)
                                             ->where('shortlisted_by', Auth::user()->id)
@@ -2082,7 +2090,7 @@
         function express_interest(id) {
             if (!is_paid_user) {
                 $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
-                $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to express interest.') }}");
                 $('.package_update_alert_modal').modal('show');
                 return;
             }
@@ -2102,7 +2110,7 @@
                         AIZ.plugins.notify('success', '{{ translate('Interest expressed successfully!') }}');
                     } else if (data && data.status === 'upgrade_required') {
                         $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
-                        $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+                        $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to express interest.') }}");
                         $('.package_update_alert_modal').modal('show');
                         $("#interest_id_" + id).html("{{ translate('Interest') }}");
                         $("#interest_a_id_" + id).attr("onclick", "express_interest(" + id + ")");

@@ -143,7 +143,7 @@
     {
       if(!is_paid_user){
           $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
-          $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+          $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to express interest.') }}");
           $('.package_update_alert_modal').modal('show');
           return;
       }
@@ -162,7 +162,7 @@
           }
           else if (data && data.status === 'upgrade_required') {
             $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
-            $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to send matchmaking proposals.') }}");
+            $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to express interest.') }}");
             $('.package_update_alert_modal').modal('show');
             $("#interest_a_id_"+id).attr("onclick","express_interest("+id+")");
           }

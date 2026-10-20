@@ -8,6 +8,10 @@
 @section('hide_footer', true)
 @section('hide_floating_cta', true)
 
+@section('style')
+    @yield('style')
+@endsection
+
 @section('content')
 <div class="member-app-layout" id="memberAppLayout">
     <!-- Offcanvas Backdrop for Mobile / Tablet (< 1200px) -->

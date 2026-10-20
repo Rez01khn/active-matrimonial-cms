@@ -181,7 +181,9 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
             Route::get('/my-interests', 'index')->name('my_interests.index');
             Route::get('/interest/requests', 'interest_requests')->name('interest_requests');
             Route::post('/interest/accept', 'accept_interest')->name('accept_interest');
+            Route::post('/interest/requests/accept', 'accept_interest')->name('interest_requests.accept');
             Route::post('/interest/reject', 'reject_interest')->name('reject_interest');
+            Route::post('/interest/requests/reject', 'reject_interest')->name('interest_requests.reject');
         });
 
         // Chat
@@ -244,6 +246,7 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
         Route::controller(ConsultationController::class)->group(function () {
             Route::get('/consultations', 'index')->name('consultations.index');
             Route::post('/consultations', 'store')->name('consultations.store');
+            Route::post('/consultations/cancel/{id}', 'cancel')->name('consultations.cancel');
         });
 
         Route::resource('profile-viewers', ProfileViewerController::class);

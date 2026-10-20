@@ -53,7 +53,7 @@
               <label class="col-md-3 col-from-label">{{translate('Visitor Topbar Running Offer Text (Guest View)')}}</label>
               <div class="col-md-8">
                   <input type="hidden" name="types[]" value="topbar_ticker_text">
-                  <input type="text" name="topbar_ticker_text" class="form-control" placeholder="{{ translate('e.g., Register Today & Get 4 Free Proposals!') }}" value="{{ get_setting('topbar_ticker_text') }}">
+                  <input type="text" name="topbar_ticker_text" class="form-control" placeholder="{{ translate('e.g., Register Today & Get 4 Free Interests!') }}" value="{{ get_setting('topbar_ticker_text') }}">
                   <small class="form-text text-muted">{{ translate('This text will scroll horizontally in the top bar marquee for visitors/guests. Leave empty to hide.') }}</small>
               </div>
           </div>

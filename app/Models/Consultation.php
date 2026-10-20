@@ -10,6 +10,8 @@ class Consultation extends Model
 {
     protected $fillable = [
         'user_id',
+        'target_user_id',
+        'meeting_type',
         'phone',
         'preferred_date',
         'preferred_slot',
@@ -28,5 +30,10 @@ class Consultation extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function targetUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'target_user_id');
     }
 }

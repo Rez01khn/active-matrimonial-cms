@@ -1,21 +1,19 @@
 @php
     $auth_user = Auth::user();
     
-    // Dynamic counts for sidebar badges
-    $sidebar_proposals_badge = \App\Models\ExpressInterest::where('user_id', $auth_user->id)->where('status', 0)->count();
-    if ($sidebar_proposals_badge == 0) {
-        $sidebar_proposals_badge = \App\Models\ExpressInterest::where('user_id', $auth_user->id)->count();
-    }
+    // Unseen interest requests: incoming pending requests created after the user last viewed the interest page
+    $last_interest_viewed = session('interest_requests_last_viewed_at');
+    $sidebar_interests_badge = \App\Models\ExpressInterest::where('user_id', $auth_user->id)
+        ->where('status', 0)
+        ->when($last_interest_viewed, function ($q, $last_viewed) {
+            $q->where('created_at', '>', $last_viewed);
+        })
+        ->count();
     
+    // Real unread chat messages count
     $sidebar_messages_badge = \App\Models\Chat::whereIn('chat_thread_id', function ($q) use ($auth_user) {
         $q->select('id')->from('chat_threads')->where('sender_user_id', $auth_user->id)->orWhere('receiver_user_id', $auth_user->id);
     })->where('sender_user_id', '!=', $auth_user->id)->where('seen', 0)->count();
-    if ($sidebar_messages_badge == 0) {
-        $sidebar_messages_badge = 5; // Clean mockup visual fidelity fallback
-    }
-    if ($sidebar_proposals_badge == 0) {
-        $sidebar_proposals_badge = 2; // Clean mockup visual fidelity fallback
-    }
 @endphp
 
 <aside class="member-dark-sidebar transition-transform duration-300 ease-in-out" id="memberDarkSidebar">
@@ -61,18 +59,18 @@
             </a>
         </li>
 
-        <!-- Proposals & Interests (Badge: 2) -->
+        <!-- Interest -->
         <li class="member-dark-nav-item">
-            <a href="{{ route('my_interests.index') }}" class="member-dark-nav-link {{ areActiveRoutes(['my_interests.index', 'interest_requests']) }}">
+            <a href="{{ route('interest_requests') }}" class="member-dark-nav-link {{ areActiveRoutes(['interest_requests', 'my_interests.index']) }}">
                 <i class="las la-heart"></i>
-                <span>{{ translate('Proposals & Interests') }}</span>
-                @if($sidebar_proposals_badge > 0)
-                    <span class="badge-counter">{{ $sidebar_proposals_badge }}</span>
+                <span>{{ translate('Interest') }}</span>
+                @if($sidebar_interests_badge > 0)
+                    <span class="badge-counter">{{ $sidebar_interests_badge }}</span>
                 @endif
             </a>
         </li>
 
-        <!-- Messages (Badge: 5) -->
+        <!-- Messages -->
         <li class="member-dark-nav-item">
             <a href="{{ route('all.messages') }}" class="member-dark-nav-link {{ areActiveRoutes(['all.messages']) }}">
                 <i class="las la-comment-alt"></i>
@@ -80,6 +78,14 @@
                 @if($sidebar_messages_badge > 0)
                     <span class="badge-counter">{{ $sidebar_messages_badge }}</span>
                 @endif
+            </a>
+        </li>
+
+        <!-- Matchmaker Meeting -->
+        <li class="member-dark-nav-item">
+            <a href="{{ route('consultations.index') }}" class="member-dark-nav-link {{ areActiveRoutes(['consultations.index']) }}">
+                <i class="las la-calendar-check"></i>
+                <span class="text-nowrap">{{ translate('Matchmaker Meeting') }}</span>
             </a>
         </li>
 

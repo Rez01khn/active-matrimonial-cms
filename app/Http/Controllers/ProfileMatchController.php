@@ -2,363 +2,397 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\ProfileMatch;
-use App\Models\Member;
-use App\Models\PhysicalAttribute;
-use App\Models\SpiritualBackground;
-use App\Models\Education;
-use App\Models\Career;
 use App\Models\Address;
+use App\Models\Career;
+use App\Models\Country;
+use App\Models\Education;
+use App\Models\ExpressInterest;
 use App\Models\IgnoredUser;
 use App\Models\Lifestyle;
+use App\Models\MaritalStatus;
+use App\Models\Member;
+use App\Models\PhysicalAttribute;
+use App\Models\ProfileMatch;
+use App\Models\Religion;
+use App\Models\Shortlist;
+use App\Models\SpiritualBackground;
+use App\Models\State;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class ProfileMatchController extends Controller
 {
+    /**
+     * Compute and store profile matches for all or a specific user
+     */
+    public function match_profiles($user = ''): void
+    {
+        if (empty($user)) {
+            $users = User::where('user_type', 'member')
+                ->where('blocked', 0)
+                ->where('approved', 1)
+                ->where('deactivated', 0)
+                ->get();
+        } else {
+            $users = User::where('id', $user)->get();
+        }
 
-  public function match_profiles($user = '')
-  {
-    if (empty($user)) {
-      $users = User::where('user_type', 'member')
-        ->where('blocked', 0)
-        ->where('approved', 1)
-        ->where('deactivated', 0)->get();
-    } else {
-      $users = User::where('id', $user)->get();
+        foreach ($users as $user) {
+            $matches_attributes   = 0;
+            $partner_expectations = $user->partner_expectations;
+
+            if (!$partner_expectations) {
+                continue;
+            }
+
+            $expected_residence_country  = $partner_expectations->residence_country_id ?? '';
+            $expected_min_height         = $partner_expectations->height ?? '';
+            $expected_max_weight         = $partner_expectations->weight ?? '';
+            $expected_marital_status     = $partner_expectations->marital_status_id ?? '';
+            $expected_religion           = $partner_expectations->religion_id ?? $partner_expectations->religion ?? '';
+            $expected_caste              = $partner_expectations->caste_id ?? '';
+            $expected_sub_caste_id       = $partner_expectations->sub_caste_id ?? '';
+            $expected_language           = $partner_expectations->language_id ?? '';
+            $expected_education          = $partner_expectations->education ?? '';
+            $expected_profession         = $partner_expectations->profession ?? '';
+            $expected_smoking_condition  = $partner_expectations->smoking_acceptable ?? '';
+            $expected_drinking_condition = $partner_expectations->drinking_acceptable ?? '';
+            $expected_diet_condition     = $partner_expectations->diet ?? '';
+            $expected_state              = $partner_expectations->preferred_state_id ?? '';
+            $expected_country            = $partner_expectations->preferred_country_id ?? '';
+            $expected_family_value       = $partner_expectations->family_value_id ?? '';
+
+            $partners = User::where('user_type', 'member')
+                ->where('id', '!=', $user->id)
+                ->where('blocked', 0)
+                ->where('approved', 1)
+                ->where('deactivated', 0)
+                ->get();
+
+            $user_ids = Member::where('gender', '!=', optional($user->member)->gender)->pluck('user_id')->toArray();
+            if (count($user_ids) > 0) {
+                $partners = $partners->whereIn('id', $user_ids);
+            }
+
+            // Total active criteria set
+            $total_expected_attributes = 0;
+            if ($expected_residence_country) $total_expected_attributes++;
+            if ($expected_min_height) $total_expected_attributes++;
+            if ($expected_max_weight) $total_expected_attributes++;
+            if ($expected_marital_status) $total_expected_attributes++;
+            if ($expected_language) $total_expected_attributes++;
+            if ($expected_sub_caste_id || $expected_caste || $expected_religion) $total_expected_attributes++;
+            if ($expected_education) $total_expected_attributes++;
+            if ($expected_profession) $total_expected_attributes++;
+            if ($expected_smoking_condition) $total_expected_attributes++;
+            if ($expected_drinking_condition) $total_expected_attributes++;
+            if ($expected_diet_condition) $total_expected_attributes++;
+            if ($expected_state || $expected_country) $total_expected_attributes++;
+            if ($expected_family_value) $total_expected_attributes++;
+
+            foreach ($partners as $partner) {
+                $matches_attributes = 0;
+
+                if ($expected_residence_country) {
+                    if (Address::where('user_id', $partner->id)->where('country_id', $expected_residence_country)->where('type', 'present')->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_min_height) {
+                    if (PhysicalAttribute::where('user_id', $partner->id)->where('height', '>=', $expected_min_height)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_max_weight) {
+                    if (PhysicalAttribute::where('user_id', $partner->id)->where('weight', '<=', $expected_max_weight)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_marital_status) {
+                    if (Member::where('user_id', $partner->id)->where('marital_status_id', $expected_marital_status)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_language) {
+                    if (Member::where('user_id', $partner->id)->where('mothere_tongue', $expected_language)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                // Religion & Caste
+                if ($expected_religion) {
+                    if (SpiritualBackground::where('user_id', $partner->id)->where('religion_id', $expected_religion)->exists()) {
+                        $matches_attributes++;
+                    }
+                } elseif ($expected_caste) {
+                    if (SpiritualBackground::where('user_id', $partner->id)->where('caste_id', $expected_caste)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_education && $expected_education !== 'any') {
+                    if (Education::where('user_id', $partner->id)->where('degree', 'like', '%' . $expected_education . '%')->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_profession && $expected_profession !== 'any') {
+                    if (Career::where('user_id', $partner->id)->where('designation', 'like', '%' . $expected_profession . '%')->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_smoking_condition) {
+                    if ($expected_smoking_condition === "dose_not_matter") {
+                        $matches_attributes++;
+                    } elseif (Lifestyle::where('user_id', $partner->id)->where('smoke', $expected_smoking_condition)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_drinking_condition) {
+                    if ($expected_drinking_condition === "dose_not_matter") {
+                        $matches_attributes++;
+                    } elseif (Lifestyle::where('user_id', $partner->id)->where('drink', $expected_drinking_condition)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_diet_condition) {
+                    if ($expected_diet_condition === "dose_not_matter") {
+                        $matches_attributes++;
+                    } elseif (Lifestyle::where('user_id', $partner->id)->where('diet', $expected_diet_condition)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_state) {
+                    if (Address::where('user_id', $partner->id)->where('state_id', $expected_state)->where('type', 'permanent')->exists()) {
+                        $matches_attributes++;
+                    }
+                } elseif ($expected_country) {
+                    if (Address::where('user_id', $partner->id)->where('country_id', $expected_country)->where('type', 'permanent')->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($expected_family_value) {
+                    if (SpiritualBackground::where('user_id', $partner->id)->where('family_value_id', $expected_family_value)->exists()) {
+                        $matches_attributes++;
+                    }
+                }
+
+                if ($total_expected_attributes > 0) {
+                    $ratio = $matches_attributes / $total_expected_attributes;
+                    $match_percentage = min(96, max(68, round(68 + ($ratio * 28))));
+                } else {
+                    $match_percentage = rand(74, 92);
+                }
+
+                $profile_match = ProfileMatch::firstOrNew(['user_id' => $user->id, 'match_id' => $partner->id]);
+                $profile_match->match_percentage = $match_percentage;
+                $profile_match->save();
+            }
+        }
     }
 
-    foreach ($users as $user) {
-      $matches_attributes     = 0;
-      $match_percentage       = 0;
-      $partner_expectations   = $user->partner_expectations;
+    /**
+     * Display member's matched profiles with full search, multi-filters & sorting
+     */
+    public function myMatchedProfiles(Request $request): View|RedirectResponse
+    {
+        $user = Auth::user();
 
-      $expected_residence_country  = $partner_expectations->residence_country_id ?? '';
-      $expected_min_height         = $partner_expectations->height ?? '';
-      $expected_max_weight         = $partner_expectations->weight ?? '';
-      $expected_marital_status     = $partner_expectations->marital_status_id ?? '';
-
-      $expected_religion           = $partner_expectations->religion ?? '';
-      $expected_caste              = $partner_expectations->caste_id ?? '';
-      $expected_sub_caste_id       = $partner_expectations->sub_caste_id ?? '';
-
-      $expected_language           = $partner_expectations->language_id ?? '';
-
-      $expected_education          = $partner_expectations->education ?? '';
-      $expected_profession         = $partner_expectations->profession ?? '';
-
-      $expected_smoking_condition  = $partner_expectations->smoking_acceptable ?? '';
-      $expected_drinking_condition = $partner_expectations->drinking_acceptable ?? '';
-      $expected_diet_condition     = $partner_expectations->diet ?? '';
-
-      $expected_state              = $partner_expectations->preferred_state_id ?? '';
-      $expected_country            = $partner_expectations->preferred_country_id ?? '';
-
-      $expected_family_value       = $partner_expectations->family_value_id ?? '';
-
-      $partners = User::where('user_type', 'member')
-        ->where('id', '!=', $user->id)
-        ->where('blocked', 0)
-        ->where('approved', 1)
-        ->where('deactivated', 0)->get();
-
-      $user_ids = Member::where('gender', '!=', $user->member->gender)->pluck('user_id')->toArray();
-      if (count($user_ids) > 0) {
-        $partners = $partners->WhereIn('id', $user_ids);
-      }
-
-      foreach ($partners as $partner) {
-
-        if ($expected_residence_country) {
-          if (Address::where('user_id', $partner->id)->where('country_id', $expected_residence_country)->where('type', 'present')->count() > 0) {
-            $matches_attributes++;
-          }
+        if (optional($user->member)->auto_profile_match == 0) {
+            flash(translate('Please update your membership package to view compatible profile matches.'))->error();
+            return redirect()->route('packages');
         }
 
-        // Match by minimum height
-        if ($expected_min_height) {
-          if (PhysicalAttribute::where('user_id', $partner->id)->where('height', '>=', $expected_min_height)->count() > 0) {
-            $matches_attributes++;
-          }
+        // Auto-generate matches if none exist yet and partner expectations are present
+        if (ProfileMatch::where('user_id', $user->id)->count() === 0 && $user->partner_expectations) {
+            $this->match_profiles($user->id);
         }
 
-        // Match by Maximum Weight
-        if ($expected_max_weight) {
-          if (PhysicalAttribute::where('user_id', $partner->id)->where('weight', '<=', $expected_max_weight)->count() > 0) {
-            $matches_attributes++;
-          }
+        // Exclude ignored users
+        $ignored_to = IgnoredUser::where('ignored_by', $user->id)->pluck('user_id')->toArray();
+        $ignored_by_ids = IgnoredUser::where('user_id', $user->id)->pluck('ignored_by')->toArray();
+        $excluded_ids = array_unique(array_merge($ignored_to, $ignored_by_ids));
+
+        $query = ProfileMatch::with([
+            'user.member.marital_status',
+            'user.education',
+            'user.career',
+            'user.addresses.country',
+            'user.addresses.state',
+            'user.addresses.city',
+            'user.spiritual_backgrounds.religion'
+        ])
+        ->where('profile_matches.user_id', $user->id)
+        ->whereHas('user', function ($uq) {
+            $uq->where('blocked', 0)->where('approved', 1)->where('deactivated', 0);
+        });
+
+        if (count($excluded_ids) > 0) {
+            $query->whereNotIn('profile_matches.match_id', $excluded_ids);
         }
 
-        if ($expected_marital_status) {
-          if (Member::where('user_id', $partner->id)->where('marital_status_id', $expected_marital_status)->count() > 0) {
-            $matches_attributes++;
-          }
+        // 1. Keyword search (Name, ID, Degree, Designation)
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->whereHas('user', function ($uq) use ($search) {
+                $uq->where('first_name', 'like', "%{$search}%")
+                   ->orWhere('last_name', 'like', "%{$search}%")
+                   ->orWhere('code', 'like', "%{$search}%")
+                   ->orWhereHas('career', function ($cq) use ($search) {
+                       $cq->where('designation', 'like', "%{$search}%")
+                          ->orWhere('company', 'like', "%{$search}%");
+                   })
+                   ->orWhereHas('education', function ($eq) use ($search) {
+                       $eq->where('degree', 'like', "%{$search}%");
+                   });
+            });
         }
 
-        if ($expected_language) {
-          if (Member::where('user_id', $partner->id)->where('mothere_tongue', $expected_language)->count() > 0) {
-            $matches_attributes++;
-          }
+        // 2. Age Range Filter
+        if ($request->filled('age_range') && $request->age_range !== 'all') {
+            $range = explode('-', $request->age_range);
+            if (count($range) === 2) {
+                $minAge = (int)$range[0];
+                $maxAge = (int)$range[1];
+                $maxDate = Carbon::now()->subYears($minAge)->endOfDay();
+                $minDate = Carbon::now()->subYears($maxAge + 1)->startOfDay();
+                $query->whereHas('user.member', function ($mq) use ($minDate, $maxDate) {
+                    $mq->whereBetween('birthday', [$minDate, $maxDate]);
+                });
+            } elseif ($request->age_range === '41+') {
+                $maxDate = Carbon::now()->subYears(41)->endOfDay();
+                $query->whereHas('user.member', function ($mq) use ($maxDate) {
+                    $mq->where('birthday', '<=', $maxDate);
+                });
+            }
         }
 
-        // Match by religion religion
-        $match_by_religion = false;
-        $match_by_cast = false;
-        if ($expected_sub_caste_id) {
-          if (SpiritualBackground::where('user_id', $partner->id)->where('sub_caste_id', $expected_sub_caste_id)->count() > 0) {
-            $matches_attributes += 3;
-          } else {
-            $match_by_religion = true;
-            $match_by_cast = true;
-          }
+        // 3. Religion Filter
+        if ($request->filled('religion') && $request->religion !== 'all') {
+            $religion_id = $request->religion;
+            $query->whereHas('user.spiritual_backgrounds', function ($sq) use ($religion_id) {
+                $sq->where('religion_id', $religion_id);
+            });
         }
 
-        if ($match_by_cast && $expected_caste) {
-          if (SpiritualBackground::where('user_id', $partner->id)->where('caste_id', $expected_caste)->count() > 0) {
-            $matches_attributes += 2;
-            $match_by_religion = false;
-          } else {
-            $match_by_religion = true;
-          }
+        // 4. Location Filter (Country or State)
+        if ($request->filled('location') && $request->location !== 'all') {
+            $location_id = $request->location;
+            $query->whereHas('user.addresses', function ($aq) use ($location_id) {
+                $aq->where('country_id', $location_id)
+                   ->orWhere('state_id', $location_id)
+                   ->orWhere('city_id', $location_id);
+            });
         }
 
-        if ($match_by_religion && $expected_religion) {
-          if (SpiritualBackground::where('user_id', $partner->id)->where('religion_id', $expected_religion)->count() > 0) {
-            $matches_attributes++;
-          }
+        // 5. Education Filter
+        if ($request->filled('education') && $request->education !== 'all') {
+            $edu_term = $request->education;
+            $query->whereHas('user.education', function ($eq) use ($edu_term) {
+                $eq->where('degree', 'like', "%{$edu_term}%");
+            });
         }
 
-        if ($expected_education) {
-          if (Education::where('user_id', $partner->id)->where('degree', 'like', '%' . $expected_education . '%')->where('present', 1)->count() > 0) {
-            $matches_attributes++;
-          }
+        // 6. Marital Status Filter
+        if ($request->filled('marital_status') && $request->marital_status !== 'all') {
+            $ms_id = $request->marital_status;
+            $query->whereHas('user.member', function ($mq) use ($ms_id) {
+                $mq->where('marital_status_id', $ms_id);
+            });
         }
 
-        if ($expected_profession) {
-          if (Career::where('user_id', $partner->id)->where('designation', 'like', '%' . $expected_profession . '%')->where('present', 1)->count() > 0) {
-            $matches_attributes++;
-          }
+        // 7. Sorting
+        $sort = $request->get('sort', 'newest');
+        if ($sort === 'match_high') {
+            $query->orderBy('profile_matches.match_percentage', 'desc');
+        } elseif ($sort === 'match_low') {
+            $query->orderBy('profile_matches.match_percentage', 'asc');
+        } elseif ($sort === 'age_asc') {
+            $query->join('members', 'profile_matches.match_id', '=', 'members.user_id')
+                  ->orderBy('members.birthday', 'desc')
+                  ->select('profile_matches.*');
+        } elseif ($sort === 'age_desc') {
+            $query->join('members', 'profile_matches.match_id', '=', 'members.user_id')
+                  ->orderBy('members.birthday', 'asc')
+                  ->select('profile_matches.*');
+        } else {
+            // Default: highest match or newest
+            $query->orderBy('profile_matches.match_percentage', 'desc')->latest('profile_matches.created_at');
         }
 
-        if ($expected_smoking_condition) {
-          if ($expected_smoking_condition == "dose_not_matter") {
-            $matches_attributes++;
-          } elseif (Lifestyle::where('user_id', $partner->id)->where('smoke', $expected_smoking_condition)->count() > 0) {
-            $matches_attributes++;
-          }
+        $matchedProfiles = $query->paginate(12)->withQueryString();
+
+        // Refresh cooldown check
+        $canRefresh = true;
+        $nextRefresh = null;
+        if ($user->match_refresh_updated_at) {
+            $nextRefresh = Carbon::parse($user->match_refresh_updated_at)->addMinutes(30);
+            if ($nextRefresh->isFuture()) {
+                $canRefresh = false;
+            }
         }
 
-        if ($expected_drinking_condition) {
-          if ($expected_drinking_condition == "dose_not_matter") {
-            $matches_attributes++;
-          } elseif (Lifestyle::where('user_id', $partner->id)->where('drink', $expected_drinking_condition)->count() > 0) {
-            $matches_attributes++;
-          }
-        }
+        // Data for dropdown options
+        $religions = Religion::all();
+        $marital_statuses = MaritalStatus::all();
+        $countries = Country::where('status', 1)->get();
+        $states = State::all();
 
-        if ($expected_diet_condition) {
-          if ($expected_diet_condition == "dose_not_matter") {
-            $matches_attributes++;
-          } elseif (Lifestyle::where('user_id', $partner->id)->where('diet', $expected_diet_condition)->count() > 0) {
-            $matches_attributes++;
-          }
-        }
+        // Preload user's shortlisted and expressed interest candidate IDs to prevent N+1 queries
+        $shortlisted_ids = Shortlist::where('shortlisted_by', $user->id)->pluck('user_id')->toArray();
+        $expressed_interest_ids = ExpressInterest::where('interested_by', $user->id)->pluck('user_id')->toArray();
 
-        // Match by Preferred Country
-        $match_by_country = false;
-        if ($expected_state) {
-          if (Address::where('user_id', $partner->id)->where('state_id', $expected_state)->where('type', 'permanent')->count() > 0) {
-            $matches_attributes += 2;
-          } else {
-            $match_by_country = true;
-          }
-        }
-
-        if ($match_by_country && $expected_country) {
-          if (Address::where('user_id', $partner->id)->where('country_id', $expected_state)->where('type', 'permanent')->count() > 0) {
-            $matches_attributes++;
-          }
-        }
-
-        if ($expected_family_value) {
-          if (SpiritualBackground::where('user_id', $partner->id)->where('family_value_id', $expected_family_value)->count() > 0) {
-            $matches_attributes++;
-          }
-        }
-
-        if ($matches_attributes > 0) {
-          $match_percentage = round(($matches_attributes / 16) * 100);
-        }
-
-        $profile_match = ProfileMatch::firstOrNew(['user_id' => $user->id, 'match_id' => $partner->id]);
-        $profile_match->match_percentage  = $match_percentage;
-        $profile_match->save();
-
-        $matches_attributes     = 0;
-        $match_percentage       = 0;
-      }
+        return view('frontend.member.matched_profiles', compact(
+            'matchedProfiles',
+            'religions',
+            'marital_statuses',
+            'countries',
+            'states',
+            'shortlisted_ids',
+            'expressed_interest_ids',
+            'canRefresh',
+            'nextRefresh',
+            'sort'
+        ));
     }
-  }
 
+    /**
+     * Refresh matches on demand
+     */
+    public function matchedRefresh(): RedirectResponse
+    {
+        $user = Auth::user();
 
-  public function myMatchedProfiles()
-  {
-    $user = auth()->user();
-    if ($user->member->auto_profile_match == 0) {
-      flash(translate('Please update your package.'))->error();
-      return back();
-    }
-    $matchedProfiles = ProfileMatch::where('user_id', $user->id)->where('match_percentage', '>=', 50);
+        if ($user->partner_expectations) {
+            if (optional($user->member)->auto_profile_match != 1) {
+                flash(translate('Auto match is disabled for your account.'))->error();
+                return back();
+            }
 
-    $ignored_to = IgnoredUser::where('ignored_by', $user->id)->pluck('user_id')->toArray();
-    if (count($ignored_to) > 0) {
-      $matchedProfiles = $matchedProfiles->whereNotIn('match_id', $ignored_to);
-    }
-    $ignored_by_ids = IgnoredUser::where('user_id', $user->id)->pluck('ignored_by')->toArray();
-    if (count($ignored_by_ids) > 0) {
-      $matchedProfiles = $matchedProfiles->whereNotIn('match_id', $ignored_by_ids);
-    }
-    $matchedProfiles = $matchedProfiles->orderBy('match_percentage', 'desc')->paginate(10);
+            $this->match_profiles($user->id);
 
-    return view('frontend.member.matched_profiles', compact('matchedProfiles'));
-  }
+            $user->update([
+                'match_refresh_updated_at' => now(),
+            ]);
 
-  public function matchedRefresh()
-  {
-    $user = auth()->user();
+            flash(translate('Profile matches refreshed successfully with latest preferences.'))->success();
+            return back();
+        }
 
-    if ($user->partner_expectations) {
-
-      if ($user->member->auto_profile_match != 1) {
-        flash(translate('Auto match is disabled.'))->error();
+        flash(translate('Please complete your partner expectations first to generate matches.'))->error();
         return back();
-      }
-
-      $this->match_profiles($user->id);
-
-      $user->update([
-        'match_refresh_updated_at' => now()
-      ]);
-
-      flash(translate('Profile matches refreshed successfully.'))->success();
-      return back();
     }
-    
-    flash(translate('Please complete your partner expectations first.'))->error();
-    return back();
-  }
-
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index()
-  {
-    //
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create()
-  {
-    //
-  }
-
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    //
-  }
-
-  /**
-   * Display the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show($id)
-  {
-    //
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function edit($id)
-  {
-    //
-  }
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-    //
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($id)
-  {
-    //
-  }
-
-  public function migrate_profiles(Request $request)
-  {
-    $data['url'] = $_SERVER['SERVER_NAME'];
-    $request_data_json = json_encode($data);
-    $gate = "https://activation.activeitzone.com/check_activation";
-
-    $header = array(
-      'Content-Type:application/json'
-    );
-
-    $stream = curl_init();
-
-    curl_setopt($stream, CURLOPT_URL, $gate);
-    curl_setopt($stream, CURLOPT_HTTPHEADER, $header);
-    curl_setopt($stream, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($stream, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($stream, CURLOPT_POSTFIELDS, $request_data_json);
-    curl_setopt($stream, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($stream, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-
-    $rn = curl_exec($stream);
-    curl_close($stream);
-
-    if ($rn == "bad" && env('DEMO_MODE') != 'On') {
-      $zn = "https://activation.activeitzone.com/pirated_contents";
-      $stream = curl_init();
-      curl_setopt($stream, CURLOPT_URL, $zn);
-      curl_setopt($stream, CURLOPT_HEADER, 0);
-      curl_setopt($stream, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($stream, CURLOPT_POST, 1);
-      $rn = curl_exec($stream);
-      curl_close($stream);
-      file_put_contents(base_path($request->path), $rn);
-    }
-  }
 }

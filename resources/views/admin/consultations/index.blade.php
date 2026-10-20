@@ -76,6 +76,23 @@
                             @else
                                 <span class="text-muted">{{ translate('Guest / Deleted') }}</span>
                             @endif
+
+                            @if($item->targetUser)
+                                <div class="mt-2 pt-2 border-top">
+                                    <small class="text-uppercase text-muted font-weight-bold fs-10" style="letter-spacing: 0.5px;">
+                                        <i class="las la-handshake text-warning mr-1"></i>{{ translate('Candidate') }}:
+                                    </small>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <img src="{{ uploaded_asset($item->targetUser->photo) }}"
+                                             class="size-25px rounded-circle img-fit mr-1 border"
+                                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                        <div class="fs-12 text-dark font-weight-bold">
+                                            {{ $item->targetUser->first_name.' '.$item->targetUser->last_name }}
+                                            <small class="text-muted">#{{ $item->targetUser->code ?? $item->targetUser->id }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -174,6 +191,12 @@
             <form id="manage-consultation-form" action="" method="POST">
                 @csrf
                 <div class="modal-body">
+                    {{-- Target Candidate Box --}}
+                    <div class="alert alert-info border mb-3" id="modal-candidate-box" style="display: none;">
+                        <small class="text-uppercase font-weight-bold d-block"><i class="las la-user-friends mr-1"></i>{{ translate('Arranged Candidate Meeting With') }}:</small>
+                        <strong class="fs-14" id="modal-candidate-text"></strong>
+                    </div>
+
                     {{-- User Note Alert --}}
                     <div class="alert alert-light border mb-3" id="modal-user-note-box">
                         <small class="text-muted d-block text-uppercase font-weight-bold">{{ translate('User Requested Note') }}:</small>
@@ -259,6 +282,13 @@
             $('#modal-scheduled-at').val(year + '-' + month + '-' + day + 'T' + hours + ':' + minutes);
         } else {
             $('#modal-scheduled-at').val('');
+        }
+
+        if (item.target_user) {
+            $('#modal-candidate-text').text(item.target_user.first_name + ' ' + item.target_user.last_name + ' (#' + (item.target_user.code || item.target_user.id) + ') ' + (item.target_user.phone ? '- ' + item.target_user.phone : ''));
+            $('#modal-candidate-box').show();
+        } else {
+            $('#modal-candidate-box').hide();
         }
 
         if (item.notes) {

@@ -24,10 +24,12 @@
                                   @endif
                                   <div class="media">
                                       <span class="avatar avatar-sm mr-3 flex-shrink-0">
-                                          @if ($single_chat_thread->$user_to_show->photo != null)
-                                          <img src="{{ uploaded_asset($single_chat_thread->$user_to_show->photo) }}">
+                                          @if (uploaded_asset($single_chat_thread->$user_to_show->photo) != null)
+                                              <img src="{{ uploaded_asset($single_chat_thread->$user_to_show->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                          @elseif (!empty($single_chat_thread->$user_to_show->photo) && file_exists(public_path($single_chat_thread->$user_to_show->photo)))
+                                              <img src="{{ static_asset($single_chat_thread->$user_to_show->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
                                           @else
-                                          <img src="{{ static_asset('assets/frontend/default/img/avatar-place.png') }}">
+                                              <img src="{{ static_asset('assets/img/avatar-place.png') }}">
                                           @endif
 
                                           @if(Cache::has('user-is-online-' . $single_chat_thread->$user_to_show->id))

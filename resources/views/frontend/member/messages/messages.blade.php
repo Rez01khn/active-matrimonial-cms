@@ -11,10 +11,12 @@
                   @php $user_to_show = 'sender';  @endphp
                 @endif
 
-                @if ($chat_thread->$user_to_show->photo != null)
-                    <img src="{{ uploaded_asset($chat_thread->$user_to_show->photo) }}">
+                @if (uploaded_asset($chat_thread->$user_to_show->photo) != null)
+                    <img src="{{ uploaded_asset($chat_thread->$user_to_show->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                @elseif (!empty($chat_thread->$user_to_show->photo) && file_exists(public_path($chat_thread->$user_to_show->photo)))
+                    <img src="{{ static_asset($chat_thread->$user_to_show->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
                 @else
-                    <img src="{{ static_asset('assets/frontend/default/img/avatar-place.png') }}">
+                    <img src="{{ static_asset('assets/img/avatar-place.png') }}">
                 @endif
             </span>
             <div class="media-body">
@@ -29,6 +31,23 @@
             </div>
         </div>
         <div class="d-flex align-items-center">
+            @if(Auth::user()->membership == 2)
+                <a href="{{ route('consultations.index', ['target' => $chat_thread->$user_to_show->id]) }}" 
+                   class="btn btn-sm text-white d-inline-flex align-items-center mr-2 px-3 py-1 font-weight-bold shadow-sm" 
+                   style="background: linear-gradient(135deg, #800020 0%, #500014 100%); border-radius: 20px; font-size: 12px; gap: 4px;"
+                   title="{{ translate('Schedule Arranged Meeting with this Candidate') }}">
+                    <i class="las la-video fs-15 text-warning"></i>
+                    <span>{{ translate('Schedule Meeting') }}</span>
+                </a>
+            @else
+                <button type="button" onclick="package_update_alert()" 
+                        class="btn btn-sm btn-outline-warning d-inline-flex align-items-center mr-2 px-3 py-1 font-weight-bold" 
+                        style="border-radius: 20px; font-size: 12px; gap: 4px;"
+                        title="{{ translate('Upgrade to VIP to Schedule Meeting') }}">
+                    <i class="las la-crown fs-15 text-warning"></i>
+                    <span>{{ translate('Meeting (VIP)') }}</span>
+                </button>
+            @endif
             <button class="aiz-mobile-toggler d-lg-none aiz-all-chat-toggler mr-2" data-toggle="class-toggle" data-target=".chat-user-list-wrap">
                 <span></span>
             </button>
@@ -67,10 +86,12 @@
           <div class="chat-info c-scrollbar-light p-4 z-1">
                 <div class="px-4 text-center mb-3">
                     <span class="avatar avatar-md mb-3">
-                        @if ($chat_thread->$user_to_show->photo != null)
+                        @if (uploaded_asset($chat_thread->$user_to_show->photo) != null)
                             <img src="{{ uploaded_asset($chat_thread->$user_to_show->photo) }}">
+                        @elseif (!empty($chat_thread->$user_to_show->photo) && file_exists(public_path($chat_thread->$user_to_show->photo)))
+                            <img src="{{ static_asset($chat_thread->$user_to_show->photo) }}">
                         @else
-                            <img src="{{ static_asset('assets/frontend/default/img/avatar-place.png') }}">
+                            <img src="{{ static_asset('assets/img/avatar-place.png') }}">
                         @endif
                     </span>
                     <h4 class="h5 mb-2 fw-600">{{ $chat_thread->$user_to_show->first_name.' '.$chat_thread->$user_to_show->last_name }}</h4>

@@ -124,14 +124,14 @@
 
 <!-- 2. Quick Stats Row (Horizontal Icon + Number & Title Matching Image 2) -->
 <div class="member-stats-row">
-    <!-- Card 1: New Proposals -->
+    <!-- Card 1: New Interests -->
     <a href="{{ route('interest_requests') }}" class="member-quick-stat-card text-reset">
         <div class="member-stat-side-icon icon-heart">
             <i class="las la-heart"></i>
         </div>
         <div class="member-stat-info">
-            <div class="member-quick-stat-num">{{ $new_proposals_count ?? 2 }}</div>
-            <div class="member-quick-stat-title">{{ translate('New Proposals') }}</div>
+            <div class="member-quick-stat-num">{{ $new_interests_count ?? ($new_proposals_count ?? 2) }}</div>
+            <div class="member-quick-stat-title">{{ translate('New Interests') }}</div>
         </div>
     </a>
 
@@ -374,13 +374,13 @@
                     <i class="las la-angle-right member-activity-arrow"></i>
                 </a>
 
-                <!-- Activity 2: New Proposal -->
+                <!-- Activity 2: New Interest -->
                 <a href="{{ route('interest_requests') }}" class="member-activity-item">
                     <div class="member-activity-icon-wrap" style="background: #FDF1F0; color: #9E1F30;">
                         <i class="las la-heart"></i>
                     </div>
                     <div>
-                        <div class="member-activity-title">{{ translate('You received a new proposal') }}</div>
+                        <div class="member-activity-title">{{ translate('You received an interest request') }}</div>
                         <div class="member-activity-time">5 {{ translate('hours ago') }}</div>
                     </div>
                     <i class="las la-angle-right member-activity-arrow"></i>

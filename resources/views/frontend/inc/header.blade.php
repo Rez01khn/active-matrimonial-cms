@@ -44,7 +44,7 @@
 
                 <!-- Scenario A: Dedicated Marquee Ticker (Strictly ONE single message, pure typography) -->
                 @php
-                    $ticker_raw = get_setting('topbar_ticker_text', 'Register Today & Get 4 Free Proposals!');
+                    $ticker_raw = get_setting('topbar_ticker_text', 'Register Today & Get 4 Free Interests!');
                     $ticker_text = is_string($ticker_raw) ? trim(preg_replace('/[\x{1F300}-\x{1FAD6}\x{2600}-\x{27BF}]/u', '', $ticker_raw)) : '';
                 @endphp
                 @if(!empty($ticker_text))

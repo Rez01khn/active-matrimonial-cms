@@ -8,7 +8,13 @@
                         <span class="time">{{ Carbon\Carbon::parse($chat->created_at)->diffForHumans() }}</span>
                     </div>
                     <span class="avatar avatar-xs flex-shrink-0">
-                        <img @if ($chat->sender->photo != null) src="{{ uploaded_asset(($chat->sender->photo))}}" @endif>
+                        @if (uploaded_asset($chat->sender->photo) != null)
+                            <img src="{{ uploaded_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @elseif (!empty($chat->sender->photo) && file_exists(public_path($chat->sender->photo)))
+                            <img src="{{ static_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @else
+                            <img src="{{ static_asset('assets/img/avatar-place.png') }}">
+                        @endif
                     </span>
                 </div>
             </div>
@@ -64,7 +70,13 @@
                         <span class="time">{{ Carbon\Carbon::parse($chat->created_at)->diffForHumans() }}</span>
                     </div>
                     <span class="avatar avatar-xs flex-shrink-0">
-                        <img @if ($chat->sender->photo != null) src="{{ uploaded_asset(($chat->sender->photo))}}" @endif>
+                        @if (uploaded_asset($chat->sender->photo) != null)
+                            <img src="{{ uploaded_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @elseif (!empty($chat->sender->photo) && file_exists(public_path($chat->sender->photo)))
+                            <img src="{{ static_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @else
+                            <img src="{{ static_asset('assets/img/avatar-place.png') }}">
+                        @endif
                     </span>
                 </div>
             </div>
@@ -74,7 +86,13 @@
             <div class="chat-coversation">
                 <div class="media">
                     <span class="avatar avatar-xs flex-shrink-0">
-                        <img @if ($chat->sender->photo != null) src="{{ uploaded_asset(($chat->sender->photo))}}" @endif>
+                        @if (uploaded_asset($chat->sender->photo) != null)
+                            <img src="{{ uploaded_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @elseif (!empty($chat->sender->photo) && file_exists(public_path($chat->sender->photo)))
+                            <img src="{{ static_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @else
+                            <img src="{{ static_asset('assets/img/avatar-place.png') }}">
+                        @endif
                     </span>
                     <div class="media-body">
                         <div class="text">{{ $chat->message }}</div>
@@ -87,7 +105,13 @@
             <div class="chat-coversation">
                 <div class="media">
                     <span class="avatar avatar-xs flex-shrink-0">
-                        <img @if ($chat->sender->photo != null) src="{{ uploaded_asset(($chat->sender->photo))}}" @endif>
+                        @if (uploaded_asset($chat->sender->photo) != null)
+                            <img src="{{ uploaded_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @elseif (!empty($chat->sender->photo) && file_exists(public_path($chat->sender->photo)))
+                            <img src="{{ static_asset($chat->sender->photo) }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        @else
+                            <img src="{{ static_asset('assets/img/avatar-place.png') }}">
+                        @endif
                     </span>
                     <div class="media-body">
                         <div class="file-preview box sm">

@@ -169,7 +169,7 @@ $lang = \App\Models\Language::where('code', $locale)->first();
     @endif
 
     {!! get_setting('header_script') !!}
-
+    @yield('style')
 </head>
 
 <body class="text-left">

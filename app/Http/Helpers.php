@@ -43,8 +43,19 @@ if (!function_exists('areActiveRoutes')) {
 if (!function_exists('uploaded_asset')) {
     function uploaded_asset($id)
     {
-        if (($asset = Upload::find($id)) != null) {
+        if (empty($id)) {
+            return null;
+        }
+        if (is_numeric($id) && ($asset = Upload::find($id)) != null) {
             return static_asset($asset->file_name);
+        }
+        if (is_string($id)) {
+            if (file_exists(public_path($id))) {
+                return static_asset($id);
+            }
+            if (file_exists(public_path('uploads/all/' . $id))) {
+                return static_asset('uploads/all/' . $id);
+            }
         }
         return null;
     }

@@ -394,78 +394,68 @@
                             if (empty($avatar_url)) {
                                 $gender_val = $user_member ? $user_member->gender : 1;
                                 $avatar_url = ($gender_val == 2)
-                                    ? static_asset('assets/img/avatar-female.png')
+                                    ? static_asset('assets/img/female-avatar-place.png')
                                     : static_asset('assets/img/avatar-place.png');
                             }
                         @endphp
 
-                        <div class="match-profile-card bg-white rounded-2xl shadow-sm border border-stone-200/80"
-                            style="border-radius: 16px; border: 1px solid var(--mat-border); box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
-                            <div class="match-card-photo-wrap position-relative"
-                                style="height: 250px; background-color: var(--mat-gold-bg); overflow: hidden;">
-                                <img src="{{ $avatar_url }}" alt="{{ $user->first_name }} {{ $user->last_name }}"
-                                    class="match-card-photo w-100 h-100"
-                                    style="object-fit: cover; object-position: top center;"
-                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
-                                <button type="button" class="match-card-fav-btn" title="{{ $is_shortlisted ? translate('Shortlisted') : translate('Add to Wishlist') }}"
-                                    onclick="do_shortlist({{ $user->id }})"
-                                    style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: #FFF; border-radius: 50%; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: {{ $is_shortlisted ? '#E63946' : '#666' }};">
-                                    <i class="{{ $is_shortlisted ? 'las la-heart' : 'lar la-heart' }} fs-18"></i>
-                                </button>
-                                @if($user->approved == 1)
-                                    <div class="match-card-verified-badge"
-                                        style="position: absolute; bottom: 12px; left: 12px; background: rgba(235, 245, 255, 0.94); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.25); display: inline-flex; align-items: center; gap: 4px;">
-                                        <i class="las la-check-circle fs-13"></i>
-                                        <span>{{ translate('Verified Profile') }}</span>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="match-card-body p-3 d-flex flex-column flex-grow-1" style="padding: 16px 18px 18px;">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h3 class="fs-17 fw-700 text-mat-maroon-dark mb-0">
-                                        {{ $user->first_name }} {{ $user->last_name }}
-                                    </h3>
-                                    @if($age)
-                                        <span class="fs-15 fw-600 text-muted" style="color: #666;">{{ $age }}</span>
+                        <div class="match-profile-card">
+                            <div class="match-card-photo-wrap">
+                                <div class="match-card-photo-inner">
+                                    <a href="{{ route('member_profile', $user->id) }}" class="d-block w-100 h-100">
+                                        <img src="{{ $avatar_url }}" alt="{{ $user->first_name }} {{ $user->last_name }}"
+                                            class="match-card-photo"
+                                            onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                    </a>
+                                    <button type="button" class="match-card-fav-btn" title="{{ $is_shortlisted ? translate('Shortlisted') : translate('Add to Wishlist') }}"
+                                        onclick="do_shortlist({{ $user->id }})">
+                                        <i class="{{ $is_shortlisted ? 'las la-heart text-danger' : 'lar la-heart' }} fs-18"></i>
+                                    </button>
+                                    @if($user->approved == 1)
+                                        <div class="match-card-verified-badge">
+                                            <i class="las la-check-circle fs-13"></i>
+                                            <span>{{ translate('Verified Profile') }}</span>
+                                        </div>
                                     @endif
                                 </div>
-                                <ul class="match-meta-list list-unstyled mb-3" style="padding: 0; margin-bottom: 14px;">
-                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                        style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-map-marker-alt text-mat-gold"
-                                            style="min-width: 18px; text-align: center;"></i>
-                                        <span>{{ $location_text }}</span>
+                            </div>
+                            <div class="match-card-body">
+                                <div class="match-card-title-row">
+                                    <h3 class="match-card-name text-truncate mr-2">
+                                        <a href="{{ route('member_profile', $user->id) }}" class="text-truncate d-block">
+                                            {{ $user->first_name }} {{ $user->last_name }}
+                                        </a>
+                                    </h3>
+                                    @if($age)
+                                        <span class="match-card-age flex-shrink-0">{{ $age }}</span>
+                                    @endif
+                                </div>
+                                <ul class="match-meta-list">
+                                    <li class="match-meta-item">
+                                        <i class="las la-map-marker-alt"></i>
+                                        <span class="text-truncate">{{ $location_text }}</span>
                                     </li>
-                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                        style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-graduation-cap text-mat-gold"
-                                            style="min-width: 18px; text-align: center;"></i>
-                                        <span>{{ $education_text }}</span>
+                                    <li class="match-meta-item">
+                                        <i class="las la-graduation-cap"></i>
+                                        <span class="text-truncate">{{ $education_text }}</span>
                                     </li>
-                                    <li class="match-meta-item fs-13 mb-1.5 d-flex align-items-center"
-                                        style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-briefcase text-mat-gold"
-                                            style="min-width: 18px; text-align: center;"></i>
-                                        <span>{{ $career_text }}</span>
+                                    <li class="match-meta-item">
+                                        <i class="las la-briefcase"></i>
+                                        <span class="text-truncate">{{ $career_text }}</span>
                                     </li>
-                                    <li class="match-meta-item fs-13 d-flex align-items-center"
-                                        style="gap: 8px; color: #555; line-height: 1.5;">
-                                        <i class="las la-users text-mat-gold"
-                                            style="min-width: 18px; text-align: center;"></i>
-                                        <span>{{ $family_text }}</span>
+                                    <li class="match-meta-item">
+                                        <i class="las la-users"></i>
+                                        <span class="text-truncate">{{ $family_text }}</span>
                                     </li>
                                 </ul>
-                                <div class="match-card-actions mt-auto pt-3 d-flex"
-                                    style="gap: 6px; border-top: 1px solid var(--mat-border-light);">
-                                    <a href="{{ route('member_profile', $user->id) }}" class="btn btn-match-view flex-grow-1 text-center"
-                                        style="border: 1px solid var(--mat-border); border-radius: 9px; text-decoration: none; color: var(--mat-maroon-dark); background: transparent; font-weight: 600; white-space: nowrap; font-size: 12px; padding: 7px 6px;">{{ translate('View Profile') }}</a>
+                                <div class="match-card-actions">
+                                    <a href="{{ route('member_profile', $user->id) }}" class="btn btn-match-view">{{ translate('View Profile') }}</a>
                                     <button type="button"
                                         id="interest_btn_{{ $user->id }}"
-                                        class="btn btn-match-interest flex-grow-1 text-center d-flex align-items-center justify-content-center"
+                                        class="btn btn-match-interest {{ $interest_status === 0 ? 'btn-match-interest-sent' : '' }}"
                                         onclick="express_interest({{ $user->id }})"
-                                        style="background-color: {{ $interest_status === 0 ? '#4A5568' : 'var(--mat-gold)' }}; border-radius: 9px; border: none; color: #FFF; font-weight: 600; gap: 4px; white-space: nowrap; font-size: 12px; padding: 7px 6px; {{ $interest_status === 0 ? 'cursor: default;' : '' }}"
                                         {{ $interest_status === 0 ? 'disabled' : '' }}>
-                                        <i class="{{ $interest_status === 0 ? 'las la-heart' : 'lar la-heart' }} fs-13"></i>
+                                        <i class="{{ $interest_status === 0 ? 'las la-heart' : 'lar la-heart' }} fs-14"></i>
                                         <span id="interest_text_{{ $user->id }}">{{ $interest_status === 0 ? translate('Interest Sent') : ($interest_info['interest_text'] ?? translate('Send Interest')) }}</span>
                                     </button>
                                 </div>

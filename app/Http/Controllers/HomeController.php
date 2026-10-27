@@ -245,7 +245,7 @@ class HomeController extends Controller
 
     public function happy_stories()
     {
-        $happy_stories = HappyStory::where('approved', 1)->latest()->paginate(12);
+        $happy_stories = HappyStory::with(['user.addresses.city', 'user.addresses.country'])->where('approved', 1)->latest()->paginate(12);
         return view('frontend.happy_stories.index', compact('happy_stories'));
     }
 

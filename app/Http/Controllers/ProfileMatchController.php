@@ -233,7 +233,8 @@ class ProfileMatchController extends Controller
             'user.addresses.country',
             'user.addresses.state',
             'user.addresses.city',
-            'user.spiritual_backgrounds.religion'
+            'user.spiritual_backgrounds.religion',
+            'user.families'
         ])
         ->where('profile_matches.user_id', $user->id)
         ->whereHas('user', function ($uq) {
@@ -333,7 +334,7 @@ class ProfileMatchController extends Controller
             $query->orderBy('profile_matches.match_percentage', 'desc')->latest('profile_matches.created_at');
         }
 
-        $matchedProfiles = $query->paginate(12)->withQueryString();
+        $matchedProfiles = $query->paginate(16)->withQueryString();
 
         // Refresh cooldown check
         $canRefresh = true;

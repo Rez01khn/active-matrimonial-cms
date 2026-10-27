@@ -175,164 +175,158 @@
         </div>
     </div>
 
-    <!-- Matched Profiles 4-Column Grid -->
+    <!-- Matched Profiles 3-Column Grid -->
     <div class="row gutters-15">
         @forelse ($matchedProfiles as $matchedProfile)
             @php
                 $candidate = $matchedProfile->user;
             @endphp
             @if ($candidate != null)
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-4" id="matched_card_{{ $candidate->id }}">
-                    <div class="match-profile-card h-100 d-flex flex-column position-relative shadow-sm">
-                        <!-- Card Top Bar: Match Badge & Quick Actions -->
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="badge px-2.5 py-1 text-white font-weight-bold d-inline-flex align-items-center"
-                                  style="background: linear-gradient(135deg, #800020 0%, #A31D3F 100%); border-radius: 9999px; font-size: 11px; letter-spacing: 0.3px; box-shadow: 0 2px 6px rgba(128,0,32,0.25);">
-                                <i class="las la-fire-alt mr-1 font-size-12"></i> {{ $matchedProfile->match_percentage }}% {{ translate('Match') }}
-                            </span>
-                            <div class="d-flex align-items-center">
-                                <!-- Quick Heart: Express Interest -->
-                                <button type="button"
-                                        onclick="express_interest({{ $candidate->id }})"
-                                        id="interest_btn_{{ $candidate->id }}"
-                                        class="btn btn-icon btn-circle btn-xs mr-1 shadow-none"
-                                        style="width: 30px; height: 30px; background: {{ in_array($candidate->id, $expressed_interest_ids) ? 'rgba(16,185,129,0.1)' : 'rgba(128,0,32,0.07)' }}; color: {{ in_array($candidate->id, $expressed_interest_ids) ? '#10B981' : '#800020' }};"
-                                        title="{{ in_array($candidate->id, $expressed_interest_ids) ? translate('Interest Expressed') : translate('Express Interest') }}">
-                                    <i class="las la-heart font-size-15"></i>
+                @php
+                    $candidate_member = $candidate->member;
+                    $candidate_address = $candidate->addresses ? $candidate->addresses->first() : null;
+                    $candidate_career = $candidate->career ? $candidate->career->first() : null;
+                    $candidate_education = $candidate->education ? $candidate->education->first() : null;
+                    $candidate_family = $candidate->families;
+
+                    // Calculate Age
+                    $age = null;
+                    if ($candidate_member && !empty($candidate_member->birthday)) {
+                        try {
+                            $age = \Carbon\Carbon::parse($candidate_member->birthday)->age;
+                        } catch (\Exception $e) {
+                            $age = null;
+                        }
+                    }
+
+                    // Location text
+                    $location_parts = [];
+                    if ($candidate_address) {
+                        if ($candidate_address->city && !empty($candidate_address->city->name)) {
+                            $location_parts[] = $candidate_address->city->name;
+                        }
+                        if ($candidate_address->state && !empty($candidate_address->state->name)) {
+                            $location_parts[] = $candidate_address->state->name;
+                        } elseif ($candidate_address->country && !empty($candidate_address->country->name)) {
+                            $location_parts[] = $candidate_address->country->name;
+                        }
+                    }
+                    $location_text = !empty($location_parts) ? implode(', ', $location_parts) : translate('Bangladesh');
+
+                    // Education text
+                    $education_text = ($candidate_education && !empty($candidate_education->degree)) 
+                        ? $candidate_education->degree 
+                        : translate('Graduate');
+
+                    // Career text
+                    $career_text = ($candidate_career && !empty($candidate_career->designation)) 
+                        ? $candidate_career->designation 
+                        : translate('Professional');
+
+                    // Family text
+                    $family_text = ($candidate_family && !empty($candidate_family->family_class)) 
+                        ? $candidate_family->family_class 
+                        : translate('Respectable Family');
+
+                    // Photo URL
+                    $gender_val = $candidate_member ? $candidate_member->gender : 1;
+                    $default_avatar = ($gender_val == 2)
+                        ? static_asset('assets/img/female-avatar-place.png')
+                        : static_asset('assets/img/avatar-place.png');
+
+                    $avatar_url = null;
+                    if (!empty($candidate->photo)) {
+                        $avatar_url = is_numeric($candidate->photo) ? uploaded_asset($candidate->photo) : static_asset($candidate->photo);
+                    }
+                    if (empty($avatar_url)) {
+                        $avatar_url = $default_avatar;
+                    }
+
+                    $has_sent_interest = in_array($candidate->id, $expressed_interest_ids);
+                    $is_shortlisted = in_array($candidate->id, $shortlisted_ids);
+                @endphp
+
+                <div class="col-xl-3 col-lg-3 col-md-6 col-12 mb-4" id="matched_card_{{ $candidate->id }}">
+                    <div class="match-profile-card">
+                        
+                        <!-- Photo Section (Framed with padding, 205px Height) -->
+                        <div class="match-card-photo-wrap">
+                            <div class="match-card-photo-inner">
+                                <a href="{{ route('member_profile', $candidate->id) }}" class="d-block w-100 h-100">
+                                    <img src="{{ $avatar_url }}" alt="{{ $candidate->first_name }} {{ $candidate->last_name }}"
+                                        class="match-card-photo"
+                                        onerror="this.onerror=null;this.src='{{ $default_avatar }}';">
+                                </a>
+
+                                <!-- Floating Top-Right Circular Button: Shortlist Heart -->
+                                <button type="button" class="match-card-fav-btn"
+                                    id="shortlist_btn_{{ $candidate->id }}"
+                                    title="{{ $is_shortlisted ? translate('Shortlisted') : translate('Add to Wishlist') }}"
+                                    onclick="toggle_shortlist({{ $candidate->id }}, this)">
+                                    <i class="{{ $is_shortlisted ? 'las la-heart text-danger' : 'lar la-heart' }} fs-18"></i>
                                 </button>
 
-                                <!-- Quick Bookmark: Shortlist -->
-                                <button type="button"
-                                        onclick="{{ in_array($candidate->id, $shortlisted_ids) ? 'remove_shortlist('.$candidate->id.')' : 'do_shortlist('.$candidate->id.')' }}"
-                                        id="shortlist_btn_{{ $candidate->id }}"
-                                        class="btn btn-icon btn-circle btn-xs mr-1 shadow-none"
-                                        style="width: 30px; height: 30px; background: {{ in_array($candidate->id, $shortlisted_ids) ? 'rgba(212,175,55,0.15)' : 'rgba(100,116,139,0.08)' }}; color: {{ in_array($candidate->id, $shortlisted_ids) ? '#D4AF37' : '#64748B' }};"
-                                        title="{{ in_array($candidate->id, $shortlisted_ids) ? translate('Shortlisted') : translate('Add to Shortlist') }}">
-                                    <i class="{{ in_array($candidate->id, $shortlisted_ids) ? 'las la-bookmark font-size-15' : 'lar la-bookmark font-size-15' }}"></i>
-                                </button>
-
-                                <!-- 3-Dots Quick Dropdown Menu -->
-                                <div class="dropdown d-inline-block">
-                                    <button class="btn btn-icon btn-circle btn-xs btn-light shadow-none" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 30px; height: 30px; background: #f8f9fa;">
-                                        <i class="las la-ellipsis-v text-muted font-size-15"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right shadow-lg border-0 py-2" style="border-radius: 12px; font-size: 13px; min-width: 210px; z-index: 1050;">
-                                        <a class="dropdown-item py-2" href="{{ route('member_profile', $candidate->id) }}">
-                                            <i class="las la-user-circle mr-2 font-size-16" style="color: #800020;"></i> {{ translate('View Full Profile') }}
-                                        </a>
-                                        <a class="dropdown-item py-2" href="{{ route('consultations.index') }}">
-                                            <i class="las la-calendar-check mr-2 font-size-16 text-success"></i> {{ translate('Book Arranged Meeting') }}
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item py-2" href="javascript:void(0);" onclick="ignore_member({{ $candidate->id }})">
-                                            <i class="las la-ban mr-2 font-size-16 text-muted"></i> {{ translate('Ignore Profile') }}
-                                        </a>
-                                        <a class="dropdown-item py-2 text-danger" href="javascript:void(0);" onclick="report_member({{ $candidate->id }}, '{{ addslashes($candidate->first_name . ' ' . $candidate->last_name) }}')">
-                                            <i class="las la-flag mr-2 font-size-16 text-danger"></i> {{ translate('Report Member') }}
-                                        </a>
+                                <!-- Floating Verified Profile Badge on Bottom-Left of Photo -->
+                                @if($candidate->approved == 1)
+                                    <div class="match-card-verified-badge">
+                                        <i class="las la-check-circle fs-13"></i>
+                                        <span>{{ translate('Verified Profile') }}</span>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Candidate Landscape Photo (16:10 Ratio) -->
-                        <div class="card-img-wrap position-relative mb-2.5 overflow-hidden" style="border-radius: 12px; height: 180px; background: #FAF5F0;">
-                            <a href="{{ route('member_profile', $candidate->id) }}" class="d-block w-100 h-100">
-                                @php
-                                    $photo_src = static_asset('assets/img/avatar-place.png');
-                                    if(uploaded_asset($candidate->photo) != null){
-                                        $photo_src = uploaded_asset($candidate->photo);
-                                    }
-                                @endphp
-                                <img src="{{ $photo_src }}"
-                                     alt="{{ $candidate->first_name }}"
-                                     class="w-100 h-100 card-profile-img"
-                                     style="object-fit: cover; object-position: top; transition: transform 0.35s ease;"
-                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
-                            </a>
-                            <!-- Online Indicator Badge -->
-                            <span class="position-absolute d-inline-flex align-items-center text-white"
-                                  style="bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); padding: 2px 8px; border-radius: 12px; font-size: 10.5px; font-weight: 500; letter-spacing: 0.2px;">
-                                <span class="d-inline-block rounded-circle mr-1.5" style="width: 6.5px; height: 6.5px; background: #10B981; box-shadow: 0 0 5px #10B981;"></span>
-                                {{ translate('Online') }}
-                            </span>
-                        </div>
-
-                        <!-- Profile Specs & Info -->
-                        <div class="d-flex align-items-baseline justify-content-between mb-1.5">
-                            <a href="{{ route('member_profile', $candidate->id) }}"
-                               class="font-weight-bold text-truncate mr-2 candidate-name"
-                               style="color: #2C0A12; font-size: 15px; text-decoration: none;"
-                               title="{{ $candidate->first_name . ' ' . $candidate->last_name }}">
-                                {{ $candidate->first_name . ' ' . $candidate->last_name }}
-                            </a>
-                            <span class="small font-weight-600 text-muted text-nowrap" style="font-size: 11px;">#{{ $candidate->code }}</span>
-                        </div>
-
-                        <div class="candidate-specs mb-2.5">
-                            @php
-                                $age = optional($candidate->member)->birthday ? \Carbon\Carbon::parse($candidate->member->birthday)->age : null;
-                                $present_address = $candidate->addresses->where('type', 'present')->first();
-                                $cityName = optional($present_address)->city ? $present_address->city->name : null;
-                                $stateName = optional($present_address)->state ? $present_address->state->name : null;
-                                $countryName = optional($present_address)->country ? $present_address->country->name : null;
-                                $locationText = $cityName ?? ($stateName ?? ($countryName ?? translate('Not Specified')));
-
-                                $education = $candidate->education->first();
-                                $educationText = $education ? $education->degree : translate('Not Specified');
-
-                                $career = $candidate->career->first();
-                                $careerText = $career ? ($career->designation . ($career->company ? ' at ' . $career->company : '')) : translate('Not Specified');
-                            @endphp
-                            <!-- Age & Location -->
-                            <div class="text-truncate text-muted small mb-1" style="font-size: 12px;" title="{{ $age ? $age . ' ' . translate('Yrs') . ' • ' : '' }}{{ $locationText }}">
-                                <i class="las la-map-marker-alt mr-1 font-size-13" style="color: #800020;"></i>
-                                <span>{{ $age ? $age . ' ' . translate('Yrs') : '' }}{{ $age ? ' • ' : '' }}{{ $locationText }}</span>
-                            </div>
-                            <!-- Education Degree -->
-                            <div class="text-truncate text-muted small mb-1" style="font-size: 12px;" title="{{ $educationText }}">
-                                <i class="las la-graduation-cap mr-1 font-size-13" style="color: #800020;"></i>
-                                <span>{{ $educationText }}</span>
-                            </div>
-                            <!-- Career / Profession -->
-                            <div class="text-truncate text-muted small mb-2" style="font-size: 12px;" title="{{ $careerText }}">
-                                <i class="las la-briefcase mr-1 font-size-13" style="color: #800020;"></i>
-                                <span>{{ $careerText }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Card Action Buttons -->
-                        <div class="row gutters-5 mt-auto pt-2 border-top" style="border-color: #F3F1EC !important;">
-                            <div class="col-6">
-                                @if(in_array($candidate->id, $expressed_interest_ids))
-                                    <button type="button"
-                                            class="btn btn-sm btn-block text-nowrap rounded-pill font-weight-bold d-inline-flex align-items-center justify-content-center"
-                                            style="font-size: 11.5px; height: 34px; background: rgba(16,185,129,0.1); color: #10B981; border: 1px solid rgba(16,185,129,0.25);"
-                                            disabled>
-                                        <i class="las la-check mr-1 font-size-13"></i> {{ translate('Sent') }}
-                                    </button>
-                                @else
-                                    <button type="button"
-                                            onclick="express_interest({{ $candidate->id }})"
-                                            id="bottom_interest_btn_{{ $candidate->id }}"
-                                            class="btn btn-sm btn-block text-nowrap rounded-pill font-weight-bold text-white d-inline-flex align-items-center justify-content-center shadow-none"
-                                            style="font-size: 11.5px; height: 34px; background: linear-gradient(135deg, #800020 0%, #9B1C3B 100%); border: none; box-shadow: 0 2px 6px rgba(128,0,32,0.2); transition: all 0.2s;"
-                                            onmouseover="this.style.opacity='0.92';"
-                                            onmouseout="this.style.opacity='1';">
-                                        <i class="las la-heart mr-1 font-size-13"></i> {{ translate('Send Interest') }}
-                                    </button>
                                 @endif
                             </div>
-                            <div class="col-6">
-                                <a href="{{ route('member_profile', $candidate->id) }}"
-                                   class="btn btn-sm btn-block text-nowrap rounded-pill font-weight-bold d-inline-flex align-items-center justify-content-center"
-                                   style="font-size: 11.5px; height: 34px; color: #800020; border: 1.5px solid #800020; background: transparent; transition: all 0.2s;"
-                                   onmouseover="this.style.background='rgba(128,0,32,0.06)';"
-                                   onmouseout="this.style.background='transparent';">
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="match-card-body">
+                            <!-- Name & Age Row -->
+                            <div class="match-card-title-row">
+                                <h3 class="match-card-name text-truncate mr-2">
+                                    <a href="{{ route('member_profile', $candidate->id) }}" class="text-truncate d-block">
+                                        {{ $candidate->first_name }} {{ $candidate->last_name }}
+                                    </a>
+                                </h3>
+                                @if($age)
+                                    <span class="match-card-age flex-shrink-0">{{ $age }}</span>
+                                @endif
+                            </div>
+
+                            <!-- 4 Meta List Items with Gold Icons -->
+                            <ul class="match-meta-list">
+                                <li class="match-meta-item">
+                                    <i class="las la-map-marker-alt"></i>
+                                    <span class="text-truncate">{{ $location_text }}</span>
+                                </li>
+                                <li class="match-meta-item">
+                                    <i class="las la-graduation-cap"></i>
+                                    <span class="text-truncate">{{ $education_text }}</span>
+                                </li>
+                                <li class="match-meta-item">
+                                    <i class="las la-briefcase"></i>
+                                    <span class="text-truncate">{{ $career_text }}</span>
+                                </li>
+                                <li class="match-meta-item">
+                                    <i class="las la-users"></i>
+                                    <span class="text-truncate">{{ $family_text }}</span>
+                                </li>
+                            </ul>
+
+                            <!-- Bottom Actions: View Profile & Interest -->
+                            <div class="match-card-actions">
+                                <a href="{{ route('member_profile', $candidate->id) }}" class="btn btn-match-view">
                                     {{ translate('View Profile') }}
                                 </a>
+
+                                <button type="button"
+                                    id="interest_btn_{{ $candidate->id }}"
+                                    class="btn btn-match-interest {{ $has_sent_interest ? 'btn-match-interest-sent' : '' }}"
+                                    onclick="express_interest({{ $candidate->id }})"
+                                    {{ $has_sent_interest ? 'disabled' : '' }}>
+                                    <i class="{{ $has_sent_interest ? 'las la-heart' : 'lar la-heart' }} fs-14"></i>
+                                    <span id="interest_text_{{ $candidate->id }}">{{ $has_sent_interest ? translate('Interest Sent') : translate('Interest') }}</span>
+                                </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             @endif
@@ -367,27 +361,6 @@
     <div class="aiz-pagination mt-4 d-flex justify-content-center">
         {{ $matchedProfiles->links() }}
     </div>
-
-    <style>
-        .match-profile-card {
-            background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid #ECE7E1;
-            padding: 14px;
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-        .match-profile-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(128, 0, 32, 0.08) !important;
-            border-color: #E2D3CA !important;
-        }
-        .match-profile-card:hover .card-profile-img {
-            transform: scale(1.04);
-        }
-        .candidate-name:hover {
-            color: #800020 !important;
-        }
-    </style>
 @endsection
 
 @section('modal')
@@ -485,104 +458,88 @@
             return;
         }
 
-        var quickBtn = $("#interest_btn_" + id);
-        var bottomBtn = $("#bottom_interest_btn_" + id);
+        var $btn = $("#interest_btn_" + id);
+        var $text = $("#interest_text_" + id);
+        var originalContent = $btn.html();
 
-        quickBtn.removeAttr("onclick");
-        bottomBtn.removeAttr("onclick").prop("disabled", true);
+        $btn.prop("disabled", true);
+        $text.text("{{ translate('Sending...') }}");
 
         $.post('{{ route('express-interest.store') }}', {
             _token: '{{ csrf_token() }}',
             id: id
         }, function (data) {
             if (data == 1 || (data && data.result)) {
-                // Update quick button
-                quickBtn.css({
-                    "background": "rgba(16,185,129,0.1)",
-                    "color": "#10B981"
-                }).attr("title", "{{ translate('Interest Expressed') }}");
+                $btn.css({
+                    'background-color': '#718096',
+                    'cursor': 'default'
+                })
+                .prop('disabled', true)
+                .removeAttr('onclick')
+                .html('<i class="las la-heart fs-14"></i> <span>{{ translate("Interest Sent") }}</span>');
 
-                // Update bottom button
-                bottomBtn.replaceWith(
-                    '<button type="button" class="btn btn-sm btn-block text-nowrap rounded-pill font-weight-bold d-inline-flex align-items-center justify-content-center" style="font-size: 11.5px; height: 34px; background: rgba(16,185,129,0.1); color: #10B981; border: 1px solid rgba(16,185,129,0.25);" disabled>' +
-                    '<i class="las la-check mr-1 font-size-13"></i> {{ translate('Sent') }}' +
-                    '</button>'
-                );
-
-                AIZ.plugins.notify('success', '{{ translate('Interest expressed successfully!') }}');
+                if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                    AIZ.plugins.notify('success', '{{ translate("Interest expressed successfully!") }}');
+                }
             } else if (data && data.status === 'upgrade_required') {
+                $btn.prop('disabled', false).html(originalContent);
                 $('#package_alert_title').text("{{ translate('Upgrade to Express Interest') }}");
                 $('#package_alert_text').text(data.message || "{{ translate('Please upgrade to a premium package to express interest.') }}");
                 $('.package_update_alert_modal').modal('show');
-                quickBtn.attr("onclick", "express_interest(" + id + ")");
-                bottomBtn.attr("onclick", "express_interest(" + id + ")").prop("disabled", false);
             } else {
-                quickBtn.attr("onclick", "express_interest(" + id + ")");
-                bottomBtn.attr("onclick", "express_interest(" + id + ")").prop("disabled", false);
-                AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{ translate('Something went wrong') }}');
+                $btn.prop('disabled', false).html(originalContent);
+                if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                    AIZ.plugins.notify('danger', (data && data.message) ? data.message : '{{ translate("Something went wrong") }}');
+                }
             }
         }).fail(function () {
-            quickBtn.attr("onclick", "express_interest(" + id + ")");
-            bottomBtn.attr("onclick", "express_interest(" + id + ")").prop("disabled", false);
-            AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+            $btn.prop('disabled', false).html(originalContent);
+            if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                AIZ.plugins.notify('danger', '{{ translate("Something went wrong") }}');
+            }
         });
     }
 
-    // Shortlist / Bookmark
-    function do_shortlist(id) {
-        var btn = $("#shortlist_btn_" + id);
-        btn.removeAttr("onclick");
+    // Toggle Shortlist
+    function toggle_shortlist(id, btn) {
+        var $btn = $(btn);
+        var isShortlisted = $btn.find('i').hasClass('las');
 
-        $.post('{{ route('member.add_to_shortlist') }}', {
-            _token: '{{ csrf_token() }}',
-            id: id
-        }, function (res) {
-            if (res == 1) {
-                btn.css({
-                    "background": "rgba(212,175,55,0.15)",
-                    "color": "#D4AF37"
-                }).attr({
-                    "title": "{{ translate('Shortlisted') }}",
-                    "onclick": "remove_shortlist(" + id + ")"
-                });
-                btn.find('i').removeClass('lar la-bookmark').addClass('las la-bookmark');
-                AIZ.plugins.notify('success', '{{ translate('Profile added to shortlist.') }}');
-            } else {
-                btn.attr("onclick", "do_shortlist(" + id + ")");
-                AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
-            }
-        }).fail(function () {
-            btn.attr("onclick", "do_shortlist(" + id + ")");
-            AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
-        });
-    }
-
-    function remove_shortlist(id) {
-        var btn = $("#shortlist_btn_" + id);
-        btn.removeAttr("onclick");
-
-        $.post('{{ route('member.remove_from_shortlist') }}', {
-            _token: '{{ csrf_token() }}',
-            id: id
-        }, function (res) {
-            if (res == 1) {
-                btn.css({
-                    "background": "rgba(100,116,139,0.08)",
-                    "color": "#64748B"
-                }).attr({
-                    "title": "{{ translate('Add to Shortlist') }}",
-                    "onclick": "do_shortlist(" + id + ")"
-                });
-                btn.find('i').removeClass('las la-bookmark').addClass('lar la-bookmark');
-                AIZ.plugins.notify('success', '{{ translate('Profile removed from shortlist.') }}');
-            } else {
-                btn.attr("onclick", "remove_shortlist(" + id + ")");
-                AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
-            }
-        }).fail(function () {
-            btn.attr("onclick", "remove_shortlist(" + id + ")");
-            AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
-        });
+        if (isShortlisted) {
+            $.post('{{ route('member.remove_from_shortlist') }}', {
+                _token: '{{ csrf_token() }}',
+                id: id
+            }, function (res) {
+                if (res == 1) {
+                    $btn.attr('title', '{{ translate("Add to Wishlist") }}')
+                        .find('i').removeClass('las text-danger').addClass('lar');
+                    if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                        AIZ.plugins.notify('success', '{{ translate("Removed from shortlist") }}');
+                    }
+                } else {
+                    if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                        AIZ.plugins.notify('danger', '{{ translate("Something went wrong") }}');
+                    }
+                }
+            });
+        } else {
+            $.post('{{ route('member.add_to_shortlist') }}', {
+                _token: '{{ csrf_token() }}',
+                id: id
+            }, function (res) {
+                if (res == 1) {
+                    $btn.attr('title', '{{ translate("Shortlisted") }}')
+                        .find('i').removeClass('lar').addClass('las text-danger');
+                    if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                        AIZ.plugins.notify('success', '{{ translate("Added to shortlist") }}');
+                    }
+                } else {
+                    if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                        AIZ.plugins.notify('danger', '{{ translate("Something went wrong") }}');
+                    }
+                }
+            });
+        }
     }
 
     // Ignore Profile

@@ -59,6 +59,14 @@
             </a>
         </li>
 
+        <!-- Happy Story -->
+        <li class="member-dark-nav-item">
+            <a href="{{ route('happy_story.member') }}" class="member-dark-nav-link {{ areActiveRoutes(['happy_story.member']) }}">
+                <i class="las la-handshake"></i>
+                <span>{{ translate('Happy Story') }}</span>
+            </a>
+        </li>
+
         <!-- Interest -->
         <li class="member-dark-nav-item">
             <a href="{{ route('interest_requests') }}" class="member-dark-nav-link {{ areActiveRoutes(['interest_requests', 'my_interests.index']) }}">

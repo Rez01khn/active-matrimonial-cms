@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Shortlist;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class ShortlistController extends Controller
 {
@@ -16,7 +16,18 @@ class ShortlistController extends Controller
      */
     public function index()
     {
-        $shortlists = Shortlist::where('shortlisted_by', Auth::user()->id)
+        $shortlists = Shortlist::with([
+                'user.member',
+                'user.spiritual_backgrounds.religion',
+                'user.addresses.city',
+                'user.addresses.state',
+                'user.addresses.country',
+                'user.education',
+                'user.career',
+                'user.physical_attributes',
+                'user.families'
+            ])
+            ->where('shortlisted_by', Auth::user()->id)
             ->WhereNotIn("user_id", function ($query) {
                 $query->select('user_id')
                     ->from('ignored_users')
@@ -27,7 +38,7 @@ class ShortlistController extends Controller
                     ->from('ignored_users')
                     ->where('ignored_by', Auth::user()->id)->orWhere('user_id', Auth::user()->id);
             })
-            ->latest()->paginate(10);
+            ->latest()->paginate(12);
         return view('frontend.member.my_shortlists', compact('shortlists'));
     }
 

@@ -92,9 +92,125 @@
 
             <!-- Vertical Multi-Row Grid Layout -->
             <div class="stories-showcase-container" id="storiesShowcaseContainer">
+                @php
+                    $dbHasSpotlight = false;
+                @endphp
+
+                @if(isset($happy_stories) && $happy_stories->count() > 0)
+                    @foreach($happy_stories as $dbIndex => $dbStory)
+                        @php
+                            $sUser = $dbStory->user;
+                            $sCoupleName = ($sUser ? $sUser->first_name : '') . ' & ' . ($dbStory->partner_name ?: translate('Partner'));
+                            $sCity = 'Dhaka';
+                            $sCountry = 'Bangladesh';
+                            if ($sUser && $sUser->addresses && $sUser->addresses->first()) {
+                                $sAddr = $sUser->addresses->first();
+                                if ($sAddr->city && !empty($sAddr->city->name)) {
+                                    $sCity = $sAddr->city->name;
+                                }
+                                if ($sAddr->country && !empty($sAddr->country->name)) {
+                                    $sCountry = $sAddr->country->name;
+                                }
+                            }
+                            $sLocation = $sCity . ', ' . $sCountry;
+                            $sMarriedMeta = translate('Married') . ' · ' . ($dbStory->created_at ? $dbStory->created_at->diffForHumans(null, true) : translate('1 Year'));
+                            $sQuote = trim(strip_tags($dbStory->details));
+                            $sIsVideo = !empty($dbStory->video_link);
+
+                            $sPhotoUrl = static_asset('assets/img/custom/story_couple.jpg');
+                            if ($sIsVideo && preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $dbStory->video_link, $ytThumbMatch)) {
+                                $sPhotoUrl = 'https://img.youtube.com/vi/' . $ytThumbMatch[1] . '/hqdefault.jpg';
+                            } elseif (!empty($dbStory->photos)) {
+                                $sFirstPhoto = trim(explode(',', $dbStory->photos)[0]);
+                                $sPhotoUrl = is_numeric($sFirstPhoto) ? uploaded_asset($sFirstPhoto) : static_asset($sFirstPhoto);
+                            } elseif ($sUser && !empty($sUser->photo)) {
+                                $sPhotoUrl = uploaded_asset($sUser->photo);
+                            }
+                        @endphp
+
+                        @if($dbIndex === 0 && $sIsVideo)
+                            @php $dbHasSpotlight = true; @endphp
+                            <!-- Spotlight Video Card (Double Width / Spans 2 Columns) -->
+                            <div class="story-card-item featured-spotlight" data-card-index="db-{{ $dbStory->id }}">
+                                <div class="story-card-media">
+                                    <span class="story-type-badge">
+                                        <i class="las la-video"></i> {{ translate('Video Story') }}
+                                    </span>
+                                    <button type="button" class="story-action-top-btn" title="View Story"
+                                            onclick="openStoryVideoModal(@js($sCoupleName), @js($sLocation), @js($sMarriedMeta), @js($sQuote), @js($dbStory->video_link), @js($sPhotoUrl))">
+                                        <i class="las la-expand-arrows-alt"></i>
+                                    </button>
+                                    <img src="{{ $sPhotoUrl }}" alt="{{ $sCoupleName }}">
+                                    <button type="button" class="story-play-overlay-btn" aria-label="Play Video Story"
+                                            onclick="openStoryVideoModal(@js($sCoupleName), @js($sLocation), @js($sMarriedMeta), @js($sQuote), @js($dbStory->video_link), @js($sPhotoUrl))">
+                                        <i class="las la-play"></i>
+                                    </button>
+                                </div>
+                                <div class="story-card-body">
+                                    <div class="story-spotlight-bar">
+                                        <div>
+                                            <h3 class="story-couple-name mb-1">{{ $sCoupleName }}</h3>
+                                            <div class="story-meta-row">
+                                                <span class="story-meta-item">
+                                                    <i class="las la-map-marker-alt"></i> {{ $sLocation }}
+                                                </span>
+                                                <span class="story-meta-item">
+                                                    <i class="las la-ring"></i> {{ $sMarriedMeta }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="story-spotlight-quote">
+                                            &ldquo;{{ $sQuote }}&rdquo;
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Standard Story Card (Video or Text Story) -->
+                            <div class="story-card-item standard-card" data-card-index="db-{{ $dbStory->id }}">
+                                <div class="story-card-media">
+                                    @if($sIsVideo)
+                                        <span class="story-type-badge">
+                                            <i class="las la-video"></i> {{ translate('Video Story') }}
+                                        </span>
+                                        <img src="{{ $sPhotoUrl }}" alt="{{ $sCoupleName }}">
+                                        <button type="button" class="story-play-overlay-btn" style="width: 44px; height: 44px; font-size: 16px;" aria-label="Play Video"
+                                                onclick="openStoryVideoModal(@js($sCoupleName), @js($sLocation), @js($sMarriedMeta), @js($sQuote), @js($dbStory->video_link), @js($sPhotoUrl))">
+                                            <i class="las la-play"></i>
+                                        </button>
+                                    @else
+                                        <span class="story-type-badge">
+                                            <i class="las la-file-alt"></i> {{ translate('Text Story') }}
+                                        </span>
+                                        <img src="{{ $sPhotoUrl }}" alt="{{ $sCoupleName }}">
+                                    @endif
+                                </div>
+                                <div class="story-card-body">
+                                    <h3 class="story-couple-name">{{ $sCoupleName }}</h3>
+                                    <div class="story-meta-row mb-2">
+                                        <span class="story-meta-item">
+                                            <i class="las la-map-marker-alt"></i> {{ $sLocation }}
+                                        </span>
+                                        <span class="story-meta-item">
+                                            <i class="las la-ring"></i> {{ $sMarriedMeta }}
+                                        </span>
+                                    </div>
+                                    <p class="story-quote-box">
+                                        &ldquo;{{ $sQuote }}&rdquo;
+                                    </p>
+                                    <div class="story-card-footer">
+                                        <button type="button" class="story-heart-toggle-btn" aria-label="Like story" onclick="toggleStoryLike(this)">
+                                            <i class="lar la-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
                 
-                <!-- ROW 1 - Card 1: Spotlight Video Card (Double Width / Spans 2 Columns) -->
-                <div class="story-card-item featured-spotlight" data-card-index="0">
+                <!-- ROW 1 - Card 1: Spotlight Video Card (Double Width / Spans 2 Columns unless DB already has spotlight) -->
+                <div class="story-card-item {{ $dbHasSpotlight ? 'standard-card' : 'featured-spotlight' }}" data-card-index="0">
                     <div class="story-card-media">
                         <!-- Top-Left Pill Badge -->
                         <span class="story-type-badge">
@@ -454,49 +570,6 @@
         </div>
     </section>
 
-    <!-- Additional Community Stories from Database (if present) -->
-    @if(isset($happy_stories) && $happy_stories->count() > 0)
-    <section class="py-5 bg-white border-bottom">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h3 class="font-serif fw-700 text-mat-maroon fs-28 mb-2">{{ translate('More Happy Couples') }}</h3>
-                <p class="text-muted fs-14">{{ translate('Read more stories shared directly by our valued members') }}</p>
-            </div>
-            <div class="row">
-                @foreach ($happy_stories as $key => $happy_story)
-                    @php
-                        $photo = explode(',', $happy_story->photos);
-                    @endphp
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card h-100 border rounded-xl overflow-hidden shadow-sm hov-shadow-md transition-all">
-                            <a href="{{ route('story_details', $happy_story->id) }}" class="text-reset d-block overflow-hidden" style="height: 220px;">
-                                <img src="{{ uploaded_asset($photo[0]) }}" class="img-fluid w-100 h-100 img-fit" alt="{{ $happy_story->title }}">
-                            </a>
-                            <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
-                                <div>
-                                    <h4 class="font-serif fw-600 fs-17 mb-2">
-                                        <a href="{{ route('story_details', $happy_story->id) }}" class="text-dark">{{ $happy_story->title }}</a>
-                                    </h4>
-                                    <div class="text-muted fs-12 mb-3">
-                                        <span>{{ translate('Posted By') }}:</span>
-                                        <span class="text-mat-maroon fw-600">{{ $happy_story->user->first_name.' '.$happy_story->user->last_name }}</span>
-                                        <span class="mx-1">&middot;</span>
-                                        <span>{{ $happy_story->created_at->format('d M, Y') }}</span>
-                                    </div>
-                                </div>
-                                <a href="{{ route('story_details', $happy_story->id) }}" class="btn btn-outline-secondary btn-sm rounded-pill align-self-start">{{ translate('Read Full Story') }} &rarr;</a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            <div class="aiz-pagination aiz-pagination-center mt-4">
-                {{ $happy_stories->appends(request()->input())->links() }}
-            </div>
-        </div>
-    </section>
-    @endif
-
     <!-- 4. Bottom Pre-Footer CTA Banner ("Your Story Could Be Next") -->
     <section class="container px-3">
         <div class="stories-bottom-cta-banner">
@@ -552,7 +625,9 @@
             </div>
             <div class="modal-body p-0 bg-dark position-relative">
                 <div class="embed-responsive embed-responsive-16by9 bg-black">
-                    <!-- Standard HTML5 Video Player with Wedding Video Showcase -->
+                    <!-- Iframe Player for YouTube / Google Drive links -->
+                    <iframe id="storyVideoIframe" class="embed-responsive-item" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="display: none; border: 0;"></iframe>
+                    <!-- Standard HTML5 Video Player for Direct Uploaded Video Files -->
                     <video id="storyVideoPlayer" class="embed-responsive-item" controls playsinline poster="{{ static_asset('assets/img/custom/story_arif_tasmia.jpg') }}">
                         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
                         {{ translate('Your browser does not support video playback.') }}
@@ -606,15 +681,47 @@
     }
 
     // Video Story Modal Handler
-    function openStoryVideoModal(coupleName, meta, quote) {
+    function openStoryVideoModal(coupleName, location, marriedMeta, quote, videoUrl, posterUrl) {
         document.getElementById('videoModalCoupleTitle').innerText = coupleName;
-        document.getElementById('videoModalCoupleMeta').innerText = meta;
-        document.getElementById('videoModalQuote').innerHTML = '&ldquo;' + quote + '&rdquo;';
-        
-        $('#storyVideoModal').modal('show');
+        document.getElementById('videoModalCoupleMeta').innerText = (location ? location + ' · ' : '') + (marriedMeta || '');
+        document.getElementById('videoModalQuote').innerHTML = '&ldquo;' + (quote || '') + '&rdquo;';
         
         const player = document.getElementById('storyVideoPlayer');
-        if (player) {
+        const iframe = document.getElementById('storyVideoIframe');
+        const rawUrl = videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+
+        let embedUrl = null;
+        const ytMatch = rawUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+        const driveMatch = rawUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i) || rawUrl.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/i);
+
+        if (ytMatch && ytMatch[1]) {
+            embedUrl = 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1';
+        } else if (driveMatch && driveMatch[1]) {
+            embedUrl = 'https://drive.google.com/file/d/' + driveMatch[1] + '/preview';
+        }
+
+        if (embedUrl && iframe) {
+            if (player) {
+                player.pause();
+                player.style.display = 'none';
+            }
+            iframe.src = embedUrl;
+            iframe.style.display = 'block';
+        } else if (player) {
+            if (iframe) {
+                iframe.src = '';
+                iframe.style.display = 'none';
+            }
+            const defaultPoster = '{{ static_asset("assets/img/custom/story_arif_tasmia.jpg") }}';
+            player.style.display = 'block';
+            player.setAttribute('poster', posterUrl || defaultPoster);
+            player.src = rawUrl;
+            player.load();
+        }
+
+        $('#storyVideoModal').modal('show');
+        
+        if (!embedUrl && player) {
             player.play().catch(function(e) {
                 // Autoplay might be muted or blocked by browser policy
             });
@@ -623,9 +730,13 @@
 
     $('#storyVideoModal').on('hidden.bs.modal', function () {
         const player = document.getElementById('storyVideoPlayer');
+        const iframe = document.getElementById('storyVideoIframe');
         if (player) {
             player.pause();
             player.currentTime = 0;
+        }
+        if (iframe) {
+            iframe.src = '';
         }
     });
 

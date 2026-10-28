@@ -1032,4 +1032,65 @@ class MemberController extends Controller
 
         return view('admin.members.member_types', compact('members', 'sort_search', 'type'));
     }
+
+    public function update_profile_photo(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filename = 'avatar_' . $user->id . '_' . time() . '.' . $extension;
+
+            $destinationPath = public_path('uploads/all');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $filename);
+
+            $upload = new Upload;
+            $upload->file_original_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $upload->file_name = 'uploads/all/' . $filename;
+            $upload->user_id = $user->id;
+            $upload->extension = $extension;
+            $upload->type = 'image';
+            $upload->file_size = filesize($destinationPath . '/' . $filename);
+            $upload->save();
+
+            if (get_setting('profile_picture_approval_by_admin') && $user->user_type == 'member') {
+                $user->photo_approved = 0;
+            } else {
+                $user->photo_approved = 1;
+            }
+
+            $user->photo = $upload->id;
+            $user->save();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'result' => true,
+                    'message' => translate('Profile photo updated successfully.'),
+                    'avatar_url' => uploaded_asset($user->photo),
+                ]);
+            }
+
+            flash(translate('Profile photo updated successfully.'))->success();
+            return back();
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'result' => false,
+                'message' => translate('Please select a valid image file.'),
+            ], 422);
+        }
+
+        flash(translate('Please select a valid image file.'))->error();
+        return back();
+    }
 }

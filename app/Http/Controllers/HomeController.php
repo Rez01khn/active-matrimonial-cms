@@ -467,10 +467,7 @@ class HomeController extends Controller
     {
         $authUser = auth()->user();
 
-        if ($authUser && $authUser->user_type == 'member' && ($authUser->id != $id) && !is_paid_member($authUser->id)) {
-            flash(translate('Please upgrade to a premium package to view complete biodata and profile details.'))->warning();
-            return redirect()->route('packages');
-        }
+        $is_paid_user = ($authUser && ($authUser->id == $id || is_paid_member($authUser->id) || $authUser->user_type == 'admin'));
 
         $similar_profiles = ProfileMatch::orderBy('match_percentage', 'desc')
             ->where('user_id', $authUser->id)
@@ -530,7 +527,7 @@ class HomeController extends Controller
         
         $additional_attributes  = AdditionalAttribute::where('status', 1)->get();
 
-        return view('frontend.member.public_profile.index', compact('user', 'similar_profiles', 'additional_attributes'));
+        return view('frontend.member.public_profile.index', compact('user', 'similar_profiles', 'additional_attributes', 'is_paid_user'));
     }
 
     public function download_member_biodata_pdf($id)

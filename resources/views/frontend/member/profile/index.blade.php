@@ -501,6 +501,55 @@
 </div>
 
 <div id="view-my-profile">
+
+@php
+    $profile_avatar_url = null;
+    if (!empty($member->photo)) {
+        $profile_avatar_url = is_numeric($member->photo) ? uploaded_asset($member->photo) : static_asset($member->photo);
+    }
+    if (empty($profile_avatar_url)) {
+        $g_val = optional($member->member)->gender ?? 1;
+        $profile_avatar_url = ($g_val == 2)
+            ? static_asset('assets/img/female-avatar-place.png')
+            : static_asset('assets/img/avatar-place.png');
+    }
+@endphp
+
+<!-- Profile Identity Hero with Direct Photo Upload -->
+<div class="mb-4 p-4 rounded-2xl bg-white border border-stone-200/80 shadow-sm d-flex flex-wrap align-items-center justify-content-between" style="border-radius: 18px; gap: 16px;">
+    <div class="d-flex align-items-center" style="gap: 18px;">
+        <div class="position-relative" style="cursor: pointer;" data-toggle="modal" data-target="#modal-update-profile-photo-main" title="{{ translate('Click to change profile photo') }}">
+            <img src="{{ $profile_avatar_url }}" alt="{{ $member->first_name }}" class="rounded-circle border shadow-sm" style="width: 76px; height: 76px; object-fit: cover; border-width: 3px !important; border-color: var(--mat-border, #ECE7E1) !important;" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+            <button type="button" class="position-absolute bottom-0 right-0 btn btn-xs btn-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; padding: 0; background: var(--mat-maroon, #4A1521); border: 2px solid #FFFFFF;" data-toggle="modal" data-target="#modal-update-profile-photo-main" title="{{ translate('Change Photo') }}">
+                <i class="las la-camera fs-13 text-white"></i>
+            </button>
+        </div>
+        <div>
+            <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
+                <h4 class="fw-700 mb-0 font-serif" style="color: var(--mat-maroon-dark, #2C0A12); font-size: 20px;">
+                    {{ $member->first_name }} {{ $member->last_name }}
+                </h4>
+                @if($member->approved == 1)
+                    <span class="badge badge-inline px-2 py-0.5 fs-11 fw-600 text-success rounded-pill" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.28);">
+                        <i class="las la-check-circle mr-1"></i>{{ translate('Verified') }}
+                    </span>
+                @endif
+            </div>
+            <div class="text-muted fs-13 mt-1 d-flex align-items-center flex-wrap" style="gap: 12px;">
+                <span><strong class="text-dark">{{ translate('Member ID') }}:</strong> #{{ $member->code ?? 'ID-'.$member->id }}</span>
+                <span>•</span>
+                <span><strong class="text-dark">{{ translate('Membership') }}:</strong> {{ is_paid_member($member->id) ? (($member->member && $member->member->package) ? $member->member->package->name : translate('Premium Member')) : translate('Free Plan') }}</span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button type="button" class="btn text-white rounded-pill px-4 py-2 fs-13 fw-600 d-inline-flex align-items-center shadow-sm" style="background: var(--mat-maroon, #4A1521); gap: 6px;" data-toggle="modal" data-target="#modal-update-profile-photo-main">
+            <i class="las la-camera fs-16" style="color: var(--mat-gold, #C5A059);"></i>
+            <span>{{ translate('Change Profile Photo') }}</span>
+        </button>
+    </div>
+</div>
+
 <div class="profile-biodata-grid">
 
     {{-- ROW 1 (2 Columns): Card 1 & Card 2 --}}
@@ -1255,6 +1304,44 @@
     @include('frontend.member.profile.modals')
     @include('modals.create_edit_modal')
     @include('modals.delete_modal')
+
+    <!-- Update Profile Photo Modal -->
+    <div class="modal fade" id="modal-update-profile-photo-main" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content rounded-2xl border-0 overflow-hidden shadow-lg" style="border-radius: 18px;">
+                <div class="modal-header py-3 px-4 border-0" style="background: var(--mat-maroon, #4A1521); color: #ffffff;">
+                    <h5 class="modal-title font-serif fw-700 fs-16 mb-0 text-white d-flex align-items-center">
+                        <i class="las la-camera mr-2" style="color: var(--mat-gold, #C5A059); font-size: 20px;"></i>
+                        {{ translate('Update Profile Photo') }}
+                    </h5>
+                    <button type="button" class="close p-0 m-0 text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.85;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('member.profile_photo_update') }}" method="POST" id="form-update-profile-photo-main" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4 text-center">
+                        <div class="mb-4 d-inline-block position-relative">
+                            <img id="avatar_preview_img_main" src="{{ $profile_avatar_url }}" class="rounded-circle border shadow-sm" style="width: 140px; height: 140px; object-fit: cover; border-width: 3px !important; border-color: var(--mat-border, #ECE7E1) !important;" alt="{{ $member->first_name }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                        </div>
+
+                        <div class="p-4 rounded-xl border border-dashed text-center mb-2" style="background: #FAF8F5; border-color: #CBD5E1; cursor: pointer;" onclick="document.getElementById('profile_photo_input_main_file').click();">
+                            <i class="las la-cloud-upload-alt fs-36 text-muted mb-1 d-block"></i>
+                            <span class="fs-14 fw-600 text-dark d-block">{{ translate('Click here to choose a photo') }}</span>
+                        </div>
+
+                        <input type="file" name="photo" id="profile_photo_input_main_file" accept="image/jpeg,image/png,image/webp,image/jpg,image/gif" class="d-none" onchange="previewMainProfilePhoto(event)">
+                    </div>
+                    <div class="modal-footer bg-light py-2.5 px-4 d-flex justify-content-between">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fs-13 fw-600" data-dismiss="modal">{{ translate('Cancel') }}</button>
+                        <button type="button" class="btn text-white rounded-pill px-4 fs-13 fw-600 shadow-sm" id="btn-save-main-photo" onclick="submitProfilePhotoUpload()" style="background: var(--mat-maroon, #4A1521); cursor: pointer;">
+                            <i class="las la-check mr-1"></i> {{ translate('Upload & Save Photo') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -3200,6 +3287,86 @@
     window.updateStatusBarDisplay = updateStatusBarDisplay;
     window.recalculateProfileCompleteness = recalculateProfileCompleteness;
     window.recalculatePartnerPrefCompleteness = recalculatePartnerPrefCompleteness;
+
+    function previewMainProfilePhoto(event) {
+        var input = event.target;
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var preview = document.getElementById('avatar_preview_img_main');
+                if (preview) {
+                    preview.src = e.target.result;
+                }
+                var btn = document.getElementById('btn-save-main-photo');
+                if (btn) {
+                    btn.disabled = false;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    window.previewMainProfilePhoto = previewMainProfilePhoto;
+
+    function submitProfilePhotoUpload() {
+        var fileInput = document.getElementById('profile_photo_input_main_file');
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+            if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                AIZ.plugins.notify('warning', '{{ translate("Please click and choose a photo first.") }}');
+            } else {
+                alert('{{ translate("Please click and choose a photo first.") }}');
+            }
+            return false;
+        }
+        $('#form-update-profile-photo-main').submit();
+    }
+    window.submitProfilePhotoUpload = submitProfilePhotoUpload;
+
+    $(document).on('submit', '#form-update-profile-photo-main', function(e) {
+        e.preventDefault();
+        var fileInput = document.getElementById('profile_photo_input_main_file');
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+            alert('{{ translate("Please select a photo first.") }}');
+            return false;
+        }
+
+        var $btn = $('#btn-save-main-photo');
+        var originalHtml = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span> {{ translate("Uploading...") }}');
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                    AIZ.plugins.notify('success', '{{ translate("Profile photo updated successfully!") }}');
+                }
+                setTimeout(function() {
+                    window.location.reload();
+                }, 350);
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html(originalHtml);
+                var errorMsg = '{{ translate("Failed to upload photo. Please select a valid image (JPG, PNG, WEBP).") }}';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                if (typeof AIZ !== 'undefined' && AIZ.plugins && AIZ.plugins.notify) {
+                    AIZ.plugins.notify('danger', errorMsg);
+                } else {
+                    alert(errorMsg);
+                }
+            }
+        });
+    });
 
     $(document).ready(function() {
         var urlParams = new URLSearchParams(window.location.search);

@@ -73,249 +73,150 @@
     </div>
 </div>
 
-<!-- 3. Tiered Pricing Cards (4 Columns on Desktop) -->
+<!-- 3. Dynamic Tiered Pricing Cards (From Database) -->
+@php
+    $total_packages = $packages->count();
+    $current_pkg_id = (auth()->check() && auth()->user()->member) ? auth()->user()->member->current_package_id : null;
+@endphp
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 mb-4">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 align-items-stretch">
+    <div class="row gutters-15 align-items-stretch">
+        @forelse ($packages as $index => $package)
+            @php
+                $is_current = ($current_pkg_id == $package->id);
+                $is_free = ($package->price == 0 || $package->id == 1);
 
-        <!-- Card 1: Basic Plan (White Card) -->
-        <div class="col mb-4 mb-lg-0">
-            <div class="plan-card plan-card-basic">
-                <div>
-                    <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-maroon-light-bg);">
-                        <i class="las la-feather-alt"></i>
+                $is_vip = ($total_packages >= 3 && $index === $total_packages - 1) || stripos($package->name, 'vip') !== false || stripos($package->name, 'platinum') !== false || stripos($package->name, 'diamond') !== false;
+                $is_popular = !$is_vip && (($total_packages >= 2 && $index === 1) || stripos($package->name, 'gold') !== false || stripos($package->name, 'standard') !== false);
+
+                $card_classes = 'mp-pkg-card';
+                if ($is_vip) {
+                    $card_classes .= ' mp-pkg-card-vip';
+                } elseif ($is_popular) {
+                    $card_classes .= ' mp-pkg-card-popular';
+                }
+
+                $tier_icons = ['las la-feather-alt', 'las la-crown', 'las la-gem', 'las la-star'];
+                $tier_icon = $tier_icons[$index % count($tier_icons)];
+
+                if ($is_free) {
+                    $tagline = translate('Perfect for getting started');
+                } elseif ($is_vip) {
+                    $tagline = translate('Exclusive. Personalized. Premium.');
+                } elseif ($is_popular) {
+                    $tagline = translate('More matches, more possibilities');
+                } else {
+                    $tagline = translate('The complete experience');
+                }
+
+                $col_class = ($total_packages === 3)
+                    ? 'col-xl-4 col-lg-4 col-md-6 col-12 mb-4'
+                    : 'col-xl-3 col-lg-3 col-md-6 col-12 mb-4';
+            @endphp
+
+            <div class="{{ $col_class }}">
+                <div class="{{ $card_classes }}">
+                    @if($is_popular)
+                        <div class="mp-pkg-ribbon">{{ translate('Most Popular') }}</div>
+                    @elseif($is_vip)
+                        <div class="mp-pkg-ribbon">{{ translate('VIP Exclusive') }}</div>
+                    @endif
+
+                    <div>
+                        <div class="mp-pkg-icon-wrap">
+                            @if(!empty($package->image) && uploaded_asset($package->image))
+                                <img src="{{ uploaded_asset($package->image) }}" alt="{{ $package->name }}" class="mp-pkg-icon-img">
+                            @else
+                                <i class="{{ $tier_icon }}"></i>
+                            @endif
+                        </div>
+
+                        <h3 class="mp-pkg-name">{{ $package->name }}</h3>
+                        <p class="mp-pkg-tagline">{{ $tagline }}</p>
+
+                        <div class="mp-pkg-price-row">
+                            @if($is_free)
+                                <span class="mp-pkg-price-val">{{ translate('Free') }}</span>
+                            @else
+                                <span class="mp-pkg-price-val">{{ single_price($package->price) }}</span>
+                            @endif
+                            <span class="mp-pkg-price-period">/ {{ $package->validity }} {{ translate('Days') }}</span>
+                        </div>
+
+                        <div class="mp-pkg-divider"></div>
+
+                        <ul class="mp-pkg-features">
+                            <li class="mp-pkg-feature-item">
+                                <i class="las la-check-circle"></i>
+                                <span><strong>{{ $package->express_interest }}</strong> {{ translate('Express Interests') }}</span>
+                            </li>
+                            <li class="mp-pkg-feature-item">
+                                <i class="las la-check-circle"></i>
+                                <span><strong>{{ $package->contact }}</strong> {{ translate('Contact Info Views') }}</span>
+                            </li>
+                            <li class="mp-pkg-feature-item">
+                                <i class="las la-check-circle"></i>
+                                <span><strong>{{ $package->photo_gallery }}</strong> {{ translate('Gallery Photo Uploads') }}</span>
+                            </li>
+                            <li class="mp-pkg-feature-item">
+                                <i class="las la-check-circle"></i>
+                                <span><strong>{{ $package->profile_viewers_view }}</strong> {{ translate('Profile Viewer Views') }}</span>
+                            </li>
+                            @if(get_setting('profile_picture_privacy') == 'only_me')
+                                <li class="mp-pkg-feature-item">
+                                    <i class="las la-check-circle"></i>
+                                    <span><strong>{{ $package->profile_image_view }}</strong> {{ translate('Private Profile Photo Views') }}</span>
+                                </li>
+                            @endif
+                            @if(get_setting('gallery_image_privacy') == 'only_me')
+                                <li class="mp-pkg-feature-item">
+                                    <i class="las la-check-circle"></i>
+                                    <span><strong>{{ $package->gallery_image_view }}</strong> {{ translate('Private Gallery Views') }}</span>
+                                </li>
+                            @endif
+                            <li class="mp-pkg-feature-item {{ $package->auto_profile_match == 0 ? 'mp-pkg-feature-disabled' : '' }}">
+                                @if($package->auto_profile_match == 1)
+                                    <i class="las la-check-circle"></i>
+                                    <span>{{ translate('Show Auto Profile Match') }}</span>
+                                @else
+                                    <i class="las la-times-circle"></i>
+                                    <span>{{ translate('Show Auto Profile Match') }}</span>
+                                @endif
+                            </li>
+                        </ul>
                     </div>
 
-                    <h3 class="plan-title text-mat-maroon">Basic Plan</h3>
-                    <p class="plan-subtitle mb-4">Perfect for getting started</p>
-
-                    <!-- Price -->
-                    <div class="d-flex align-items-baseline mb-4">
-                        <span class="plan-price-num text-mat-maroon mr-2">৳ 1,499</span>
-                        <span class="plan-price-period text-muted">/ 3 Months</span>
+                    <div class="mp-pkg-action-wrap">
+                        @auth
+                            @if(auth()->user()->user_type == 'admin')
+                                <a href="javascript:void(0);" onclick="package_update_alert()" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
+                                    <span>{{ translate('Get Started') }}</span>
+                                    <i class="las la-arrow-right"></i>
+                                </a>
+                            @elseif($is_free)
+                                <a href="{{ route('free_package_purchase', $package->id) }}" class="btn-mp-pkg-outline">
+                                    <span>{{ translate('Get Started Free') }}</span>
+                                    <i class="las la-arrow-right"></i>
+                                </a>
+                            @else
+                                <a href="{{ route('package_payment_methods', encrypt($package->id)) }}" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
+                                    <span>{{ translate('Get Started') }}</span>
+                                    <i class="las la-arrow-right"></i>
+                                </a>
+                            @endif
+                        @else
+                            <a href="javascript:void(0);" onclick="loginModal()" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
+                                <span>{{ translate('Get Started') }}</span>
+                                <i class="las la-arrow-right"></i>
+                            </a>
+                        @endauth
                     </div>
-
-                    <div style="height: 1px; background-color: var(--mat-border-light); margin-bottom: 20px;"></div>
-
-                    <!-- Features List -->
-                    <ul class="plan-features-list">
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Create your profile</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Browse matches</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Send up to 10 interests/day</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>View limited profiles</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Bottom Button -->
-                <div class="mt-auto pt-3">
-                    @auth
-                        @php $basicPkg = $packages->first(); @endphp
-                        <a href="{{ $basicPkg ? route('package_payment_methods', encrypt($basicPkg->id)) : route('packages') }}" class="btn btn-plan-outline w-100">
-                            Get Started &rarr;
-                        </a>
-                    @else
-                        <a href="javascript:void(0);" onclick="loginModal()" class="btn btn-plan-outline w-100">
-                            Get Started &rarr;
-                        </a>
-                    @endauth
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2: Standard Plan (Most Popular Highlighted Card) -->
-        <div class="col mb-4 mb-lg-0">
-            <div class="plan-card plan-card-standard">
-                <!-- Ribbon Badge -->
-                <div class="plan-popular-ribbon">Most Popular</div>
-
-                <div>
-                    <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-gold-bg);">
-                        <i class="las la-crown"></i>
-                    </div>
-
-                    <h3 class="plan-title text-mat-maroon">Standard Plan</h3>
-                    <p class="plan-subtitle mb-4">More matches, more possibilities</p>
-
-                    <!-- Price -->
-                    <div class="d-flex align-items-baseline mb-4">
-                        <span class="plan-price-num text-mat-maroon mr-2">৳ 2,999</span>
-                        <span class="plan-price-period text-muted">/ 6 Months</span>
-                    </div>
-
-                    <div style="height: 1px; background-color: var(--mat-border); margin-bottom: 20px;"></div>
-
-                    <!-- Features List -->
-                    <ul class="plan-features-list">
-                        <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
-                            <span>All Basic features</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
-                            <span>Send up to 30 interests/day</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
-                            <span>View all profiles</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #333;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-gold fw-700"></i>
-                            <span>Access to success stories</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Bottom Button -->
-                <div class="mt-auto pt-3">
-                    @auth
-                        @php $stdPkg = $packages->skip(1)->first() ?? $packages->first(); @endphp
-                        <a href="{{ $stdPkg ? route('package_payment_methods', encrypt($stdPkg->id)) : route('packages') }}" class="btn btn-plan-gold w-100">
-                            Get Started &rarr;
-                        </a>
-                    @else
-                        <a href="javascript:void(0);" onclick="loginModal()" class="btn btn-plan-gold w-100">
-                            Get Started &rarr;
-                        </a>
-                    @endauth
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3: Premium Plan (White Card) -->
-        <div class="col mb-4 mb-lg-0">
-            <div class="plan-card plan-card-premium">
-                <div>
-                    <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle text-mat-gold" style="background-color: var(--mat-maroon-light-bg);">
-                        <i class="las la-gem"></i>
-                    </div>
-
-                    <h3 class="plan-title text-mat-maroon">Premium Plan</h3>
-                    <p class="plan-subtitle mb-4">The complete experience</p>
-
-                    <!-- Price -->
-                    <div class="d-flex align-items-baseline mb-4">
-                        <span class="plan-price-num text-mat-maroon mr-2">৳ 4,999</span>
-                        <span class="plan-price-period text-muted">/ 12 Months</span>
-                    </div>
-
-                    <div style="height: 1px; background-color: var(--mat-border-light); margin-bottom: 20px;"></div>
-
-                    <!-- Features List -->
-                    <ul class="plan-features-list">
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>All Standard features</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Unlimited interests</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>See who viewed your profile</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Priority customer support</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #444;">
-                            <i class="las la-check fs-16 mt-0.5 text-mat-maroon-dark fw-700"></i>
-                            <span>Access to premium matches</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Bottom Button -->
-                <div class="mt-auto pt-3">
-                    @auth
-                        @php $premPkg = $packages->last() ?? $packages->first(); @endphp
-                        <a href="{{ $premPkg ? route('package_payment_methods', encrypt($premPkg->id)) : route('packages') }}" class="btn btn-plan-outline w-100">
-                            Get Started &rarr;
-                        </a>
-                    @else
-                        <a href="javascript:void(0);" onclick="loginModal()" class="btn btn-plan-outline w-100">
-                            Get Started &rarr;
-                        </a>
-                    @endauth
                 </div>
             </div>
-        </div>
-
-        <!-- Card 4: VIP Plan (Luxury Dark Maroon Card) -->
-        <div class="col mb-4 mb-lg-0">
-            <div class="plan-card plan-card-vip">
-                <div>
-                    <!-- Circular Icon Badge -->
-                    <div class="plan-icon-circle" style="background-color: rgba(255, 255, 255, 0.12); border: 1px solid rgba(229, 168, 82, 0.35); color: #E5A852;">
-                        <i class="las la-star"></i>
-                    </div>
-
-                    <h3 class="plan-title text-white">VIP Plan</h3>
-                    <p class="plan-subtitle mb-4" style="color: #E2D5C8;">Exclusive. Personalized. Premium.</p>
-
-                    <!-- Price -->
-                    <div class="d-flex align-items-baseline mb-4">
-                        <span class="plan-price-num text-white mr-2">৳ 9,999</span>
-                        <span class="plan-price-period" style="color: #D5C7B8;">/ 12 Months</span>
-                    </div>
-
-                    <div style="height: 1px; background-color: rgba(255, 255, 255, 0.15); margin-bottom: 20px;"></div>
-
-                    <!-- Features List -->
-                    <ul class="plan-features-list">
-                        <li class="plan-feature-item" style="color: #FAF4EE;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #E5A852; font-weight: 700;"></i>
-                            <span>All Premium features</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #FAF4EE;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #E5A852; font-weight: 700;"></i>
-                            <span>Personal matchmaker support</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #FAF4EE;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #E5A852; font-weight: 700;"></i>
-                            <span>Featured profile placement</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #FAF4EE;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #E5A852; font-weight: 700;"></i>
-                            <span>Video call assistance</span>
-                        </li>
-                        <li class="plan-feature-item" style="color: #FAF4EE;">
-                            <i class="las la-check fs-16 mt-0.5" style="color: #E5A852; font-weight: 700;"></i>
-                            <span>Special events & offers</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Bottom Button -->
-                <div class="mt-auto pt-3">
-                    @auth
-                        @php $vipPkg = $packages->last() ?? $packages->first(); @endphp
-                        <a href="{{ $vipPkg ? route('package_payment_methods', encrypt($vipPkg->id)) : route('packages') }}" class="btn btn-plan-gold w-100">
-                            Get Started &rarr;
-                        </a>
-                    @else
-                        <a href="javascript:void(0);" onclick="loginModal()" class="btn btn-plan-gold w-100">
-                            Get Started &rarr;
-                        </a>
-                    @endauth
-                </div>
+        @empty
+            <div class="col-12 text-center py-5">
+                <h4 class="mp-pkg-section-title">{{ translate('No Active Packages Found') }}</h4>
             </div>
-        </div>
-
+        @endforelse
     </div>
 </div>
 

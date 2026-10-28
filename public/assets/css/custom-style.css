@@ -8978,3 +8978,901 @@ a.text-primary:focus {
   fill: #10b981;
   transition: width 0.4s ease;
 }
+
+
+/* ==========================================================================
+   MEMBER PANEL: MEMBERSHIP PACKAGES, CHECKOUT & PAYMENT HISTORY
+   ========================================================================== */
+
+/* 1. Page Header & Breadcrumb */
+.mp-pkg-header-wrap {
+  margin-bottom: 24px;
+}
+
+.mp-pkg-breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 8px;
+}
+
+.mp-pkg-breadcrumb-link {
+  color: var(--mat-text-muted, #686868);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.mp-pkg-breadcrumb-link:hover {
+  color: var(--mat-maroon, #4A1521);
+  text-decoration: none;
+}
+
+.mp-pkg-breadcrumb-sep {
+  color: var(--mat-text-muted, #686868);
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+.mp-pkg-breadcrumb-active {
+  color: var(--mat-maroon-dark, #2C0A12);
+  font-weight: 600;
+}
+
+.mp-pkg-title-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mp-pkg-page-title {
+  font-family: var(--mat-font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.3px;
+}
+
+.mp-pkg-page-subtitle {
+  font-family: var(--mat-font-sans);
+  font-size: 14px;
+  color: var(--mat-text-muted, #686868);
+  margin: 0;
+}
+
+.mp-pkg-history-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mat-white, #FFFFFF);
+  border: 1px solid var(--mat-border, #E7E0D5);
+  color: var(--mat-maroon-dark, #2C0A12) !important;
+  font-family: var(--mat-font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  text-decoration: none !important;
+  box-shadow: 0 2px 8px rgba(44, 10, 18, 0.04);
+  transition: all 0.22s ease;
+}
+
+.mp-pkg-history-btn i {
+  color: var(--mat-gold, #967240);
+  font-size: 17px;
+}
+
+.mp-pkg-history-btn:hover {
+  background: var(--mat-gold-bg, #F3ECE2);
+  border-color: var(--mat-gold, #967240);
+  transform: translateY(-1px);
+}
+
+/* 2. Current Active Plan Summary Banner */
+.mp-current-plan-banner {
+  background: linear-gradient(135deg, #2C0A12 0%, #4A1521 60%, #5F1B2A 100%);
+  border-radius: 20px;
+  padding: 26px 28px;
+  color: var(--mat-white, #FFFFFF);
+  box-shadow: 0 12px 32px rgba(44, 10, 18, 0.16);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+  border: 1px solid rgba(229, 194, 134, 0.22);
+}
+
+.mp-current-plan-banner::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 194, 134, 0.16) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.mp-current-plan-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mp-current-plan-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mp-current-plan-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(229, 194, 134, 0.15);
+  border: 1px solid rgba(229, 194, 134, 0.35);
+  color: var(--mat-gold-light, #E5C286);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.mp-current-plan-eyebrow {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--mat-gold-light, #E5C286);
+  font-weight: 600;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-current-plan-name {
+  font-family: var(--mat-font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--mat-white, #FFFFFF);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mp-plan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-family: var(--mat-font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.mp-plan-status-active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6EE7B7;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.mp-plan-status-expired {
+  background: rgba(239, 68, 68, 0.22);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.mp-current-plan-validity-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mp-current-plan-validity-icon {
+  font-size: 24px;
+  color: var(--mat-gold-light, #E5C286);
+}
+
+.mp-current-plan-validity-label {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+}
+
+.mp-current-plan-validity-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mat-white, #FFFFFF);
+}
+
+/* 3. Quota / Usage Metrics inside Current Plan Banner */
+.mp-quota-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 991.98px) {
+  .mp-quota-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .mp-quota-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mp-quota-item {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  transition: background 0.2s ease;
+}
+
+.mp-quota-item:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.mp-quota-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(229, 194, 134, 0.16);
+  color: var(--mat-gold-light, #E5C286);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mp-quota-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.mp-quota-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--mat-white, #FFFFFF);
+  line-height: 1.2;
+}
+
+.mp-quota-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4. Section Heading Before Pricing Cards */
+.mp-pkg-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.mp-pkg-section-title {
+  font-family: var(--mat-font-serif);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin: 0 0 3px 0;
+}
+
+.mp-pkg-section-desc {
+  font-size: 13.5px;
+  color: var(--mat-text-muted, #686868);
+  margin: 0;
+}
+
+/* 5. Member Panel Package Cards (4-Column Grid) */
+.mp-pkg-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 18px;
+  padding: 24px 20px;
+  background: var(--mat-white, #FFFFFF);
+  border: 1px solid var(--mat-border, #E7E0D5);
+  box-shadow: 0 4px 18px rgba(44, 10, 18, 0.04);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-pkg-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(44, 10, 18, 0.09);
+  border-color: var(--mat-gold, #967240);
+}
+
+.mp-pkg-card-popular {
+  background: var(--mat-bg-section, #FAF7F2);
+  border: 1.5px solid var(--mat-gold, #967240);
+  box-shadow: 0 8px 26px rgba(150, 114, 64, 0.13);
+}
+
+.mp-pkg-card-vip {
+  background: var(--mat-maroon-dark, #2C0A12);
+  border: 1.5px solid #3E101B;
+  color: var(--mat-white, #FFFFFF);
+  box-shadow: 0 10px 30px rgba(44, 10, 18, 0.24);
+}
+
+.mp-pkg-card-current {
+  border: 2px solid #10B981;
+}
+
+.mp-pkg-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--mat-gold, #967240);
+  color: var(--mat-white, #FFFFFF);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 5px 13px;
+  border-bottom-left-radius: 12px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.mp-pkg-ribbon-current {
+  background: #10B981;
+}
+
+.mp-pkg-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 22px;
+  background: var(--mat-gold-bg, #F3ECE2);
+  color: var(--mat-gold, #967240);
+  overflow: hidden;
+}
+
+.mp-pkg-card-vip .mp-pkg-icon-wrap {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(229, 194, 134, 0.35);
+  color: var(--mat-gold-light, #E5C286);
+}
+
+.mp-pkg-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.mp-pkg-name {
+  font-family: var(--mat-font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin: 0 0 4px 0;
+}
+
+.mp-pkg-card-vip .mp-pkg-name {
+  color: var(--mat-white, #FFFFFF);
+}
+
+.mp-pkg-tagline {
+  font-size: 12.5px;
+  color: var(--mat-text-muted, #686868);
+  margin-bottom: 16px;
+}
+
+.mp-pkg-card-vip .mp-pkg-tagline {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.mp-pkg-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.mp-pkg-price-val {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mat-maroon, #4A1521);
+  line-height: 1;
+}
+
+.mp-pkg-card-vip .mp-pkg-price-val {
+  color: var(--mat-gold-light, #E5C286);
+}
+
+.mp-pkg-price-period {
+  font-size: 12.5px;
+  color: var(--mat-text-muted, #686868);
+  font-weight: 500;
+}
+
+.mp-pkg-card-vip .mp-pkg-price-period {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mp-pkg-divider {
+  height: 1px;
+  background-color: var(--mat-border-light, #E2DCD5);
+  margin-bottom: 16px;
+}
+
+.mp-pkg-card-vip .mp-pkg-divider {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.mp-pkg-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.mp-pkg-feature-item {
+  font-size: 13px;
+  color: var(--mat-text-dark, #2C2C2C);
+  line-height: 1.45;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.mp-pkg-card-vip .mp-pkg-feature-item {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mp-pkg-feature-item i.la-check-circle,
+.mp-pkg-feature-item i.la-check {
+  color: var(--mat-gold, #967240);
+  font-size: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.mp-pkg-card-vip .mp-pkg-feature-item i.la-check-circle,
+.mp-pkg-card-vip .mp-pkg-feature-item i.la-check {
+  color: var(--mat-gold-light, #E5C286);
+}
+
+.mp-pkg-feature-disabled {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.mp-pkg-feature-item i.la-times-circle,
+.mp-pkg-feature-item i.la-times {
+  color: #EF4444;
+  font-size: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.mp-pkg-action-wrap {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.btn-mp-pkg-outline {
+  width: 100%;
+  border: 1.5px solid var(--mat-maroon-dark, #2C0A12);
+  color: var(--mat-maroon-dark, #2C0A12) !important;
+  background: transparent;
+  border-radius: 11px;
+  font-weight: 600;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+.btn-mp-pkg-outline:hover {
+  background: var(--mat-maroon-dark, #2C0A12);
+  color: var(--mat-white, #FFFFFF) !important;
+}
+
+.btn-mp-pkg-gold {
+  width: 100%;
+  background: var(--mat-gold, #967240);
+  color: var(--mat-white, #FFFFFF) !important;
+  border: 1.5px solid var(--mat-gold, #967240);
+  border-radius: 11px;
+  font-weight: 600;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(150, 114, 64, 0.25);
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+.btn-mp-pkg-gold:hover {
+  background: var(--mat-gold-hover, #805F32);
+  border-color: var(--mat-gold-hover, #805F32);
+  color: var(--mat-white, #FFFFFF) !important;
+}
+
+.btn-mp-pkg-current {
+  width: 100%;
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669 !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-radius: 11px;
+  font-weight: 600;
+  padding: 10px 14px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.mp-pkg-card-vip .btn-mp-pkg-current {
+  background: rgba(16, 185, 129, 0.22);
+  color: #6EE7B7 !important;
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+/* 6. Trust & Guarantee Bar inside Member Panel */
+.mp-pkg-trust-bar {
+  background: var(--mat-white, #FFFFFF);
+  border: 1px solid var(--mat-border, #E7E0D5);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(44, 10, 18, 0.03);
+}
+
+.mp-trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mp-trust-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--mat-gold-bg, #F3ECE2);
+  color: var(--mat-gold, #967240);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mp-trust-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin: 0 0 2px 0;
+}
+
+.mp-trust-desc {
+  font-size: 12px;
+  color: var(--mat-text-muted, #686868);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 7. Checkout / Select Payment Method Cards (In Member Panel) */
+.mp-checkout-summary-card,
+.mp-checkout-methods-card {
+  background: var(--mat-white, #FFFFFF);
+  border: 1px solid var(--mat-border, #E7E0D5);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(44, 10, 18, 0.04);
+  overflow: hidden;
+}
+
+.mp-checkout-card-header {
+  background: var(--mat-bg-section, #FAF7F2);
+  border-bottom: 1px solid var(--mat-border, #E7E0D5);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mp-checkout-card-title {
+  font-family: var(--mat-font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin: 0;
+}
+
+.mp-checkout-card-body {
+  padding: 24px 22px;
+}
+
+.mp-payment-option-box {
+  border: 1.5px solid var(--mat-border, #E7E0D5);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: all 0.2s ease;
+  background: var(--mat-white, #FFFFFF);
+  cursor: pointer;
+  display: block;
+}
+
+.mp-payment-option-box:hover {
+  border-color: var(--mat-gold, #967240);
+  background: var(--mat-bg-section, #FAF7F2);
+}
+
+.aiz-megabox input:checked ~ .mp-payment-option-box {
+  border-color: var(--mat-maroon, #4A1521) !important;
+  background: var(--mat-maroon-light-bg, #FDF0F0) !important;
+  box-shadow: 0 4px 14px rgba(74, 21, 33, 0.1);
+}
+
+.mp-payment-gateway-img {
+  max-height: 42px;
+  object-fit: contain;
+  margin: 0 auto 8px auto;
+  display: block;
+}
+
+.mp-payment-gateway-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--mat-maroon-dark, #2C0A12);
+  display: block;
+}
+
+
+/* ==========================================================================
+   BIODATA PAYWALL BLUR EFFECT (FOR FREE MEMBERS)
+   ========================================================================== */
+.profile-paywall-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.profile-paywall-blurred {
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.42;
+  max-height: 520px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.profile-paywall-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.88) 45%, #FFFFFF 100%);
+}
+
+.profile-paywall-card {
+  background: var(--mat-white, #FFFFFF);
+  border-radius: 20px;
+  border: 1.5px solid var(--mat-border, #ECE7E0);
+  box-shadow: 0 18px 45px rgba(44, 10, 18, 0.14);
+  padding: 36px 30px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.profile-paywall-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--mat-gold-bg, #F3ECE2);
+  color: var(--mat-gold, #967240);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(150, 114, 64, 0.3);
+}
+
+.profile-paywall-title {
+  font-family: var(--mat-font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mat-maroon-dark, #2C0A12);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.profile-paywall-desc {
+  font-family: var(--mat-font-sans);
+  font-size: 13.5px;
+  color: var(--mat-text-muted, #686868);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.profile-paywall-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  text-align: left;
+  margin: 0 auto 24px auto;
+  max-width: 380px;
+  font-size: 13px;
+  color: var(--mat-text-dark, #2C2C2C);
+}
+
+.profile-paywall-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-paywall-perk-item i {
+  color: #10B981;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.profile-paywall-btn {
+  background: var(--mat-maroon, #4A1521);
+  color: #FFFFFF !important;
+  border-radius: 9999px;
+  padding: 12px 28px;
+  font-family: var(--mat-font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(44, 10, 18, 0.25);
+  transition: all 0.22s ease;
+}
+
+.profile-paywall-btn:hover {
+  background: var(--mat-maroon-dark, #2C0A12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 10, 18, 0.35);
+  color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   Account Settings Badges & Status Pills
+   ========================================================================== */
+.account-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: 999px;
+  width: auto;
+  min-height: 24px;
+}
+
+.account-status-badge-active {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065F46;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+.account-status-badge-deactivated {
+  background: rgba(245, 158, 11, 0.12);
+  color: #B45309;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.account-membership-badge-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  width: auto;
+}
+
+.account-membership-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--mat-maroon, #4A1521);
+  color: #FFFFFF;
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  box-shadow: 0 2px 8px rgba(74, 21, 33, 0.18);
+  width: auto;
+}
+
+.account-membership-badge-premium i {
+  color: var(--mat-gold, #C5A059);
+}
+
+.account-membership-upgrade-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--mat-maroon, #4A1521);
+  color: #FFFFFF !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.account-membership-upgrade-btn:hover {
+  background: var(--mat-maroon-dark, #2C0A12);
+  transform: translateY(-1px);
+}
+

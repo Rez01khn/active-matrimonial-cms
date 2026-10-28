@@ -12,12 +12,12 @@ use App\Notifications\DbStoreNotification;
 use App\Services\FirbaseNotification;
 use App\Utility\EmailUtility;
 use App\Utility\SmsUtility;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Facades\FirebaseNotificationService as Larafirebase;
-use Notification;
-use Session;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Session;
 
 class PackagePaymentController extends Controller
 {
@@ -36,7 +36,7 @@ class PackagePaymentController extends Controller
     public function index()
     {
         $per_page = 10;
-        $package_payments = PackagePayment::latest()->paginate($per_page);
+        $package_payments = PackagePayment::with(['package'])->latest()->paginate($per_page);
         return view('admin.package_payments.index', compact('package_payments', 'per_page'));
     }
 
@@ -256,7 +256,7 @@ class PackagePaymentController extends Controller
 
     public function package_purchase_history(Request $request)
     {
-        $package_payments = PackagePayment::latest()
+        $package_payments = PackagePayment::with(['package'])->latest()
             ->where('user_id', Auth::user()->id)
             ->paginate(10);
         return view('frontend.member.package_payment_history', compact('package_payments'));

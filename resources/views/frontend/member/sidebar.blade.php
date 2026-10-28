@@ -123,7 +123,7 @@
 
         <!-- Membership Packages -->
         <li class="member-dark-nav-item">
-            <a href="{{ route('packages') }}" class="member-dark-nav-link {{ areActiveRoutes(['packages', 'package_purchase_history']) }}">
+            <a href="{{ route('packages') }}" class="member-dark-nav-link {{ areActiveRoutes(['packages', 'package_payment_methods', 'package_purchase_history', 'package_payment.invoice']) }}">
                 <i class="las la-crown"></i>
                 <span>{{ translate('Membership Packages') }}</span>
             </a>

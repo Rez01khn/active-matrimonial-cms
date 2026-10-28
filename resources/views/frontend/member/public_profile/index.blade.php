@@ -180,12 +180,20 @@
                             </div>
                             <h2 class="fs-20 fw-500 mb-3">{{ $user->first_name . ' ' . $user->last_name }}</h2>
                             <div class="mb-3">
-                                <a href="{{ route('member.biodata.pdf', $user->id) }}"
-                                    class="btn btn-block btn-biodata-pdf py-2 shadow-sm d-flex align-items-center justify-content-center text-white"
-                                    download="Biodata-{{ $user->code }}.pdf">
-                                    <i class="las la-file-download fs-18 mr-2 text-white"></i>
-                                    <span class="fw-700 fs-13">{{ translate('Download Biodata (PDF)') }}</span>
-                                </a>
+                                @if($is_paid_user)
+                                    <a href="{{ route('member.biodata.pdf', $user->id) }}"
+                                        class="btn btn-block btn-biodata-pdf py-2 shadow-sm d-flex align-items-center justify-content-center text-white"
+                                        download="Biodata-{{ $user->code }}.pdf">
+                                        <i class="las la-file-download fs-18 mr-2 text-white"></i>
+                                        <span class="fw-700 fs-13">{{ translate('Download Biodata (PDF)') }}</span>
+                                    </a>
+                                @else
+                                    <button type="button" onclick="prompt_biodata_upgrade('{{ translate('Please upgrade to a premium package to download full biodata in PDF.') }}')"
+                                        class="btn btn-block btn-biodata-pdf py-2 shadow-sm d-flex align-items-center justify-content-center text-white border-0">
+                                        <i class="las la-file-download fs-18 mr-2 text-white"></i>
+                                        <span class="fw-700 fs-13">{{ translate('Download Biodata (PDF)') }}</span>
+                                    </button>
+                                @endif
                             </div>
 
                             @if (Auth::user()->id != $user->id)
@@ -371,12 +379,20 @@
                                 <span class="opacity-60">{{ translate('Member ID: ') }}</span>
                                 <span class="ml-1 text-primary fw-600">#{{ $user->code }}</span>
                             </div>
-                            <a href="{{ route('member.biodata.pdf', $user->id) }}"
-                                class="btn btn-sm btn-biodata-pdf py-1 px-2 d-inline-flex align-items-center text-white"
-                                download="Biodata-{{ $user->code }}.pdf">
-                                <i class="las la-file-download mr-1 text-white"></i>
-                                <span class="fs-12 fw-700">{{ translate('Download PDF') }}</span>
-                            </a>
+                            @if(isset($is_paid_user) && $is_paid_user)
+                                <a href="{{ route('member.biodata.pdf', $user->id) }}"
+                                    class="btn btn-sm btn-biodata-pdf py-1 px-2 d-inline-flex align-items-center text-white"
+                                    download="Biodata-{{ $user->code }}.pdf">
+                                    <i class="las la-file-download mr-1 text-white"></i>
+                                    <span class="fs-12 fw-700">{{ translate('Download PDF') }}</span>
+                                </a>
+                            @else
+                                <button type="button" onclick="prompt_biodata_upgrade('{{ translate('Please upgrade to a premium package to download full biodata in PDF.') }}')"
+                                    class="btn btn-sm btn-biodata-pdf py-1 px-2 d-inline-flex align-items-center text-white border-0">
+                                    <i class="las la-file-download mr-1 text-white"></i>
+                                    <span class="fs-12 fw-700">{{ translate('Download PDF') }}</span>
+                                </button>
+                            @endif
                         </div>
                         <h2 class="fs-20 fw-500 mb-4">{{ $user->first_name . ' ' . $user->last_name }}</h2>
 
@@ -432,6 +448,10 @@
                             </div>
                         @endif
                     </div>
+                    @if(isset($is_paid_user) && !$is_paid_user)
+                    <div class="profile-paywall-wrapper">
+                        <div class="profile-paywall-blurred">
+                    @endif
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="profile">
                             <svg style="height: 0;width: 0;opacity: 0;visibility: hidden;">
@@ -1973,6 +1993,39 @@
                             </div>
                         </div>
                     </div>
+                    @if(isset($is_paid_user) && !$is_paid_user)
+                        </div>
+                        <div class="profile-paywall-overlay">
+                            <div class="profile-paywall-card">
+                                <div class="profile-paywall-icon">
+                                    <i class="las la-crown"></i>
+                                </div>
+                                <h3 class="profile-paywall-title">{{ translate('Full Biodata is Locked') }}</h3>
+                                <p class="profile-paywall-desc">
+                                    {{ translate('Upgrade to any of our paid membership plans to view complete family background, career, education details, and direct contact information.') }}
+                                </p>
+                                <div class="profile-paywall-perks">
+                                    <div class="profile-paywall-perk-item">
+                                        <i class="las la-check-circle"></i>
+                                        <span>{{ translate('Unlock Complete Biodata & Family Details') }}</span>
+                                    </div>
+                                    <div class="profile-paywall-perk-item">
+                                        <i class="las la-check-circle"></i>
+                                        <span>{{ translate('Access Verified Contact Numbers & Addresses') }}</span>
+                                    </div>
+                                    <div class="profile-paywall-perk-item">
+                                        <i class="las la-check-circle"></i>
+                                        <span>{{ translate('Send Direct Express Interests & Download Biodata PDF') }}</span>
+                                    </div>
+                                </div>
+                                <a href="{{ route('packages') }}" class="profile-paywall-btn">
+                                    <i class="las la-gem"></i>
+                                    <span>{{ translate('Upgrade Membership Now') }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -2039,6 +2092,25 @@
         var package_validity = {{ package_validity(Auth::user()->id) ? 'true' : 'false' }};
         var is_paid_user = {{ is_paid_member(Auth::id()) ? 'true' : 'false' }};
         var user_id = {{ Auth::user()->id }};
+
+        function prompt_biodata_upgrade(customMessage, customTitle) {
+            var title = customTitle || "{{ translate('Unlock Full Biodata') }}";
+            var message = customMessage || "{{ translate('Please upgrade to a premium package to access full biodata details, contacts, and PDF download.') }}";
+            $('#package_alert_title').text(title);
+            $('#package_alert_text').text(message);
+            $('.package_update_alert_modal').modal('show');
+        }
+
+        @if(isset($is_paid_user) && !$is_paid_user)
+        $(document).ready(function() {
+            setTimeout(function() {
+                prompt_biodata_upgrade(
+                    "{{ translate('To unlock complete family background, career, education details, and verified contact numbers, please upgrade your membership plan.') }}",
+                    "{{ translate('Unlock Full Biodata') }}"
+                );
+            }, 5000);
+        });
+        @endif
 
         // View Contact details
         function view_contact(id) {
@@ -2129,6 +2201,13 @@
 
         // Shortlist
         function do_shortlist(id) {
+            if (!is_paid_user) {
+                $('#package_alert_title').text("{{ translate('Upgrade to Shortlist') }}");
+                $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to shortlist members.') }}");
+                $('.package_update_alert_modal').modal('show');
+                return;
+            }
+
             $("#shortlist_a_id_" + id).removeAttr("onclick");
             $("#shortlist_id_" + id).html("{{ translate('Shortlisting') }}..");
             $.post('{{ route('member.add_to_shortlist') }}', {

@@ -552,6 +552,12 @@
                 window.location.href = "{{ route('login') }}";
                 return;
             @else
+                if (!is_paid_user) {
+                    $('#package_alert_title').text("{{ translate('Upgrade to Shortlist') }}");
+                    $('#package_alert_text').text("{{ translate('Please upgrade to a premium package to shortlist members.') }}");
+                    $('.package_update_alert_modal').modal('show');
+                    return;
+                }
                 $.post('{{ route('member.add_to_shortlist') }}', {
                     _token: '{{ csrf_token() }}',
                     id: id

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Package;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,19 +19,24 @@ class CheckMemberPackage
     {
         $user = Auth::user();
 
-        if ($request->routeIs('member_profile') || $request->is('member-profile/*')) {
-            $target_id = $request->route('id');
-            if ($user && $user->user_type == 'member' && ($target_id != $user->id) && !is_paid_member($user->id)) {
-                flash(translate('Please upgrade to a premium package to view complete biodata and profile details.'))->warning();
-                return redirect()->route('packages');
-            }
-        }
-
+        // Auto-assign Free Package (Package ID 1) if user has no current package
         if ($user && $user->member && is_null($user->member->current_package_id)) {
+            $free_pkg = Package::where('id', 1)->first() ?? Package::where('price', 0)->first();
+            if ($free_pkg) {
+                $user->member->current_package_id            = $free_pkg->id;
+                $user->member->remaining_interest            = $free_pkg->express_interest ?? 0;
+                $user->member->remaining_photo_gallery       = $free_pkg->photo_gallery ?? 0;
+                $user->member->remaining_contact_view        = $free_pkg->contact ?? 0;
+                $user->member->remaining_profile_viewer_view = $free_pkg->profile_viewers_view ?? 0;
+                $user->member->remaining_profile_image_view  = $free_pkg->profile_image_view ?? 0;
+                $user->member->remaining_gallery_image_view  = $free_pkg->gallery_image_view ?? 0;
+                $user->member->auto_profile_match            = $free_pkg->auto_profile_match ?? 0;
+                $user->member->package_validity              = date('Y-m-d', strtotime('+' . ($free_pkg->validity ?? 365) . ' days'));
+                $user->member->save();
 
-            if (!$request->routeIs(['home', 'packages', 'package_payment_methods', 'free_package_purchase', 'package_payment.invoice', 'package_purchase_history', 'package.payment'])) {
-                flash(translate('Please purchase a package first.'))->warning();
-                return redirect()->route('packages');
+                $user->membership = 1;
+                $user->has_purchased_free_package = 1;
+                $user->save();
             }
         }
 

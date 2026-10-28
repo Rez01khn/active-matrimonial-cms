@@ -6,8 +6,10 @@ use App\Models\ManualPaymentMethod;
 use App\Models\Member;
 use App\Models\Package;
 use Illuminate\Http\Request;
-use Redirect;
-use Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class PackageController extends Controller
 {
@@ -19,28 +21,28 @@ class PackageController extends Controller
         $this->middleware(['permission:delete_package'])->only('destroy');
 
         $this->package_rules = [
-            'name'              => ['required', 'max:255'],
-            'price'             => ['required'],
-            'express_interest'  => ['required'],
-            'photo_gallery'     => ['required'],
-            'contact'           => ['required'],
-            'profile_viewers_view'=> ['required'],
-            'profile_image_view' => ['required'],
-            'gallery_image_view' => ['required'],
-            'validity'          => ['required'],
+            'name'                 => ['required', 'max:255'],
+            'price'                => ['required'],
+            'express_interest'     => ['required'],
+            'photo_gallery'        => ['required'],
+            'contact'              => ['required'],
+            'profile_viewers_view' => ['required'],
+            'profile_image_view'   => ['required'],
+            'gallery_image_view'   => ['required'],
+            'validity'             => ['required'],
         ];
 
         $this->package_messages = [
-            'name.required'              => translate('Name is required'),
-            'name.max'                   => translate('Max 255 characters'),
-            'price.required'             => translate('Package Price is required'),
-            'express_interest.required'  => translate('No. of Express Interest is required'),
-            'photo_gallery.required'     => translate('No. of Photo gallery is required'),
-            'contact.required'           => translate('No. of Contact View is required'),
-            'contact.profile_viewers_view'=> translate('No. of Profile Viewer view is required'),
-            'profile_image_view.required' => translate('No. of Profile Image View is required'),
-            'gallery_image_view.required' => translate('No. of Gallery Image View View is required'),
-            'validity.required'          => translate('Package Validity day is required'),
+            'name.required'                => translate('Name is required'),
+            'name.max'                     => translate('Max 255 characters'),
+            'price.required'               => translate('Package Price is required'),
+            'express_interest.required'    => translate('No. of Express Interest is required'),
+            'photo_gallery.required'       => translate('No. of Photo gallery is required'),
+            'contact.required'             => translate('No. of Contact View is required'),
+            'contact.profile_viewers_view' => translate('No. of Profile Viewer view is required'),
+            'profile_image_view.required'  => translate('No. of Profile Image View is required'),
+            'gallery_image_view.required'  => translate('No. of Gallery Image View View is required'),
+            'validity.required'            => translate('Package Validity day is required'),
         ];
     }
 
@@ -51,7 +53,7 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $packages      = Package::paginate(10);
+        $packages = Package::paginate(10);
         return view('admin.premium_packages.index', compact('packages'));
     }
 
@@ -73,30 +75,30 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        $rules      = $this->package_rules;
-        $messages   = $this->package_messages;
-        $validator  = Validator::make($request->all(), $rules, $messages);
+        $rules     = $this->package_rules;
+        $messages  = $this->package_messages;
+        $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             flash(translate('Sorry! Something went wrong'))->error();
             return Redirect::back()->withErrors($validator);
         }
 
-        $package                    = new Package;
-        $package->name              = $request->name;
-        $package->price             = filter_min_value($request->price);
-        $package->express_interest  = filter_min_value($request->express_interest);
-        $package->photo_gallery     = filter_min_value($request->photo_gallery);
-        $package->contact           = filter_min_value($request->contact);
-        $package->profile_viewers_view= filter_min_value($request->profile_viewers_view);
-        $package->profile_image_view = filter_min_value($request->profile_image_view);
-        $package->gallery_image_view = filter_min_value($request->gallery_image_view);
+        $package                       = new Package;
+        $package->name                 = $request->name;
+        $package->price                = filter_min_value($request->price);
+        $package->express_interest     = filter_min_value($request->express_interest);
+        $package->photo_gallery        = filter_min_value($request->photo_gallery);
+        $package->contact              = filter_min_value($request->contact);
+        $package->profile_viewers_view = filter_min_value($request->profile_viewers_view);
+        $package->profile_image_view   = filter_min_value($request->profile_image_view);
+        $package->gallery_image_view   = filter_min_value($request->gallery_image_view);
         if ($request->auto_profile_match != null) {
             $package->auto_profile_match = 1;
         } else {
             $package->auto_profile_match = 0;
         }
-        $package->validity          = filter_min_value($request->validity);
-        $package->image             = $request->package_image;
+        $package->validity = filter_min_value($request->validity);
+        $package->image    = $request->package_image;
 
         if ($package->save()) {
             flash(translate('New Package has been added successfully'))->success();
@@ -139,31 +141,31 @@ class PackageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $rules      = $this->package_rules;
-        $messages   = $this->package_messages;
-        $validator  = Validator::make($request->all(), $rules, $messages);
+        $rules     = $this->package_rules;
+        $messages  = $this->package_messages;
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             flash(translate('Sorry! Something went wrong'))->error();
             return Redirect::back()->withErrors($validator);
         }
 
-        $package                    = Package::findOrFail($id);
-        $package->name              = $request->name;
-        $package->price             = filter_min_value($request->price);
-        $package->express_interest  = filter_min_value($request->express_interest);
-        $package->photo_gallery     = filter_min_value($request->photo_gallery);
-        $package->contact           = filter_min_value($request->contact);
-        $package->profile_viewers_view= filter_min_value($request->profile_viewers_view);
-        $package->profile_image_view = filter_min_value($request->profile_image_view);
-        $package->gallery_image_view = filter_min_value($request->gallery_image_view);
+        $package                       = Package::findOrFail($id);
+        $package->name                 = $request->name;
+        $package->price                = filter_min_value($request->price);
+        $package->express_interest     = filter_min_value($request->express_interest);
+        $package->photo_gallery        = filter_min_value($request->photo_gallery);
+        $package->contact              = filter_min_value($request->contact);
+        $package->profile_viewers_view = filter_min_value($request->profile_viewers_view);
+        $package->profile_image_view   = filter_min_value($request->profile_image_view);
+        $package->gallery_image_view   = filter_min_value($request->gallery_image_view);
         if ($request->auto_profile_match != null) {
             $package->auto_profile_match = 1;
         } else {
             $package->auto_profile_match = 0;
         }
-        $package->validity          = filter_min_value($request->validity);
-        $package->image             = $request->package_image;
+        $package->validity = filter_min_value($request->validity);
+        $package->image    = $request->package_image;
         if ($package->save()) {
             flash(translate('Package info has been updated successfully'))->success();
             return redirect()->route('packages.index');
@@ -203,21 +205,32 @@ class PackageController extends Controller
         }
     }
 
-    public function select_package()
+    public function select_package(): View
     {
-        $user = auth()->user();
-        $packages = Package::where('active', '1')->get();
+        $user = Auth::user();
+        $packages = Package::where('active', '1')
+            ->where('id', '!=', 1)
+            ->where('price', '>', 0)
+            ->orderBy('price', 'asc')
+            ->limit(3)
+            ->get();
+
+        if ($user && $user->user_type === 'member') {
+            $user->loadMissing(['member.package']);
+            return view('frontend.member.packages', compact('packages', 'user'));
+        }
+
         return view('frontend.package.packages', compact('packages', 'user'));
     }
 
-    public function package_payemnt_methods($id)
+    public function package_payemnt_methods($id): View
     {
         $manual_payments = ManualPaymentMethod::all();
-        $package = Package::where('id', decrypt($id))->first();
+        $package = Package::where('id', decrypt($id))->firstOrFail();
         return view('frontend.package.select_payemnt_method', compact('package', 'manual_payments'));
     }
 
-    function check_for_package_invalid()
+    public function check_for_package_invalid(): void
     {
         $members = Member::all();
         foreach ($members as $member) {

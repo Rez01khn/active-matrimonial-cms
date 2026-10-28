@@ -152,6 +152,7 @@ Route::group(['middleware' => ['member', 'check.package']], function () {
             Route::get('/members/change-password', 'change_password')->name('member.change_password');
             Route::post('/member/password-update/{id}', 'password_update')->name('member.password_update');
             Route::get('/profile-settings', 'profile_settings')->name('profile_settings');
+            Route::post('/member/profile-photo-update', 'update_profile_photo')->name('member.profile_photo_update');
         });
         // Account deacticvation & deletation
         Route::post('/member/account-activation', 'update_account_deactivation_status')->name('member.account_deactivation');

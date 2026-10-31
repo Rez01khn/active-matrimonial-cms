@@ -2,363 +2,533 @@
 
 @section('content')
 
+<!-- Brand Typography & Styling -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+<style>
+    :root {
+        --mat-maroon: #4A1521;
+        --mat-maroon-dark: #2C0A12;
+        --mat-gold: #967240;
+        --mat-gold-light: #C5A059;
+        --mat-gold-bg: #FAF6F1;
+        --mat-border: #ECE7E1;
+        --mat-font-serif: 'Playfair Display', Georgia, serif;
+        --mat-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .plans-hero-section {
+        position: relative;
+        background-image: url('{{ static_asset('assets/img/custom/plans_hero_couple.jpg') }}');
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        background-position: center center !important;
+        padding: 65px 0 60px;
+        border-bottom: 1px solid var(--mat-border);
+        overflow: hidden;
+    }
+    .plans-hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, rgba(255, 253, 249, 0.94) 0%, rgba(255, 253, 249, 0.88) 45%, rgba(255, 253, 249, 0.50) 100%);
+        z-index: 1;
+    }
+    .plans-hero-title {
+        font-family: var(--mat-font-serif);
+        font-size: 38px;
+        font-weight: 700;
+        color: var(--mat-maroon);
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+    .plans-hero-subtitle {
+        font-size: 15px;
+        color: #64748B;
+        line-height: 1.6;
+        max-width: 520px;
+    }
+
+
+    /* Luxury Pricing Card */
+    .lux-card {
+        background: #FFFFFF;
+        border: 1px solid var(--mat-border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(74, 21, 33, 0.04);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        position: relative;
+    }
+    .lux-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 36px rgba(74, 21, 33, 0.12);
+        border-color: #D8CEBE;
+    }
+
+    /* Card Top Visual Showcase Header */
+    .lux-card-header {
+        padding: 24px 22px 18px;
+        position: relative;
+        color: #FFFFFF;
+        min-height: 175px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+    .lux-header-theme-royal {
+        background: linear-gradient(135deg, #2D0913 0%, #150307 100%);
+    }
+    .lux-header-theme-gold {
+        background: linear-gradient(135deg, #2F1A08 0%, #170B03 100%);
+    }
+    .lux-header-theme-diamond {
+        background: linear-gradient(135deg, #1C2B3A 0%, #0B131C 100%);
+    }
+    .lux-header-theme-pearl {
+        background: linear-gradient(135deg, #2C201A 0%, #17100D 100%);
+    }
+
+    /* Floating Visual Art in Header */
+    .lux-art-wrap {
+        position: absolute;
+        right: -10px;
+        bottom: -5px;
+        width: 140px;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.92;
+        pointer-events: none;
+        transition: transform 0.3s ease;
+    }
+    .lux-card:hover .lux-art-wrap {
+        transform: scale(1.08) rotate(2deg);
+    }
+    .lux-art-img {
+        max-width: 130px;
+        max-height: 130px;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+    }
+
+    .lux-badge-pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #FAF5EB;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(4px);
+    }
+    .lux-badge-gold {
+        background: rgba(197, 160, 89, 0.3);
+        border-color: rgba(197, 160, 89, 0.6);
+        color: #FDE68A;
+    }
+
+    .lux-pkg-title {
+        font-family: var(--mat-font-serif);
+        font-size: 22px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin: 4px 0 2px;
+        line-height: 1.2;
+    }
+    .lux-pkg-subtitle {
+        font-size: 11.5px;
+        opacity: 0.8;
+        margin-bottom: 12px;
+        line-height: 1.3;
+    }
+    .lux-price-pill {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        width: fit-content;
+        z-index: 2;
+    }
+    .lux-price-val {
+        font-size: 18px;
+        font-weight: 800;
+        color: #FFFFFF;
+    }
+    .lux-price-period {
+        font-size: 11px;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+
+    /* 2x2 Metric Grid */
+    .lux-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+    .lux-stat-box {
+        background: #FAF6F0;
+        border: 1px solid #ECE4D8;
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    .lux-stat-box:hover {
+        background: #F5EEDB;
+        border-color: #DFD2BE;
+    }
+    .lux-stat-label {
+        font-size: 10.5px;
+        color: #78716C;
+        font-weight: 600;
+        text-transform: capitalize;
+        display: block;
+        margin-bottom: 2px;
+    }
+    .lux-stat-value {
+        font-size: 15px;
+        font-weight: 800;
+        color: #292524;
+        line-height: 1.1;
+    }
+
+    /* Key Benefits List */
+    .lux-benefits-title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #1C1917;
+        margin-bottom: 10px;
+        letter-spacing: -0.2px;
+    }
+    .lux-benefits-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    .lux-benefits-item {
+        display: flex;
+        align-items: flex-start;
+        font-size: 12px;
+        color: #44403C;
+        line-height: 1.45;
+        margin-bottom: 8px;
+    }
+    .lux-benefits-icon {
+        color: #16A34A;
+        font-size: 15px;
+        margin-right: 8px;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    /* CTA Buttons */
+    .btn-lux-primary {
+        background: linear-gradient(135deg, #B8860B 0%, #D4AF37 50%, #996515 100%);
+        color: #FFFFFF !important;
+        font-weight: 700;
+        font-size: 13.5px;
+        border-radius: 999px;
+        padding: 10px 20px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none !important;
+        box-shadow: 0 4px 14px rgba(184, 134, 11, 0.28);
+        border: none;
+        transition: all 0.25s ease;
+    }
+    .btn-lux-primary:hover {
+        background: linear-gradient(135deg, #C59A1E 0%, #E0BE4C 50%, #A8731F 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(184, 134, 11, 0.38);
+        color: #FFFFFF !important;
+    }
+    .btn-lux-outline {
+        background: #FFFFFF;
+        color: #292524 !important;
+        font-weight: 600;
+        font-size: 12.5px;
+        border-radius: 999px;
+        padding: 8px 18px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none !important;
+        border: 1px solid #DFD7CD;
+        margin-top: 8px;
+        transition: all 0.2s ease;
+    }
+    .btn-lux-outline:hover {
+        background: #FAF8F5;
+        border-color: var(--mat-gold);
+        color: var(--mat-maroon) !important;
+    }
+</style>
+
 <!-- 1. Page Header & Hero Banner -->
 <section class="plans-hero-section">
-    <!-- Subtle Floral Watermark Accent (SVG) -->
-    <svg class="plans-hero-vines" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0C40 20 70 60 80 110C85 130 90 150 110 160" stroke="var(--mat-gold)" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <path d="M10 0C50 30 80 75 90 130" stroke="var(--mat-gold)" stroke-width="1.2"/>
-        <circle cx="45" cy="30" r="3" fill="var(--mat-gold)" fill-opacity="0.4"/>
-        <circle cx="75" cy="70" r="4" fill="var(--mat-gold)" fill-opacity="0.5"/>
-        <circle cx="95" cy="125" r="3.5" fill="var(--mat-gold)" fill-opacity="0.4"/>
-        <path d="M45 30C52 24 60 26 62 32C56 36 48 34 45 30Z" fill="var(--mat-gold)" fill-opacity="0.3"/>
-        <path d="M75 70C82 64 90 66 92 72C86 76 78 74 75 70Z" fill="var(--mat-gold)" fill-opacity="0.3"/>
-    </svg>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 position-relative z-2">
+    <div class="container position-relative" style="z-index: 2;">
         <div class="row align-items-center">
-            
-            <!-- Left Column: Title, Subtitle, Divider -->
-            <div class="col-lg-6 col-md-7 mb-4 mb-md-0">
-                <!-- Breadcrumbs -->
+            <div class="col-lg-8 col-md-10 text-center text-md-left">
                 <nav aria-label="breadcrumb">
-                    <ul class="d-flex align-items-center list-unstyled p-0 mb-3 fs-13" style="margin: 0; gap: 8px;">
-                        <li><a href="{{ route('home') }}" class="text-muted text-decoration-none">Home</a></li>
-                        <li class="text-muted fs-12">›</li>
-                        <li class="text-dark fw-600">Membership Plans</li>
+                    <ul class="d-flex align-items-center list-unstyled p-0 mb-2 fs-12" style="gap: 6px;">
+                        <li><a href="{{ route('home') }}" class="text-muted text-decoration-none">{{ translate('Home') }}</a></li>
+                        <li class="text-muted">›</li>
+                        <li class="text-dark font-weight-700">{{ translate('Membership Plans') }}</li>
                     </ul>
                 </nav>
-
-                <h1 class="plans-hero-title mb-3">Membership Plans</h1>
+                <h1 class="plans-hero-title mb-2">{{ translate('Membership Plans') }}</h1>
                 <p class="plans-hero-subtitle mb-0">
-                    Choose the perfect plan that fits your journey to find love and build a beautiful future together.
+                    {{ translate('Choose the perfect plan that fits your journey to find love and build a beautiful future together.') }}
                 </p>
-
-                <!-- Centered/Left delicate divider with heart (— ♥ —) -->
-                <div class="plans-hero-divider mt-4">
-                    <div class="plans-hero-divider-line"></div>
-                    <i class="las la-heart text-mat-maroon-dark" style="font-size: 16px;"></i>
-                    <div class="plans-hero-divider-line"></div>
-                </div>
             </div>
-
-            <!-- Right Column: Blended Couple Photo & Floating Script Accent -->
-            <div class="col-lg-6 col-md-5 position-relative">
-                <div class="plans-couple-wrap">
-                    <img src="{{ static_asset('assets/img/custom/plans_hero_couple.jpg') }}" alt="Real Couples Real Stories" class="plans-couple-img">
-                    
-                    <!-- Floating Script Accent -->
-                    <div class="plans-floating-script d-none d-sm-block">
-                        <span>Real People</span><br>
-                        <span>Real Stories</span><br>
-                        <span>Lasting Love</span>
-                        <div class="text-center mt-1 text-mat-gold" style="font-size: 13px;">❤</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
 
-<!-- 2. Segment Toggle Switch (Centered) -->
-<div class="plans-gender-toggle-wrap">
-    <div class="plans-gender-toggle">
-        <button type="button" class="btn plans-toggle-btn active" id="btn-toggle-men" onclick="switchPlanGender('men')">
-            For Men
-        </button>
-        <button type="button" class="btn plans-toggle-btn" id="btn-toggle-women" onclick="switchPlanGender('women')">
-            For Women
-        </button>
-    </div>
-</div>
-
-<!-- 3. Dynamic Tiered Pricing Cards (From Database) -->
+<!-- 2. High-Converting Luxury Pricing Cards Grid -->
 @php
     $total_packages = $packages->count();
     $current_pkg_id = (auth()->check() && auth()->user()->member) ? auth()->user()->member->current_package_id : null;
+
+    // Artwork & Theme metadata matching user reference image
+    $artworks = [
+        0 => [
+            'theme' => 'lux-header-theme-royal',
+            'badge' => 'VIP Royal',
+            'icon' => 'las la-crown',
+            'subtitle' => 'The Ultimate Matchmaking Experience',
+        ],
+        1 => [
+            'theme' => 'lux-header-theme-gold',
+            'badge' => 'Premium Match',
+            'icon' => 'las la-ring',
+            'subtitle' => 'Premium Matchmaking Perfected',
+        ],
+        2 => [
+            'theme' => 'lux-header-theme-diamond',
+            'badge' => 'Best Value',
+            'icon' => 'las la-gem',
+            'subtitle' => 'Elegant & Powerful Matching',
+        ],
+        3 => [
+            'theme' => 'lux-header-theme-pearl',
+            'badge' => 'Smart Choice',
+            'icon' => 'las la-certificate',
+            'subtitle' => 'Reliable & Flexible Matching',
+        ],
+    ];
 @endphp
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 mb-4">
-    <div class="row gutters-15 align-items-stretch">
+
+<div class="container pt-5 pb-5 mb-4">
+    <div class="row justify-content-center">
         @forelse ($packages as $index => $package)
             @php
                 $is_current = ($current_pkg_id == $package->id);
                 $is_free = ($package->price == 0 || $package->id == 1);
 
-                $is_vip = ($total_packages >= 3 && $index === $total_packages - 1) || stripos($package->name, 'vip') !== false || stripos($package->name, 'platinum') !== false || stripos($package->name, 'diamond') !== false;
-                $is_popular = !$is_vip && (($total_packages >= 2 && $index === 1) || stripos($package->name, 'gold') !== false || stripos($package->name, 'standard') !== false);
-
-                $card_classes = 'mp-pkg-card';
-                if ($is_vip) {
-                    $card_classes .= ' mp-pkg-card-vip';
-                } elseif ($is_popular) {
-                    $card_classes .= ' mp-pkg-card-popular';
-                }
-
-                $tier_icons = ['las la-feather-alt', 'las la-crown', 'las la-gem', 'las la-star'];
-                $tier_icon = $tier_icons[$index % count($tier_icons)];
+                $art_conf = $artworks[$index % count($artworks)];
+                $header_theme = $art_conf['theme'];
+                $header_badge = $art_conf['badge'];
+                $header_icon = $art_conf['icon'];
+                $header_subtitle = $art_conf['subtitle'];
 
                 if ($is_free) {
-                    $tagline = translate('Perfect for getting started');
-                } elseif ($is_vip) {
-                    $tagline = translate('Exclusive. Personalized. Premium.');
-                } elseif ($is_popular) {
-                    $tagline = translate('More matches, more possibilities');
-                } else {
-                    $tagline = translate('The complete experience');
+                    $header_badge = translate('Free Starter');
+                    $header_subtitle = translate('Get started with basic matching');
+                } elseif ($package->price > 50000) {
+                    $header_badge = translate('VIP Royal');
                 }
 
-                $col_class = ($total_packages === 3)
-                    ? 'col-xl-4 col-lg-4 col-md-6 col-12 mb-4'
-                    : 'col-xl-3 col-lg-3 col-md-6 col-12 mb-4';
+                // Grid layout responsive calculation
+                $col_classes = 'col-xl-3 col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch';
+                if ($total_packages == 3) {
+                    $col_classes = 'col-xl-4 col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch';
+                } elseif ($total_packages == 2) {
+                    $col_classes = 'col-xl-5 col-lg-6 col-md-6 col-12 mb-4 d-flex align-items-stretch';
+                } elseif ($total_packages == 1) {
+                    $col_classes = 'col-xl-5 col-lg-6 col-md-8 col-12 mb-4 d-flex align-items-stretch';
+                }
             @endphp
 
-            <div class="{{ $col_class }}">
-                <div class="{{ $card_classes }}">
-                    @if($is_popular)
-                        <div class="mp-pkg-ribbon">{{ translate('Most Popular') }}</div>
-                    @elseif($is_vip)
-                        <div class="mp-pkg-ribbon">{{ translate('VIP Exclusive') }}</div>
-                    @endif
-
+            <div class="{{ $col_classes }}">
+                <div class="lux-card w-100">
                     <div>
-                        <div class="mp-pkg-icon-wrap">
-                            @if(!empty($package->image) && uploaded_asset($package->image))
-                                <img src="{{ uploaded_asset($package->image) }}" alt="{{ $package->name }}" class="mp-pkg-icon-img">
-                            @else
-                                <i class="{{ $tier_icon }}"></i>
-                            @endif
-                        </div>
+                        <!-- Top Showcase Header -->
+                        <div class="lux-card-header {{ $header_theme }}">
+                            <div class="d-flex align-items-center justify-content-between position-relative z-2">
+                                <div class="d-flex align-items-center text-warning" style="font-size: 18px;">
+                                    <i class="{{ $header_icon }}"></i>
+                                </div>
+                                <span class="lux-badge-pill {{ $index == 0 || $index == 1 ? 'lux-badge-gold' : '' }}">
+                                    {{ $header_badge }}
+                                </span>
+                            </div>
 
-                        <h3 class="mp-pkg-name">{{ $package->name }}</h3>
-                        <p class="mp-pkg-tagline">{{ $tagline }}</p>
+                            <div class="position-relative z-2">
+                                <h3 class="lux-pkg-title">{{ $package->name }}</h3>
+                                <p class="lux-pkg-subtitle">{{ $header_subtitle }}</p>
 
-                        <div class="mp-pkg-price-row">
-                            @if($is_free)
-                                <span class="mp-pkg-price-val">{{ translate('Free') }}</span>
-                            @else
-                                <span class="mp-pkg-price-val">{{ single_price($package->price) }}</span>
-                            @endif
-                            <span class="mp-pkg-price-period">/ {{ $package->validity }} {{ translate('Days') }}</span>
-                        </div>
+                                <div class="lux-price-pill">
+                                    <span class="lux-price-val">
+                                        @if($is_free)
+                                            {{ translate('Free') }}
+                                        @else
+                                            {{ single_price($package->price) }}
+                                        @endif
+                                    </span>
+                                    <span class="lux-price-period">
+                                        / {{ $package->validity }} {{ translate('Days') }}
+                                    </span>
+                                </div>
+                            </div>
 
-                        <div class="mp-pkg-divider"></div>
-
-                        <ul class="mp-pkg-features">
-                            <li class="mp-pkg-feature-item">
-                                <i class="las la-check-circle"></i>
-                                <span><strong>{{ $package->express_interest }}</strong> {{ translate('Express Interests') }}</span>
-                            </li>
-                            <li class="mp-pkg-feature-item">
-                                <i class="las la-check-circle"></i>
-                                <span><strong>{{ $package->contact }}</strong> {{ translate('Contact Info Views') }}</span>
-                            </li>
-                            <li class="mp-pkg-feature-item">
-                                <i class="las la-check-circle"></i>
-                                <span><strong>{{ $package->photo_gallery }}</strong> {{ translate('Gallery Photo Uploads') }}</span>
-                            </li>
-                            <li class="mp-pkg-feature-item">
-                                <i class="las la-check-circle"></i>
-                                <span><strong>{{ $package->profile_viewers_view }}</strong> {{ translate('Profile Viewer Views') }}</span>
-                            </li>
-                            @if(get_setting('profile_picture_privacy') == 'only_me')
-                                <li class="mp-pkg-feature-item">
-                                    <i class="las la-check-circle"></i>
-                                    <span><strong>{{ $package->profile_image_view }}</strong> {{ translate('Private Profile Photo Views') }}</span>
-                                </li>
-                            @endif
-                            @if(get_setting('gallery_image_privacy') == 'only_me')
-                                <li class="mp-pkg-feature-item">
-                                    <i class="las la-check-circle"></i>
-                                    <span><strong>{{ $package->gallery_image_view }}</strong> {{ translate('Private Gallery Views') }}</span>
-                                </li>
-                            @endif
-                            <li class="mp-pkg-feature-item {{ $package->auto_profile_match == 0 ? 'mp-pkg-feature-disabled' : '' }}">
-                                @if($package->auto_profile_match == 1)
-                                    <i class="las la-check-circle"></i>
-                                    <span>{{ translate('Show Auto Profile Match') }}</span>
+                            <!-- Floating Artwork / Package Image -->
+                            <div class="lux-art-wrap">
+                                @if(!empty($package->image) && uploaded_asset($package->image))
+                                    <img src="{{ uploaded_asset($package->image) }}" alt="{{ $package->name }}" class="lux-art-img">
                                 @else
-                                    <i class="las la-times-circle"></i>
-                                    <span>{{ translate('Show Auto Profile Match') }}</span>
+                                    <div class="d-flex align-items-center justify-content-center w-100 h-100 text-white-50" style="font-size: 80px; opacity: 0.25;">
+                                        <i class="{{ $header_icon }}"></i>
+                                    </div>
                                 @endif
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+
+                        <!-- Card Body: Stat Grid + Benefits -->
+                        <div style="padding: 22px 20px;">
+                            <!-- 2x2 Quick Metrics Grid -->
+                            <div class="lux-stat-grid">
+                                <div class="lux-stat-box">
+                                    <span class="lux-stat-label">{{ translate('Proposals') }}</span>
+                                    <span class="lux-stat-value" style="color: var(--mat-maroon);">{{ $package->express_interest }}</span>
+                                </div>
+                                <div class="lux-stat-box">
+                                    <span class="lux-stat-label">{{ translate('Contacts') }}</span>
+                                    <span class="lux-stat-value" style="color: var(--mat-maroon);">{{ $package->contact }}</span>
+                                </div>
+                                <div class="lux-stat-box">
+                                    <span class="lux-stat-label">{{ translate('Support') }}</span>
+                                    <span class="lux-stat-value fs-13">{{ $index == 0 ? '24/7 Dedicated' : ($index == 1 ? 'Priority 24/7' : 'Standard') }}</span>
+                                </div>
+                                <div class="lux-stat-box">
+                                    <span class="lux-stat-label">{{ translate('Photo Upload') }}</span>
+                                    <span class="lux-stat-value fs-13">{{ $package->photo_gallery }} {{ translate('Photos') }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Key Membership Benefits -->
+                            <div class="lux-benefits-title">{{ translate('Key Membership Benefits') }}</div>
+                            <ul class="lux-benefits-list">
+                                <li class="lux-benefits-item">
+                                    <i class="las la-check-circle lux-benefits-icon"></i>
+                                    <span><strong>{{ $package->express_interest }}</strong> {{ translate('Express Interest Proposals') }}</span>
+                                </li>
+                                <li class="lux-benefits-item">
+                                    <i class="las la-check-circle lux-benefits-icon"></i>
+                                    <span><strong>{{ $package->contact }}</strong> {{ translate('Direct Contact Numbers & Profiles') }}</span>
+                                </li>
+                                <li class="lux-benefits-item">
+                                    <i class="las la-check-circle lux-benefits-icon"></i>
+                                    <span><strong>{{ $package->photo_gallery }}</strong> {{ translate('Gallery Photo Uploads') }}</span>
+                                </li>
+                                <li class="lux-benefits-item">
+                                    <i class="las la-check-circle lux-benefits-icon"></i>
+                                    <span><strong>{{ $package->profile_viewers_view }}</strong> {{ translate('Profile Viewers Access') }}</span>
+                                </li>
+                                @if($package->auto_profile_match == 1)
+                                    <li class="lux-benefits-item">
+                                        <i class="las la-check-circle lux-benefits-icon"></i>
+                                        <span>{{ translate('Automated Smart Matchmaking Algorithm') }}</span>
+                                    </li>
+                                @endif
+                                <li class="lux-benefits-item">
+                                    <i class="las la-check-circle lux-benefits-icon"></i>
+                                    <span>{{ translate('Enhanced Profile Ranking & Visibility') }}</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="mp-pkg-action-wrap">
+                    <!-- Dual Action Buttons -->
+                    <div class="p-3 border-top" style="background: #FFFDF9; border-color: var(--mat-border) !important; padding: 18px 20px !important;">
                         @auth
                             @if(auth()->user()->user_type == 'admin')
-                                <a href="javascript:void(0);" onclick="package_update_alert()" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
-                                    <span>{{ translate('Get Started') }}</span>
-                                    <i class="las la-arrow-right"></i>
+                                <a href="javascript:void(0);" onclick="package_update_alert()" class="btn-lux-primary">
+                                    {{ translate('Choose') }} {{ $package->name }}
                                 </a>
                             @elseif($is_free)
-                                <a href="{{ route('free_package_purchase', $package->id) }}" class="btn-mp-pkg-outline">
-                                    <span>{{ translate('Get Started Free') }}</span>
-                                    <i class="las la-arrow-right"></i>
+                                <a href="{{ route('free_package_purchase', $package->id) }}" class="btn-lux-primary">
+                                    {{ translate('Get Started Free') }}
                                 </a>
                             @else
-                                <a href="{{ route('package_payment_methods', encrypt($package->id)) }}" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
-                                    <span>{{ translate('Get Started') }}</span>
-                                    <i class="las la-arrow-right"></i>
+                                <a href="{{ route('package_payment_methods', encrypt($package->id)) }}" class="btn-lux-primary">
+                                    {{ translate('Choose') }} {{ $package->name }}
                                 </a>
                             @endif
                         @else
-                            <a href="javascript:void(0);" onclick="loginModal()" class="{{ ($is_vip || $is_popular) ? 'btn-mp-pkg-gold' : 'btn-mp-pkg-outline' }}">
-                                <span>{{ translate('Get Started') }}</span>
-                                <i class="las la-arrow-right"></i>
+                            <a href="javascript:void(0);" onclick="loginModal()" class="btn-lux-primary">
+                                {{ translate('Choose') }} {{ $package->name }}
                             </a>
                         @endauth
+
+                        <a href="{{ route('contact_us') }}" class="btn-lux-outline">
+                            <i class="las la-headset mr-1"></i> {{ translate('Talk to Consultant') }}
+                        </a>
                     </div>
                 </div>
             </div>
         @empty
             <div class="col-12 text-center py-5">
-                <h4 class="mp-pkg-section-title">{{ translate('No Active Packages Found') }}</h4>
+                <i class="las la-gem text-muted fs-40 mb-2"></i>
+                <h4 class="text-muted">{{ translate('No membership packages available right now.') }}</h4>
             </div>
         @endforelse
     </div>
 </div>
 
-<!-- 4. "Why Trust Us" Feature Strip (6 Features) -->
-<section class="plans-trust-strip">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 text-center">
-
-            <!-- 1. Verified Profiles -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
-                    <i class="las la-shield-alt"></i>
-                </div>
-                <h4 class="trust-item-title">Verified Profiles</h4>
-                <p class="trust-item-desc">Every profile is manually screened by our team.</p>
+<!-- 4. Trust Strip -->
+<section class="py-5" style="background: #FFFDF9; border-top: 1px solid var(--mat-border);">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-3 mb-md-0">
+                <i class="las la-shield-alt fs-30 mb-2" style="color: var(--mat-gold);"></i>
+                <h6 class="font-weight-700 text-dark mb-1 fs-14">{{ translate('100% Verified Profiles') }}</h6>
+                <p class="text-muted fs-12 mb-0">{{ translate('Manually screened by our team') }}</p>
             </div>
-
-            <!-- 2. Privacy Protection -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
-                    <i class="las la-lock"></i>
-                </div>
-                <h4 class="trust-item-title">Privacy Protection</h4>
-                <p class="trust-item-desc">You decide who sees your photos and contact info.</p>
+            <div class="col-md-3 col-6 mb-3 mb-md-0">
+                <i class="las la-lock fs-30 mb-2" style="color: var(--mat-maroon);"></i>
+                <h6 class="font-weight-700 text-dark mb-1 fs-14">{{ translate('Privacy Protection') }}</h6>
+                <p class="text-muted fs-12 mb-0">{{ translate('You control who sees your info') }}</p>
             </div>
-
-            <!-- 3. Safe Communication -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
-                    <i class="las la-comment-dots"></i>
-                </div>
-                <h4 class="trust-item-title">Safe Communication</h4>
-                <p class="trust-item-desc">Secure chat and interest-sending system.</p>
+            <div class="col-md-3 col-6">
+                <i class="las la-handshake fs-30 mb-2" style="color: var(--mat-gold);"></i>
+                <h6 class="font-weight-700 text-dark mb-1 fs-14">{{ translate('Matchmaking Sessions') }}</h6>
+                <p class="text-muted fs-12 mb-0">{{ translate('Dedicated relationship consultant') }}</p>
             </div>
-
-            <!-- 4. Advanced Filters -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
-                    <i class="las la-sliders-h"></i>
-                </div>
-                <h4 class="trust-item-title">Advanced Filters</h4>
-                <p class="trust-item-desc">Filter by education, income, family background and more.</p>
+            <div class="col-md-3 col-6">
+                <i class="las la-headset fs-30 mb-2" style="color: var(--mat-maroon);"></i>
+                <h6 class="font-weight-700 text-dark mb-1 fs-14">{{ translate('24/7 Dedicated Support') }}</h6>
+                <p class="text-muted fs-12 mb-0">{{ translate('Always here to assist your journey') }}</p>
             </div>
-
-            <!-- 5. NID/Passport Verification -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-gold" style="background-color: var(--mat-gold-bg);">
-                    <i class="las la-id-card"></i>
-                </div>
-                <h4 class="trust-item-title">NID/Passport Verification</h4>
-                <p class="trust-item-desc">Get a blue tick for verified profiles.</p>
-            </div>
-
-            <!-- 6. 24/7 Support -->
-            <div class="col mb-3 mb-lg-0">
-                <div class="trust-item-icon-box text-mat-maroon" style="background-color: var(--mat-maroon-light-bg);">
-                    <i class="las la-headset"></i>
-                </div>
-                <h4 class="trust-item-title">24/7 Support</h4>
-                <p class="trust-item-desc">Dedicated customer care for premium members.</p>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- 5. Conversion Banner & FAQ Section (Bottom Row) -->
-<section class="py-5" style="background-color: var(--mat-bg-section); border-top: 1px solid var(--mat-border-light);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="row align-items-center">
-
-            <!-- Left Side: Ready to Find Your Soulmate -->
-            <div class="col-lg-4 mb-4 mb-lg-0 pr-lg-4">
-                <i class="las la-heart fs-36 text-mat-maroon-dark"></i>
-                <h3 class="font-serif fw-700 mt-2 mb-2 text-mat-maroon-dark" style="font-size: 26px; line-height: 1.25;">
-                    Ready to Find Your Soulmate?
-                </h3>
-                <p class="text-muted fs-14 mb-4" style="line-height: 1.55;">
-                    Join thousands of happy couples who found their life partner through our trusted platform.
-                </p>
-                <a href="{{ route('register') }}" class="btn text-white d-inline-flex align-items-center" style="background: var(--mat-maroon-dark); border-radius: 9999px; padding: 11px 26px; font-size: 14px; font-weight: 600; gap: 8px; text-decoration: none; box-shadow: 0 4px 14px rgba(44, 10, 18, 0.2);">
-                    <i class="las la-user-plus fs-16"></i>
-                    <span>Register Free &rarr;</span>
-                </a>
-            </div>
-
-            <!-- Middle Side: Frequently Asked Questions Accordion -->
-            <div class="col-lg-5 mb-4 mb-lg-0 px-lg-3">
-                <h3 class="font-serif fw-700 mb-3 text-mat-maroon-dark" style="font-size: 20px;">
-                    Frequently Asked Questions
-                </h3>
-
-                <!-- FAQ 1 -->
-                <div class="plans-faq-card open" id="faq-card-1">
-                    <div class="plans-faq-header" onclick="toggleFaq('faq-card-1')">
-                        <span>Can I change my plan later?</span>
-                        <span class="plans-faq-toggle-icon">+</span>
-                    </div>
-                    <div class="plans-faq-body">
-                        Yes, you can upgrade your membership plan at any time from your account settings. The remaining balance will be adjusted accordingly.
-                    </div>
-                </div>
-
-                <!-- FAQ 2 -->
-                <div class="plans-faq-card" id="faq-card-2">
-                    <div class="plans-faq-header" onclick="toggleFaq('faq-card-2')">
-                        <span>Is my personal information safe?</span>
-                        <span class="plans-faq-toggle-icon">+</span>
-                    </div>
-                    <div class="plans-faq-body">
-                        Absolutely. We employ bank-grade encryption and give you 100% control over who can view your photos and contact details.
-                    </div>
-                </div>
-
-                <!-- FAQ 3 -->
-                <div class="plans-faq-card" id="faq-card-3">
-                    <div class="plans-faq-header" onclick="toggleFaq('faq-card-3')">
-                        <span>What payment methods do you accept?</span>
-                        <span class="plans-faq-toggle-icon">+</span>
-                    </div>
-                    <div class="plans-faq-body">
-                        We accept all major credit/debit cards, bKash, Nagad, Rocket, and bank transfers through our secure payment gateway.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Side: Decorative Linked Hearts & Script Text -->
-            <div class="col-lg-3 text-center pl-lg-4">
-                <div class="p-4 rounded-2xl position-relative" style="background: rgba(255, 255, 255, 0.65); border: 1px solid var(--mat-border-light); border-radius: 16px;">
-                    <!-- Linked Hearts SVG -->
-                    <svg width="60" height="42" viewBox="0 0 60 42" fill="none" class="mx-auto mb-3" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 6C17 1 9 4 9 11C9 19 22 29 22 29C22 29 35 19 35 11C35 4 27 1 22 6Z" fill="#F4ECE1" stroke="var(--mat-gold)" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M38 12C33 7 25 10 25 17C25 25 38 35 38 35C38 35 51 25 51 17C51 10 43 7 38 12Z" fill="var(--mat-maroon-light-bg)" stroke="var(--mat-maroon-dark)" stroke-width="1.6" stroke-linejoin="round"/>
-                    </svg>
-
-                    <div class="font-serif" style="font-style: italic; font-size: 20px; font-weight: 600; color: var(--mat-gold); line-height: 1.3;">
-                        Better Matches<br>Brighter Futures
-                    </div>
-                    <div class="mt-2 text-muted fs-11 opacity-60">✦ ✦ ✦</div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
@@ -372,40 +542,14 @@
 
 @section('script')
 <script type="text/javascript">
-    // Login alert
     function loginModal(){
         $('#LoginModal').modal();
     }
 
-    // Package update alert
     function package_update_alert(){
         $('.package_update_alert_modal').modal('show');
     }
 
-    // Gender Switch Handler
-    function switchPlanGender(gender) {
-        if (gender === 'men') {
-            document.getElementById('btn-toggle-men').classList.add('active');
-            document.getElementById('btn-toggle-women').classList.remove('active');
-        } else {
-            document.getElementById('btn-toggle-women').classList.add('active');
-            document.getElementById('btn-toggle-men').classList.remove('active');
-        }
-    }
 
-    // FAQ Accordion Toggle
-    function toggleFaq(cardId) {
-        var card = document.getElementById(cardId);
-        if (card.classList.contains('open')) {
-            card.classList.remove('open');
-        } else {
-            // Close all
-            var cards = document.querySelectorAll('.plans-faq-card');
-            cards.forEach(function(c) {
-                c.classList.remove('open');
-            });
-            card.classList.add('open');
-        }
-    }
 </script>
 @endsection

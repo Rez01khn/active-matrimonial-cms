@@ -96,6 +96,42 @@ class MemberController extends Controller
         ];
     }
 
+    public function index(Request $request)
+    {
+        CoreComponentRepository::instantiateShopRepository();
+        CoreComponentRepository::initializeCache();
+
+        $sort_search = null;
+        $members = User::latest()->where('user_type', 'member');
+
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
+            $members = $members->where(function ($q) use ($sort_search) {
+                $q->where('code', $sort_search)
+                    ->orWhere('first_name', 'like', '%' . $sort_search . '%')
+                    ->orWhere('last_name', 'like', '%' . $sort_search . '%')
+                    ->orWhere('phone', 'like', '%' . $sort_search . '%')
+                    ->orWhereRaw("CONCAT(first_name, ' ', last_name) like ?", ["%{$sort_search}%"]);
+            });
+        }
+
+        if ($request->has('package_id') && $request->package_id != null) {
+            $package_id = $request->package_id;
+            $members = $members->whereHas('member', function ($q) use ($package_id) {
+                if ($package_id == 1) {
+                    $q->where(function ($sub) {
+                        $sub->where('current_package_id', 1)->orWhereNull('current_package_id');
+                    });
+                } else {
+                    $q->where('current_package_id', $package_id);
+                }
+            });
+        }
+
+        $members = $members->paginate(15);
+        return view('admin.members.index', compact('members', 'sort_search'));
+    }
+
     public function premiumIndex(Request $request)
     {
 
@@ -107,7 +143,7 @@ class MemberController extends Controller
             ->where('user_type', 'member')
             ->where('membership', 2);
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != null) {
             $sort_search = $request->search;
             $members = $members->where(function ($q) use ($sort_search) {
                 $q->where('code', $sort_search)
@@ -118,10 +154,23 @@ class MemberController extends Controller
             });
         }
 
+        if ($request->has('package_id') && $request->package_id != null) {
+            $package_id = $request->package_id;
+            $members = $members->whereHas('member', function ($q) use ($package_id) {
+                if ($package_id == 1) {
+                    $q->where(function ($sub) {
+                        $sub->where('current_package_id', 1)->orWhereNull('current_package_id');
+                    });
+                } else {
+                    $q->where('current_package_id', $package_id);
+                }
+            });
+        }
 
-        $members = $members->paginate(10);
+        $members = $members->paginate(15);
         return view('admin.members.index', compact('members', 'sort_search'));
     }
+
     public function freeIndex(Request $request)
     {
 
@@ -131,9 +180,9 @@ class MemberController extends Controller
         $sort_search = null;
         $members = User::latest()
             ->where('user_type', 'member')
-            ->where('membership', 1);
+            ->whereIn('membership', [0, 1]);
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != null) {
             $sort_search = $request->search;
             $members = $members->where(function ($q) use ($sort_search) {
                 $q->where('code', $sort_search)
@@ -144,8 +193,7 @@ class MemberController extends Controller
             });
         }
 
-
-        $members = $members->paginate(10);
+        $members = $members->paginate(15);
         return view('admin.members.index', compact('members', 'sort_search'));
     }
 

@@ -1,9 +1,12 @@
 @extends('admin.layouts.app')
 @section('content')
+@php
+    $current_package = request('package_id') ? \App\Models\Package::find(request('package_id')) : null;
+@endphp
 <div class="aiz-titlebar mt-2 mb-4">
     <div class="row align-items-center">
         <div class="col-md-6">
-            <h1 class="h3">{{translate('Members')}}</h1>
+            <h1 class="h3">{{ $current_package ? $current_package->name . ' ' . translate('Members') : translate('Members') }}</h1>
         </div>
         @can('create_member')
             <div class="col-md-6 text-right">
@@ -17,11 +20,30 @@
         <div class="card">
             <div class="card-header row gutters-5">
   				<div class="col text-center text-md-left">
-  					<h5 class="mb-md-0 h6 text-capitalize">{{ translate('All members') }}</h5>
+  					<h5 class="mb-md-0 h6 text-capitalize">{{ $current_package ? $current_package->name . ' ' . translate('Members') : translate('All members') }}</h5>
   				</div>
+                <div class="col-md-3">
+                    <form id="filter_package" action="" method="GET">
+                        <select class="form-control form-control-sm aiz-selectpicker" name="package_id" onchange="this.form.submit()">
+                            <option value="">{{ translate('All Packages') }}</option>
+                            @foreach(\App\Models\Package::where('active', 1)->get() as $pkg)
+                                <option value="{{ $pkg->id }}" @if(request('package_id') == $pkg->id) selected @endif>{{ $pkg->name }}</option>
+                            @endforeach
+                        </select>
+                        @if(request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                        @if(request('type'))
+                            <input type="hidden" name="type" value="{{ request('type') }}">
+                        @endif
+                    </form>
+                </div>
   				<div class="col-md-3">
   					<form class="" id="sort_members" action="" method="GET">
-                        <input type="hidden" name="type" value="{{ request('type') }}">     {{-- have changed --}}
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                        @if(request('package_id'))
+                            <input type="hidden" name="package_id" value="{{ request('package_id') }}">
+                        @endif
   						<div class="input-group input-group-sm">
   					  		<input type="text" class="form-control" id="search" name="search"@isset($sort_search) value="{{ $sort_search }}" @endisset placeholder="{{ translate('Type First name / Last name / Phone / ID & Enter') }}">
   						</div>
@@ -42,6 +64,7 @@
                             @endif
                             <th data-breakpoints="md">{{translate('Profile Reported')}}</th>
                             <th data-breakpoints="md">{{translate('Member Since')}}</th>
+                            <th data-breakpoints="md">{{translate('Package')}}</th>
                             <th data-breakpoints="md">{{translate('Member Status')}}</th>
                             <th class="text-right">{{translate('Options')}}</th>
                         </tr>
@@ -90,6 +113,25 @@
                                   @endif
                                 </td>
                                 <td>{{ date('d-m-Y', strtotime($member->created_at)) }}</td>
+                                <td>
+                                    @php
+                                        $member_pkg = optional($member->member)->package;
+                                        $is_premium = $member->membership == 2;
+                                    @endphp
+                                    @if($member_pkg)
+                                        <span class="badge badge-inline font-weight-700 px-2 py-1 rounded-pill" style="background: rgba(197, 160, 89, 0.15); color: #8A6828; border: 1px solid rgba(197, 160, 89, 0.35);">
+                                            <i class="las la-crown mr-1"></i> {{ $member_pkg->name }}
+                                        </span>
+                                    @elseif($is_premium)
+                                        <span class="badge badge-inline badge-success font-weight-700 px-2 py-1 rounded-pill">
+                                            <i class="las la-crown mr-1"></i> {{ translate('Premium') }}
+                                        </span>
+                                    @else
+                                        <span class="badge badge-inline badge-light font-weight-600 px-2 py-1 rounded-pill text-muted border">
+                                            {{ translate('Free') }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($member->deactivated == 0)
                                         <span class="badge badge-inline badge-success">{{translate('Active')}}</span>

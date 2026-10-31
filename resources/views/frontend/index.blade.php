@@ -403,211 +403,261 @@
         </div>
     </section>
 
-    <!-- 4. Meet Our Featured Members -->
+    <!-- 4. Meet Our Featured Members (With Bride & Groom Toggle) -->
+    <style>
+        .featured-gender-toggle-wrap {
+            display: inline-flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .featured-gender-toggle {
+            background: #FFFFFF;
+            padding: 5px;
+            border-radius: 999px;
+            border: 1px solid rgba(231, 224, 213, 0.9);
+            box-shadow: 0 4px 16px rgba(74, 21, 33, 0.08);
+            display: inline-flex;
+            gap: 6px;
+        }
+        .featured-toggle-btn {
+            border: none;
+            background: transparent;
+            padding: 9px 26px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 999px;
+            color: #64748B;
+            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .featured-toggle-btn:hover {
+            color: #4A1521;
+        }
+        .featured-toggle-btn.active {
+            background: #4A1521;
+            color: #FFFFFF;
+            box-shadow: 0 3px 10px rgba(74, 21, 33, 0.25);
+        }
+
+        /* Symmetric Slider Wrap & Tight Card Spacing */
+        .member-carousel-wrap {
+            position: relative;
+            padding: 0 54px;
+            margin: 0 auto;
+        }
+        @media (max-width: 767.98px) {
+            .member-carousel-wrap {
+                padding: 0 10px;
+            }
+        }
+        .member-slider-compact {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+        .member-slider-compact .slick-list {
+            margin: 0 -7px !important;
+            padding: 6px 0 !important;
+        }
+        .member-slider-compact .carousel-box {
+            padding: 0 7px !important; /* 14px compact gap between cards */
+            outline: none !important;
+        }
+        .member-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #FFFFFF !important;
+            color: #4A1521 !important;
+            border: 1px solid rgba(231, 224, 213, 0.9) !important;
+            box-shadow: 0 4px 14px rgba(74, 21, 33, 0.1) !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 25;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+            outline: none !important;
+            padding: 0;
+        }
+        .member-nav-btn i {
+            color: #4A1521 !important;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .member-nav-btn:hover {
+            background-color: #4A1521 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 6px 18px rgba(74, 21, 33, 0.25) !important;
+            transform: translateY(-50%) scale(1.08);
+        }
+        .member-nav-btn:hover i {
+            color: #FFFFFF !important;
+        }
+        .member-nav-btn.prev-btn {
+            left: 0 !important;
+            right: auto !important;
+        }
+        .member-nav-btn.next-btn {
+            right: 0 !important;
+            left: auto !important;
+        }
+    </style>
     <section class="py-6 bg-mat-section position-relative">
         <div class="container">
             <div class="text-center max-w-700px mx-auto mb-5">
-                <h2 class="font-serif fw-700 text-mat-maroon fs-36 mb-2">Meet Our Featured Members</h2>
-                <p class="text-muted fs-14">Explore a selection of profiles looking for meaningful connections.</p>
+                <h2 class="font-serif fw-700 text-mat-maroon fs-36 mb-2">{{ translate('Meet Our Featured Members') }}</h2>
+                <p class="text-muted fs-14 mb-3">{{ translate('Explore a selection of profiles looking for meaningful connections.') }}</p>
+                
+                <!-- Toggle Segment: Brides (পাত্রী) & Grooms (পাত্র) -->
+                <div class="featured-gender-toggle-wrap">
+                    <div class="featured-gender-toggle">
+                        <button type="button" class="featured-toggle-btn active" id="btn-toggle-brides" onclick="switchFeaturedGender('brides')">
+                            <i class="las la-female mr-1 fs-18"></i> {{ translate('For Brides') }}
+                        </button>
+                        <button type="button" class="featured-toggle-btn" id="btn-toggle-grooms" onclick="switchFeaturedGender('grooms')">
+                            <i class="las la-male mr-1 fs-18"></i> {{ translate('For Grooms') }}
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Member Carousel Container -->
-            <div class="member-carousel-wrap">
+            <!-- 1. Brides Carousel Container (Active by Default) -->
+            <div class="member-carousel-wrap" id="featured-brides-container">
                 <!-- Left Navigation Arrow -->
-                <button type="button" class="member-nav-btn prev-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickPrev')" aria-label="Previous Members">
+                <button type="button" class="member-nav-btn prev-btn d-none d-md-flex" onclick="$('#brides-slider').slick('slickPrev')" aria-label="Previous Brides">
                     <i class="las la-angle-left fs-18"></i>
                 </button>
 
-                <!-- Slider Container -->
-                <div class="aiz-carousel gutters-15" id="member-slider"
+                <!-- Brides Slider -->
+                <div class="aiz-carousel member-slider-compact" id="brides-slider"
                     data-items="5"
                     data-xl-items="5"
                     data-lg-items="5"
                     data-md-items="3"
                     data-sm-items="2"
-                    data-xs-items="2"
+                    data-xs-items="1"
                     data-dots="true"
                     data-autoplay="true"
                     data-infinite="true"
                     data-arrows="false">
 
-                    <!-- Member 1: Ayesha -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/ayesha.jpg') }}" alt="Ayesha" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Ayesha, <span class="fw-400">27</span></h6>
-                                    <div class="fs-12 text-muted">Dhaka, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'4" • Professional</div>
+                    @forelse ($featured_brides as $bride)
+                        @php
+                            $age = $bride->member && $bride->member->birthday ? \Carbon\Carbon::parse($bride->member->birthday)->age : null;
+                            $city = optional(optional($bride->addresses->first())->city)->name ?? 'Dhaka';
+                            $career = optional($bride->career->first())->designation ?? translate('Professional');
+                            $religion = optional(optional($bride->spiritual_backgrounds)->religion)->name ?? 'Muslim';
+                            $height = optional($bride->physical_attributes)->height ? optional($bride->physical_attributes)->height . ' ft' : null;
+                            $photo = $bride->photo ? (str_starts_with($bride->photo, 'assets/') ? static_asset($bride->photo) : uploaded_asset($bride->photo)) : static_asset('assets/img/female-avatar-place.png');
+                            $profile_url = Auth::check() ? route('member_profile', $bride->id) : 'javascript:void(0)';
+                            $onclick = !Auth::check() ? 'onclick="loginModal()"' : '';
+                        @endphp
+                        <div class="carousel-box">
+                            <div class="member-card">
+                                <div class="member-card-img-wrap">
+                                    <a href="{{ $profile_url }}" {!! $onclick !!}>
+                                        <img src="{{ $photo }}" alt="{{ $bride->first_name }}" class="member-card-img" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/female-avatar-place.png') }}';">
+                                    </a>
                                 </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
+                                <div class="member-card-body">
+                                    <div class="member-info-content">
+                                        <h6 class="fw-700 fs-16 mb-0 text-dark">
+                                            <a href="{{ $profile_url }}" {!! $onclick !!} class="text-reset text-truncate d-inline-block mw-100">
+                                                {{ $bride->first_name }}@if($age), <span class="fw-400">{{ $age }}</span>@endif
+                                            </a>
+                                        </h6>
+                                        <div class="fs-12 text-muted">{{ $city }}, Bangladesh</div>
+                                        <div class="member-meta-pill">{{ $religion }} • {{ $height ? $height . ' • ' : '' }}{{ $career }}</div>
+                                    </div>
+                                    <a href="{{ $profile_url }}" {!! $onclick !!} class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Member 2: Rahim -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/rahim.jpg') }}" alt="Rahim" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Rahim, <span class="fw-400">30</span></h6>
-                                    <div class="fs-12 text-muted">Chittagong, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'8" • Professional</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
+                    @empty
+                        <div class="text-center py-4 w-100">
+                            <p class="text-muted">{{ translate('No featured brides available at the moment.') }}</p>
                         </div>
-                    </div>
-
-                    <!-- Member 3: Nusrat -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/nusrat.jpg') }}" alt="Nusrat" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Nusrat, <span class="fw-400">26</span></h6>
-                                    <div class="fs-12 text-muted">Sylhet, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'3" • Student</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 4: Fahim -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/fahim.jpg') }}" alt="Fahim" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Fahim, <span class="fw-400">32</span></h6>
-                                    <div class="fs-12 text-muted">Dhaka, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'11" • Professional</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 5: Maliha -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/maliha.jpg') }}" alt="Maliha" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Maliha, <span class="fw-400">28</span></h6>
-                                    <div class="fs-12 text-muted">Rajshahi, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'3" • Professional</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 6: Tariq -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/rahim.jpg') }}" alt="Tariq" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Tariq, <span class="fw-400">29</span></h6>
-                                    <div class="fs-12 text-muted">Khulna, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'10" • Software Engineer</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 7: Sadia -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/ayesha.jpg') }}" alt="Sadia" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Sadia, <span class="fw-400">25</span></h6>
-                                    <div class="fs-12 text-muted">Dhaka, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'5" • Architect</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 8: Tanvir -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/fahim.jpg') }}" alt="Tanvir" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Tanvir, <span class="fw-400">31</span></h6>
-                                    <div class="fs-12 text-muted">Barisal, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'9" • Doctor</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 9: Anika -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/nusrat.jpg') }}" alt="Anika" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <h6 class="fw-700 fs-16 mb-0 text-dark">Anika, <span class="fw-400">24</span></h6>
-                                    <div class="fs-12 text-muted">Comilla, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'2" • UI Designer</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Member 10: Samira -->
-                    <div class="carousel-box">
-                        <div class="member-card">
-                            <div class="member-card-img-wrap">
-                                <img src="{{ static_asset('assets/img/custom/maliha.jpg') }}" alt="Samira" class="member-card-img">
-                            </div>
-                            <div class="member-card-body">
-                                <div class="member-info-content">
-                                    <div class="h6 fw-700 fs-16 mb-0 text-dark">Samira, <span class="fw-400">27</span></div>
-                                    <div class="fs-12 text-muted">Chittagong, Bangladesh</div>
-                                    <div class="member-meta-pill">Muslim • 5'4" • Educator</div>
-                                </div>
-                                <a href="{{ route('register') }}" class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
 
                 </div>
 
                 <!-- Right Navigation Arrow -->
-                <button type="button" class="member-nav-btn next-btn d-none d-md-flex" onclick="$('#member-slider').slick('slickNext')" aria-label="Next Members">
+                <button type="button" class="member-nav-btn next-btn d-none d-md-flex" onclick="$('#brides-slider').slick('slickNext')" aria-label="Next Brides">
                     <i class="las la-angle-right fs-18"></i>
                 </button>
             </div>
+
+            <!-- 2. Grooms Carousel Container (Initially Hidden) -->
+            <div class="member-carousel-wrap d-none" id="featured-grooms-container">
+                <!-- Left Navigation Arrow -->
+                <button type="button" class="member-nav-btn prev-btn d-none d-md-flex" onclick="$('#grooms-slider').slick('slickPrev')" aria-label="Previous Grooms">
+                    <i class="las la-angle-left fs-18"></i>
+                </button>
+
+                <!-- Grooms Slider -->
+                <div class="aiz-carousel member-slider-compact" id="grooms-slider"
+                    data-items="5"
+                    data-xl-items="5"
+                    data-lg-items="5"
+                    data-md-items="3"
+                    data-sm-items="2"
+                    data-xs-items="1"
+                    data-dots="true"
+                    data-autoplay="true"
+                    data-infinite="true"
+                    data-arrows="false">
+
+                    @forelse ($featured_grooms as $groom)
+                        @php
+                            $age = $groom->member && $groom->member->birthday ? \Carbon\Carbon::parse($groom->member->birthday)->age : null;
+                            $city = optional(optional($groom->addresses->first())->city)->name ?? 'Dhaka';
+                            $career = optional($groom->career->first())->designation ?? translate('Professional');
+                            $religion = optional(optional($groom->spiritual_backgrounds)->religion)->name ?? 'Muslim';
+                            $height = optional($groom->physical_attributes)->height ? optional($groom->physical_attributes)->height . ' ft' : null;
+                            $photo = $groom->photo ? (str_starts_with($groom->photo, 'assets/') ? static_asset($groom->photo) : uploaded_asset($groom->photo)) : static_asset('assets/img/avatar-place.png');
+                            $profile_url = Auth::check() ? route('member_profile', $groom->id) : 'javascript:void(0)';
+                            $onclick = !Auth::check() ? 'onclick="loginModal()"' : '';
+                        @endphp
+                        <div class="carousel-box">
+                            <div class="member-card">
+                                <div class="member-card-img-wrap">
+                                    <a href="{{ $profile_url }}" {!! $onclick !!}>
+                                        <img src="{{ $photo }}" alt="{{ $groom->first_name }}" class="member-card-img" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                    </a>
+                                </div>
+                                <div class="member-card-body">
+                                    <div class="member-info-content">
+                                        <h6 class="fw-700 fs-16 mb-0 text-dark">
+                                            <a href="{{ $profile_url }}" {!! $onclick !!} class="text-reset text-truncate d-inline-block mw-100">
+                                                {{ $groom->first_name }}@if($age), <span class="fw-400">{{ $age }}</span>@endif
+                                            </a>
+                                        </h6>
+                                        <div class="fs-12 text-muted">{{ $city }}, Bangladesh</div>
+                                        <div class="member-meta-pill">{{ $religion }} • {{ $height ? $height . ' • ' : '' }}{{ $career }}</div>
+                                    </div>
+                                    <a href="{{ $profile_url }}" {!! $onclick !!} class="btn btn-mat-gold btn-sm btn-block">{{ translate('View Profile') }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 w-100">
+                            <p class="text-muted">{{ translate('No featured grooms available at the moment.') }}</p>
+                        </div>
+                    @endforelse
+
+                </div>
+
+                <!-- Right Navigation Arrow -->
+                <button type="button" class="member-nav-btn next-btn d-none d-md-flex" onclick="$('#grooms-slider').slick('slickNext')" aria-label="Next Grooms">
+                    <i class="las la-angle-right fs-18"></i>
+                </button>
+            </div>
+
         </div>
     </section>
 
@@ -1141,6 +1191,10 @@
 
 @endsection
 
+@section('modal')
+    @include('modals.login_modal')
+@endsection
+
 @section('script')
     <script>
         function scrollCarousel(id, amount) {
@@ -1148,6 +1202,34 @@
             if (el) {
                 el.scrollBy({ left: amount, behavior: 'smooth' });
             }
+        }
+
+        function switchFeaturedGender(gender) {
+            if (gender === 'brides') {
+                $('#btn-toggle-brides').addClass('active');
+                $('#btn-toggle-grooms').removeClass('active');
+                $('#featured-brides-container').removeClass('d-none');
+                $('#featured-grooms-container').addClass('d-none');
+                if ($('#brides-slider').hasClass('slick-initialized')) {
+                    $('#brides-slider').slick('setPosition');
+                } else if (typeof AIZ !== 'undefined' && AIZ.plugins) {
+                    AIZ.plugins.slickCarousel();
+                }
+            } else {
+                $('#btn-toggle-grooms').addClass('active');
+                $('#btn-toggle-brides').removeClass('active');
+                $('#featured-grooms-container').removeClass('d-none');
+                $('#featured-brides-container').addClass('d-none');
+                if ($('#grooms-slider').hasClass('slick-initialized')) {
+                    $('#grooms-slider').slick('setPosition');
+                } else if (typeof AIZ !== 'undefined' && AIZ.plugins) {
+                    AIZ.plugins.slickCarousel();
+                }
+            }
+        }
+
+        function loginModal() {
+            $('#LoginModal').modal('show');
         }
 
         $(document).ready(function() {

@@ -33,14 +33,14 @@
 
             <!-- 3. Left Column (25% - 28% width): Strictly ONE Single Filter Sidebar -->
             <aside class="lg:col-span-3">
-                <div class="filter-card-container bg-white rounded-2xl shadow-sm border border-stone-200/80 p-5"
-                    style="border-radius: 16px; border: 1px solid var(--mat-border); padding: 22px; background: #FFFFFF; box-shadow: 0 4px 18px rgba(0,0,0,0.04);">
+                <div class="filter-card-container bg-white rounded-2xl shadow-sm border border-stone-200/80"
+                    style="border-radius: 16px; border: 1px solid var(--mat-border); padding: 16px 14px; background: #FFFFFF; box-shadow: 0 4px 18px rgba(0,0,0,0.04);">
 
                     <!-- Filter Header -->
-                    <div class="filter-sidebar-header d-flex align-items-center mb-4 pb-3"
-                        style="border-bottom: 1px solid var(--mat-border-light); gap: 10px;">
-                        <i class="las la-sliders-h fs-20 text-mat-gold"></i>
-                        <span class="fs-18 fw-700 text-mat-maroon-dark">{{ translate('Filter Matches') }}</span>
+                    <div class="filter-sidebar-header d-flex align-items-center mb-3 pb-2"
+                        style="border-bottom: 1px solid var(--mat-border-light); gap: 8px;">
+                        <i class="las la-sliders-h fs-18 text-mat-gold"></i>
+                        <span class="fs-16 fw-700 text-mat-maroon-dark">{{ translate('Filter Matches') }}</span>
                     </div>
 
                     <form action="{{ route('member.listing') }}" method="get" id="filter-form">

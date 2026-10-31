@@ -38,6 +38,153 @@
         var AIZ = AIZ || {};
     </script>
 
+    <style>
+        /* Admin Sidebar Royal Heritage Theme (#331019 & #C5A059) */
+        :root {
+            --mat-maroon: #4A1521;
+            --mat-maroon-dark: #331019;
+            --mat-gold: #967240;
+            --mat-gold-light: #C5A059;
+            --mat-gold-hover: #FDE68A;
+        }
+
+        .aiz-sidebar.left {
+            background-color: #331019 !important;
+            border-right: 1px solid rgba(197, 160, 89, 0.15) !important;
+        }
+        .aiz-side-nav-logo-wrap {
+            background-color: #240a11 !important;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.15) !important;
+            padding: 18px 20px !important;
+        }
+        .aiz-side-nav-wrap #menu-search {
+            background: rgba(255, 255, 255, 0.07) !important;
+            border: 1px solid rgba(197, 160, 89, 0.25) !important;
+            color: #FFFFFF !important;
+            border-radius: 999px !important;
+            padding-left: 36px !important;
+            padding-right: 14px !important;
+            height: 38px !important;
+            font-size: 12px !important;
+            transition: all 0.25s ease !important;
+        }
+        .aiz-side-nav-wrap #menu-search::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        .aiz-side-nav-wrap #menu-search:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #C5A059 !important;
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.25) !important;
+        }
+
+        /* Sidebar Section Category Headers */
+        .aiz-side-nav-category {
+            padding: 18px 18px 6px 18px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(197, 160, 89, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        .aiz-side-nav-category::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(197, 160, 89, 0.25), transparent);
+        }
+
+        /* Nav Item & Pill Styling */
+        .aiz-side-nav-list .aiz-side-nav-item {
+            margin: 2px 10px;
+        }
+        .aiz-side-nav-list .aiz-side-nav-link {
+            color: #E2DCD5 !important;
+            border-radius: 10px !important;
+            padding: 9px 14px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            border: 1px solid transparent !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        .aiz-side-nav-list .aiz-side-nav-icon {
+            color: #C5A059 !important;
+            font-size: 18px !important;
+            width: 24px !important;
+            margin-right: 10px !important;
+            text-align: center !important;
+            flex-shrink: 0 !important;
+            transition: transform 0.2s ease, color 0.2s ease !important;
+        }
+        .aiz-side-nav-list .aiz-side-nav-link:hover {
+            color: #FFFFFF !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(197, 160, 89, 0.2) !important;
+            transform: translateX(2px);
+        }
+        .aiz-side-nav-list .aiz-side-nav-link:hover .aiz-side-nav-icon {
+            color: #FDE68A !important;
+            transform: scale(1.1);
+        }
+        .aiz-side-nav-list .aiz-side-nav-link.active,
+        .aiz-side-nav-list .aiz-side-nav-link.level-2-active,
+        .aiz-side-nav-list .aiz-side-nav-link.level-3-active {
+            color: #FFFFFF !important;
+            background: linear-gradient(135deg, #4A1521 0%, #2A0912 100%) !important;
+            border: 1px solid rgba(197, 160, 89, 0.45) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+            font-weight: 700 !important;
+        }
+        .aiz-side-nav-list .aiz-side-nav-link.active .aiz-side-nav-icon {
+            color: #FDE68A !important;
+        }
+
+        /* Submenu Tree Hierarchy Styling */
+        .aiz-side-nav-list .level-2 {
+            background: rgba(0, 0, 0, 0.16) !important;
+            border-radius: 8px !important;
+            margin: 4px 6px 6px 16px !important;
+            padding: 6px 0 !important;
+            border-left: 2px dashed rgba(197, 160, 89, 0.28) !important;
+        }
+        .aiz-side-nav-list .level-2 .aiz-side-nav-item {
+            margin: 1px 6px !important;
+        }
+        .aiz-side-nav-list .level-2 .aiz-side-nav-link {
+            padding: 7px 12px !important;
+            font-size: 12.5px !important;
+            border-radius: 6px !important;
+        }
+        .aiz-side-nav-list .level-2 .aiz-side-nav-link:after {
+            display: none !important;
+        }
+        .aiz-side-nav-list .level-2 .aiz-side-nav-link::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(197, 160, 89, 0.4);
+            margin-right: 8px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .aiz-side-nav-list .level-2 .aiz-side-nav-link:hover::before,
+        .aiz-side-nav-list .level-2 .aiz-side-nav-link.active::before {
+            background: #C5A059;
+            box-shadow: 0 0 6px #C5A059;
+            transform: scale(1.3);
+        }
+
+        .aiz-side-nav-arrow {
+            color: rgba(197, 160, 89, 0.7) !important;
+            font-size: 10px !important;
+            transition: transform 0.25s ease !important;
+        }    </style>
 </head>
 
 <body>

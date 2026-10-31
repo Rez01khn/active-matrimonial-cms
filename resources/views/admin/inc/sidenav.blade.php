@@ -6,15 +6,17 @@
             </a>
         </div>
         <div class="aiz-side-nav-wrap">
-            <div class="px-20px mb-3">
-                <input class="form-control bg-soft-secondary border-0 form-control-sm text-white" type="text"
-                    name="" placeholder="{{ translate('Search in menu') }}" id="menu-search"
+            <div class="px-20px mb-3 position-relative">
+                <i class="las la-search position-absolute" style="left: 32px; top: 50%; transform: translateY(-50%); color: rgba(197, 160, 89, 0.65); font-size: 15px; pointer-events: none;"></i>
+                <input class="form-control" type="text"
+                    name="" placeholder="{{ translate('Search in menu...') }}" id="menu-search"
                     onkeyup="menuSearch()">
             </div>
             <ul class="aiz-side-nav-list" id="search-menu">
             </ul>
             <ul class="aiz-side-nav-list" id="main-menu" data-toggle="aiz-side-menu">
 
+                <li class="aiz-side-nav-category">{{ translate('Overview') }}</li>
                 <li class="aiz-side-nav-item">
                     <a href="{{ route('admin.dashboard') }}" class="aiz-side-nav-link">
                         <i class="las la-home aiz-side-nav-icon"></i>
@@ -22,6 +24,7 @@
                     </a>
                 </li>
 
+                <li class="aiz-side-nav-category">{{ translate('Members & Packages') }}</li>
                 <!-- Member Manage -->
                 <li class="aiz-side-nav-item">
                     <a href="#" class="aiz-side-nav-link">
@@ -32,23 +35,23 @@
                     <ul class="aiz-side-nav-list level-2">
                         @can('show_members')
                         <li class="aiz-side-nav-item">
-                            <a href="{{ route('unsubscribed.members.index') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.create', 'members.edit', 'members.show']) }}">
-                                <span class="aiz-side-nav-text">{{ translate('Basic Members') }}</span>
+                            <a href="{{ route('members.index') }}"
+                                class="aiz-side-nav-link {{ (Route::currentRouteName() == 'members.index' && !request('package_id')) || areActiveRoutes(['members.create', 'members.edit', 'members.show']) ? 'active' : '' }}">
+                                <span class="aiz-side-nav-text">{{ translate('All Members') }}</span>
                             </a>
                         </li>
+
+                        @php
+                            $sidebar_packages = \App\Models\Package::where('active', 1)->orderBy('id', 'asc')->get();
+                        @endphp
+                        @foreach($sidebar_packages as $s_pkg)
                         <li class="aiz-side-nav-item">
-                            <a href="{{ route('free.members.index') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.create', 'members.edit', 'members.show']) }}">
-                                <span class="aiz-side-nav-text">{{ translate('Free Members') }}</span>
+                            <a href="{{ route('members.index', ['package_id' => $s_pkg->id]) }}"
+                                class="aiz-side-nav-link {{ (Route::currentRouteName() == 'members.index' && request('package_id') == $s_pkg->id) ? 'active' : '' }}">
+                                <span class="aiz-side-nav-text">{{ $s_pkg->name }} {{ translate('Members') }}</span>
                             </a>
                         </li>
-                        <li class="aiz-side-nav-item">
-                            <a href="{{ route('premium.members.index') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.create', 'members.edit', 'members.show']) }}">
-                                <span class="aiz-side-nav-text">{{ translate('Premium Members') }}</span>
-                            </a>
-                        </li>
+                        @endforeach
                         @endcan
 
                         @can('approved_member_show')
@@ -239,26 +242,34 @@
                     </ul>
                 </li>
 
+                <li class="aiz-side-nav-category">{{ translate('Operations') }}</li>
                 <!-- Consultations & Meetings -->
                 <li class="aiz-side-nav-item">
                     <a href="{{ route('admin.consultations.index') }}"
                         class="aiz-side-nav-link {{ areActiveRoutes(['admin.consultations.index']) }}">
                         <i class="las la-video aiz-side-nav-icon"></i>
                         <span class="aiz-side-nav-text">{{ translate('Consultations') }}</span>
+                        @php
+                            $nav_pending_consults = \App\Models\Consultation::where('status', 'pending')->count();
+                        @endphp
+                        @if($nav_pending_consults > 0)
+                            <span class="badge badge-inline badge-warning ml-auto fs-10 font-weight-700 px-2 py-0.5" style="border-radius: 999px;">{{ $nav_pending_consults }}</span>
+                        @endif
                     </a>
                 </li>
 
-                <!-- Premium Packages -->
+                <!-- Packages -->
                 @can('show_packages')
                 <li class="aiz-side-nav-item">
                     <a href="{{ route('packages.index') }}"
                         class="aiz-side-nav-link {{ areActiveRoutes(['packages.create', 'packages.edit']) }}">
-                        <i class="las la-home aiz-side-nav-icon"></i>
-                        <span class="aiz-side-nav-text">{{ translate('Premium Packages') }}</span>
+                        <i class="las la-gem aiz-side-nav-icon"></i>
+                        <span class="aiz-side-nav-text">{{ translate('Packages') }}</span>
                     </a>
                 </li>
                 @endcan
 
+                <li class="aiz-side-nav-category">{{ translate('Finance & Billing') }}</li>
                 <!-- Earnings -->
                 @can('show_package_payments')
                 <li class="aiz-side-nav-item ">
@@ -569,6 +580,7 @@
                 </li>
                 @endcan
 
+                <li class="aiz-side-nav-category">{{ translate('Settings & System') }}</li>
                 <!-- Website Setup -->
                 @if (auth()->user()->can('header') ||
                 auth()->user()->can('footer') ||
@@ -771,6 +783,26 @@
 
             </ul><!-- .aiz-side-nav -->
         </div><!-- .aiz-side-nav-wrap -->
+            <!-- Sidebar Footer: Logged in Admin Profile -->
+        <div class="dash-sidebar-footer p-2.5 mx-2 my-2 rounded-lg d-flex align-items-center justify-content-between" style="background: rgba(0, 0, 0, 0.28); border: 1px solid rgba(197, 160, 89, 0.25);">
+            <div class="d-flex align-items-center overflow-hidden mr-2">
+                @php
+                    $nav_admin = Auth::user();
+                    $nav_admin_photo = ($nav_admin && !empty($nav_admin->photo)) ? uploaded_asset($nav_admin->photo) : static_asset('assets/img/avatar-place.png');
+                @endphp
+                <div class="position-relative mr-2 flex-shrink-0">
+                    <img src="{{ $nav_admin_photo }}" class="rounded-circle border" style="width: 34px; height: 34px; object-fit: cover; border-color: rgba(197, 160, 89, 0.5) !important;" alt="" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                    <span class="position-absolute rounded-circle bg-success" style="width: 8px; height: 8px; bottom: 0; right: 0; border: 1.5px solid #331019;"></span>
+                </div>
+                <div class="text-truncate">
+                    <div class="text-white font-weight-700 fs-12 text-truncate">{{ $nav_admin ? $nav_admin->first_name . ' ' . $nav_admin->last_name : 'Admin' }}</div>
+                    <div class="fs-10 text-truncate text-capitalize" style="color: var(--mat-gold-light) !important;">{{ $nav_admin ? $nav_admin->user_type : 'Administrator' }}</div>
+                </div>
+            </div>
+            <a href="{{ route('logout') }}" class="btn btn-icon btn-circle btn-sm text-reset flex-shrink-0" style="background: rgba(255, 255, 255, 0.08); color: #E2DCD5 !important;" title="{{ translate('Logout') }}">
+                <i class="las la-sign-out-alt fs-15"></i>
+            </a>
+        </div>
     </div><!-- .aiz-sidebar -->
     <div class="aiz-sidebar-overlay"></div>
 </div><!-- .aiz-sidebar -->

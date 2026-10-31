@@ -257,7 +257,7 @@
                                 </div>
                             @endif
                         </div>
-                        @if (Auth::user()->member->auto_profile_match == 1)
+                        @if (optional(Auth::user()->member)->auto_profile_match == 1)
                             <div class="mb-4">
                                 <div class="d-flex justify-content-between">
                                     <h3 class="fs-18 mb-3">{{ translate('Similar Profiles') }}</h3>

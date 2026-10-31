@@ -9,6 +9,8 @@ class Package extends Model
 {
     use SoftDeletes;
 
+    protected $guarded = [];
+
     public function payckage_payments()
     {
         return $this->hasmany(PackagePayment::class)->withTrashed();

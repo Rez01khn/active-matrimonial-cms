@@ -12,26 +12,49 @@
         <div class="d-flex align-items-center justify-content-between h-100 text-xs">
 
             @auth
-                <!-- Scenario B: Authenticated Member Identity (Centered in Middle) -->
+                <!-- Scenario B: Authenticated Identity (Centered in Middle) -->
                 <div class="topbar-auth-left d-none d-lg-flex align-items-center flex-shrink-0">
                     <!-- Clean balance spacer -->
                 </div>
 
-                <div class="topbar-center-identity">
-                    <div class="topbar-member-identity d-flex align-items-center flex-shrink-0">
-                        <span class="topbar-member-greeting">
-                            <span class="topbar-prefix-text">{{ get_setting('topbar_member_prefix', 'Welcome back') }},</span>
-                            <strong class="font-weight-600 ml-1">{{ Auth::user()->name ?: Auth::user()->first_name }}</strong>
-                        </span>
-                        <span class="topbar-sep-dot">&middot;</span>
-                        <span class="topbar-member-code">
-                            ID: #{{ Auth::user()->code ?? Auth::id() }}
-                        </span>
-                        <span class="topbar-package-badge">
-                            [ {{ Auth::user()->member->current_package->name ?? (Auth::user()->member->package->name ?? translate('Free Member')) }} ]
-                        </span>
+                @if(Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff')
+                    <!-- Logged in as Admin / Staff -->
+                    <div class="topbar-center-identity">
+                        <a href="{{ route('admin.dashboard') }}" class="topbar-member-identity d-flex align-items-center flex-shrink-0 text-decoration-none" title="{{ translate('Go to Admin Dashboard') }}">
+                            <span class="topbar-member-greeting">
+                                <span class="topbar-prefix-text">{{ translate('Welcome back') }},</span>
+                                <strong class="font-weight-700 ml-1" style="color: #FFFFFF;">{{ Auth::user()->name ?: (Auth::user()->first_name . ' ' . Auth::user()->last_name) }}</strong>
+                            </span>
+                            <span class="topbar-sep-dot">&middot;</span>
+                            <span class="badge badge-inline px-2.5 py-1 text-white font-weight-700 fs-11 rounded-pill shadow-sm" style="background: rgba(197, 160, 89, 0.35); border: 1px solid rgba(197, 160, 89, 0.6); color: #FDE68A !important;">
+                                <i class="las la-shield-alt mr-1"></i> {{ translate('ADMIN DASHBOARD') }} &rarr;
+                            </span>
+                        </a>
                     </div>
-                </div>
+                @else
+                    <!-- Logged in as Member -->
+                    <div class="topbar-center-identity">
+                        <a href="{{ route('dashboard') }}" class="topbar-member-identity d-flex align-items-center flex-shrink-0 text-decoration-none" title="{{ translate('Go to Member Dashboard') }}">
+                            <span class="topbar-member-greeting">
+                                <span class="topbar-prefix-text">{{ get_setting('topbar_member_prefix', 'Welcome back') }},</span>
+                                <strong class="font-weight-600 ml-1" style="color: #FFFFFF;">{{ Auth::user()->name ?: Auth::user()->first_name }}</strong>
+                            </span>
+                            <span class="topbar-sep-dot">&middot;</span>
+                            <span class="topbar-member-code" style="color: #E2DCD5;">
+                                ID: #{{ Auth::user()->code ?? Auth::id() }}
+                            </span>
+                            @php
+                                $user_member = Auth::user()->member;
+                                $pkg_title = ($user_member && $user_member->current_package) 
+                                    ? $user_member->current_package->name 
+                                    : (($user_member && $user_member->package) ? $user_member->package->name : (Auth::user()->membership == 2 ? translate('Premium') : translate('Free Member')));
+                            @endphp
+                            <span class="topbar-package-badge ml-1" style="color: var(--mat-gold-light);">
+                                [ {{ $pkg_title }} ]
+                            </span>
+                        </a>
+                    </div>
+                @endif
 
                 <div class="topbar-spacer d-none d-lg-block"></div>
             @endauth
@@ -159,18 +182,33 @@
                 @auth
                     <!-- Notifications & User Profile -->
                     <div class="d-flex align-items-center">
-                        <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-reset mr-3">
-                            <img src="{{ uploaded_asset(Auth::user()->photo) }}"
-                                class="size-35px rounded-circle img-fit mr-2 border border-mat-gold"
-                                onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
-                            <span class="fw-600 text-mat-maroon d-none d-md-inline">
-                                {{ Auth::user()->first_name }}
-                            </span>
-                        </a>
-                        <a href="{{ route('user.logout') }}" class="btn btn-mat-maroon btn-sm py-2 px-3 rounded-pill">
-                            <i class="las la-sign-out-alt"></i>
-                            <span class="d-none d-md-inline">{{ translate('Logout') }}</span>
-                        </a>
+                        @if(Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff')
+                            <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center text-reset mr-3">
+                                <img src="{{ uploaded_asset(Auth::user()->photo) }}"
+                                    class="size-35px rounded-circle img-fit mr-2 border border-mat-gold"
+                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                <span class="fw-600 text-mat-maroon d-none d-md-inline">
+                                    {{ Auth::user()->first_name }} ({{ translate('Admin') }})
+                                </span>
+                            </a>
+                            <a href="{{ route('logout') }}" class="btn btn-mat-maroon btn-sm py-2 px-3 rounded-pill">
+                                <i class="las la-sign-out-alt"></i>
+                                <span class="d-none d-md-inline">{{ translate('Logout') }}</span>
+                            </a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-reset mr-3">
+                                <img src="{{ uploaded_asset(Auth::user()->photo) }}"
+                                    class="size-35px rounded-circle img-fit mr-2 border border-mat-gold"
+                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
+                                <span class="fw-600 text-mat-maroon d-none d-md-inline">
+                                    {{ Auth::user()->first_name }}
+                                </span>
+                            </a>
+                            <a href="{{ route('user.logout') }}" class="btn btn-mat-maroon btn-sm py-2 px-3 rounded-pill">
+                                <i class="las la-sign-out-alt"></i>
+                                <span class="d-none d-md-inline">{{ translate('Logout') }}</span>
+                            </a>
+                        @endif
                     </div>
                 @endauth
                 @guest

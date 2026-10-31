@@ -36,6 +36,12 @@ use PDF;
 use App\Models\Upload;
 use App\Models\Chat;
 use App\Models\ChatThread;
+use App\Models\Package;
+use App\Models\PackagePayment;
+use App\Models\Consultation;
+use App\Models\ContactUs;
+use Carbon\Carbon;
+use DB;
 
 
 class HomeController extends Controller
@@ -130,7 +136,43 @@ class HomeController extends Controller
 
         $happy_stories = HappyStory::where('approved', 1)->latest()->take(6)->get();
 
-        return view('frontend.index', compact('premium_members', 'new_members', 'religions', 'cities', 'genders', 'age_ranges', 'happy_stories'));
+        // Featured Brides (female members, gender = 2)
+        $featured_brides = User::where('user_type', 'member')
+            ->where('approved', 1)
+            ->where('blocked', 0)
+            ->where('deactivated', 0)
+            ->whereHas('member', function ($q) {
+                $q->where('gender', 2);
+            })
+            ->with(['member', 'spiritual_backgrounds.religion', 'career', 'addresses.city', 'physical_attributes'])
+            ->latest('id')
+            ->take(12)
+            ->get();
+
+        // Featured Grooms (male members, gender = 1)
+        $featured_grooms = User::where('user_type', 'member')
+            ->where('approved', 1)
+            ->where('blocked', 0)
+            ->where('deactivated', 0)
+            ->whereHas('member', function ($q) {
+                $q->where('gender', 1);
+            })
+            ->with(['member', 'spiritual_backgrounds.religion', 'career', 'addresses.city', 'physical_attributes'])
+            ->latest('id')
+            ->take(12)
+            ->get();
+
+        return view('frontend.index', compact(
+            'premium_members',
+            'new_members',
+            'religions',
+            'cities',
+            'genders',
+            'age_ranges',
+            'happy_stories',
+            'featured_brides',
+            'featured_grooms'
+        ));
     }
 
 
@@ -155,13 +197,143 @@ class HomeController extends Controller
 
     public function admin_dashboard()
     {
-        // $user = auth()->user();
-        // // $user->assignRole(['Super Admin']);
-        // // $permissions = $user->getAllPermissions();
-        // // dd($permissions);
-        // $roles = $user->getRoleNames(); // Collection of role names
-        // dd($roles);
-        return view('admin.dashboard');
+        $today = Carbon::today();
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        // Member Metrics
+        $total_members = User::where('user_type', 'member')->count();
+        $free_members = User::where('user_type', 'member')->where('membership', '<=', 1)->count();
+        $premium_members = User::where('user_type', 'member')->where('membership', 2)->count();
+        $blocked_members = User::where('user_type', 'member')->where('blocked', 1)->count();
+
+        // New Registrations
+        $today_new_members = User::where('user_type', 'member')->whereDate('created_at', $today)->count();
+        $this_week_members = User::where('user_type', 'member')->whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
+        $this_month_members = User::where('user_type', 'member')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
+
+        // Latest 5 Registrants for Avatar stack
+        // Registrants for Avatar stack (Today / Weekly / Monthly)
+        $today_registrants = User::where('user_type', 'member')->whereDate('created_at', $today)->latest()->take(5)->get();
+        $weekly_registrants = User::where('user_type', 'member')->whereBetween('created_at', [$startOfWeek, $endOfWeek])->latest()->take(5)->get();
+        $monthly_registrants = User::where('user_type', 'member')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->latest()->take(5)->get();
+        $latest_registrants = $monthly_registrants;
+
+        // Active & Gender stats
+        $active_members_count = User::where('user_type', 'member')->where('deactivated', 0)->count();
+        $male_members_count = Member::where('gender', 1)->count();
+        $female_members_count = Member::where('gender', 2)->count();
+
+        // Earnings
+        $total_earnings = PackagePayment::where('payment_status', 'Paid')->sum('amount');
+        $this_month_earnings = PackagePayment::where('payment_status', 'Paid')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->sum('amount');
+        $last_month_earnings = PackagePayment::where('payment_status', 'Paid')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->sum('amount');
+
+        // Monthly Earnings for 12 months of current year
+        $monthly_earnings = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthStr = str_pad($m, 2, '0', STR_PAD_LEFT);
+            $monthly_earnings[] = (float) PackagePayment::where('payment_status', 'Paid')
+                ->whereMonth('created_at', $monthStr)
+                ->whereYear('created_at', $currentYear)
+                ->sum('amount');
+        }
+
+        // Package breakdown
+        $packages = Package::where('active', 1)->get();
+        $package_stats = [];
+        foreach ($packages as $pkg) {
+            $count = Member::where('current_package_id', $pkg->id)->count();
+            $package_stats[] = [
+                'name' => $pkg->name,
+                'count' => $count
+            ];
+        }
+
+        // Pending items (Action Hub)
+        $pending_payments_count = PackagePayment::where('payment_status', 'Pending')->count();
+        $unapproved_photos_count = User::where('user_type', 'member')->where('photo_approved', 0)->whereNotNull('photo')->count();
+        $pending_members_count = User::where('user_type', 'member')->where('approved', 0)->count();
+
+        // Recent Members
+        // Recent Members (up to 25 for internal scrollable list)
+        $recent_members = User::with(['member.package'])->where('user_type', 'member')->latest()->take(25)->get();
+
+        // Expiring Soon / Renewal Reminders
+        $expiring_members = Member::with(['user', 'package'])
+            ->whereHas('user', function ($q) {
+                $q->where('user_type', 'member')->where('membership', 2);
+            })
+            ->whereNotNull('package_validity')
+            ->orderBy('package_validity', 'asc')
+            ->take(25)
+            ->get();
+
+        // Fallback for expiring members if none exists yet
+        if ($expiring_members->isEmpty()) {
+            $expiring_members = Member::with(['user', 'package'])
+                ->whereHas('user', function ($q) {
+                    $q->where('user_type', 'member');
+                })
+                ->latest()
+                ->take(6)
+                ->get();
+        }
+
+        // Meeting & Consultation Requests
+        $recent_consultations = Consultation::with(['user', 'targetUser'])->latest()->take(20)->get();
+        $pending_meetings_count = Consultation::where('status', 'pending')->count();
+        $total_meetings_count = Consultation::count();
+
+        // Email & Contact Inquiries
+        $recent_contact_queries = ContactUs::latest()->take(20)->get();
+        $pending_contact_queries_count = ContactUs::where('status', 0)->count();
+        $total_contact_queries_count = ContactUs::count();
+
+        // Happy Stories
+        $happy_stories = HappyStory::where('approved', '1')->latest()->limit(8)->get();
+        $total_happy_stories = HappyStory::count();
+        $approved_happy_stories = HappyStory::where('approved', 1)->count();
+        $pending_happy_stories = HappyStory::where('approved', 0)->count();
+
+        return view('admin.dashboard', compact(
+            'total_members',
+            'free_members',
+            'premium_members',
+            'blocked_members',
+            'today_new_members',
+            'this_week_members',
+            'this_month_members',
+            'latest_registrants',
+            'today_registrants',
+            'weekly_registrants',
+            'monthly_registrants',
+            'active_members_count',
+            'male_members_count',
+            'female_members_count',
+            'total_earnings',
+            'this_month_earnings',
+            'last_month_earnings',
+            'monthly_earnings',
+            'package_stats',
+            'pending_payments_count',
+            'unapproved_photos_count',
+            'pending_members_count',
+            'recent_members',
+            'expiring_members',
+            'happy_stories',
+            'total_happy_stories',
+            'approved_happy_stories',
+            'pending_happy_stories',
+            'recent_consultations',
+            'pending_meetings_count',
+            'total_meetings_count',
+            'recent_contact_queries',
+            'pending_contact_queries_count',
+            'total_contact_queries_count'
+        ));
     }
     
     // Manage Admin Profile
@@ -489,7 +661,7 @@ class HomeController extends Controller
         $user = User::findOrFail($id);
 
         // Profile view data store
-        if($user->id != $authUser->id){
+        if ($authUser->user_type != 'admin' && $user->id != $authUser->id) {
             $profileViewed = ProfileViewer::where('user_id', $user->id)->where('viewed_by', $authUser->id)->first();
             if($profileViewed == null){
                 if(package_validity($user->id) && $user->member->remaining_profile_viewer_view > 0){

@@ -40,6 +40,7 @@ use App\Models\Package;
 use App\Models\PackagePayment;
 use App\Models\Consultation;
 use App\Models\ContactUs;
+use App\Models\Subscriber;
 use Carbon\Carbon;
 use DB;
 
@@ -1006,5 +1007,29 @@ class HomeController extends Controller
             $customerVerification->save();
             return response()->json(['status' => 1, 'message' => translate('Verification Successful')]);
         }
+    }
+
+    public function subscribers_store(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|max:255'
+        ]);
+
+        $subscriber = Subscriber::where('email', $request->email)->first();
+        if ($subscriber != null) {
+            return response()->json([
+                'result' => true,
+                'message' => translate('You are already subscribed to our newsletter!')
+            ]);
+        }
+
+        Subscriber::create([
+            'email' => $request->email
+        ]);
+
+        return response()->json([
+            'result' => true,
+            'message' => translate('Thank you for subscribing to our newsletter!')
+        ]);
     }
 }

@@ -86,6 +86,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/users/blocked', 'user_account_blocked')->name('user.blocked');
     Route::post('/registration/verification-code-send', 'sendRegVerificationCode')->name('verification_code_send');
     Route::post('/registration/verification-code-confirmation', 'regVerifyCodeConfirmation')->name('verify_code_confirmation');
+    Route::post('/subscribers', 'subscribers_store')->name('subscribers.store');
 });
 
 // Uploader

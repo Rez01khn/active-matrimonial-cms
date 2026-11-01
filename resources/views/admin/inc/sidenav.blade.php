@@ -242,6 +242,17 @@
                     </ul>
                 </li>
 
+                <!-- Packages -->
+                @can('show_packages')
+                <li class="aiz-side-nav-item">
+                    <a href="{{ route('packages.index') }}"
+                        class="aiz-side-nav-link {{ areActiveRoutes(['packages.index', 'packages.create', 'packages.edit']) }}">
+                        <i class="las la-gem aiz-side-nav-icon"></i>
+                        <span class="aiz-side-nav-text">{{ translate('Packages') }}</span>
+                    </a>
+                </li>
+                @endcan
+
                 <li class="aiz-side-nav-category">{{ translate('Operations') }}</li>
                 <!-- Consultations & Meetings -->
                 <li class="aiz-side-nav-item">
@@ -258,22 +269,10 @@
                     </a>
                 </li>
 
-                <!-- Packages -->
-                @can('show_packages')
-                <li class="aiz-side-nav-item">
-                    <a href="{{ route('packages.index') }}"
-                        class="aiz-side-nav-link {{ areActiveRoutes(['packages.create', 'packages.edit']) }}">
-                        <i class="las la-gem aiz-side-nav-icon"></i>
-                        <span class="aiz-side-nav-text">{{ translate('Packages') }}</span>
-                    </a>
-                </li>
-                @endcan
-
-                <li class="aiz-side-nav-category">{{ translate('Finance & Billing') }}</li>
-                <!-- Earnings -->
+                <!-- Package Payments (Moved into Operations) -->
                 @can('show_package_payments')
-                <li class="aiz-side-nav-item ">
-                    <a href="{{ route('package-payments.index') }}" class="aiz-side-nav-link">
+                <li class="aiz-side-nav-item">
+                    <a href="{{ route('package-payments.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['package-payments.index']) }}">
                         <i class="las la-money-bill-alt aiz-side-nav-icon"></i>
                         <span class="aiz-side-nav-text">{{ translate('Package Payments') }}</span>
                     </a>

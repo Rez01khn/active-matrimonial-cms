@@ -115,10 +115,17 @@
                                 <td>{{ date('d-m-Y', strtotime($member->created_at)) }}</td>
                                 <td>
                                     @php
+                                        $pending_pkg_payment = $member->payckage_payments
+                                            ? $member->payckage_payments->where('payment_status', 'Due')->sortByDesc('id')->first()
+                                            : null;
                                         $member_pkg = optional($member->member)->package;
                                         $is_premium = $member->membership == 2;
                                     @endphp
-                                    @if($member_pkg)
+                                    @if($pending_pkg_payment && $pending_pkg_payment->package)
+                                        <span class="badge badge-inline font-weight-700 px-2 py-1 rounded-pill" style="background: rgba(197, 160, 89, 0.18); color: #8A6828; border: 1px solid rgba(197, 160, 89, 0.45);">
+                                            <i class="las la-crown mr-1"></i> {{ $pending_pkg_payment->package->name }} ({{ translate('Pending') }})
+                                        </span>
+                                    @elseif($member_pkg)
                                         <span class="badge badge-inline font-weight-700 px-2 py-1 rounded-pill" style="background: rgba(197, 160, 89, 0.15); color: #8A6828; border: 1px solid rgba(197, 160, 89, 0.35);">
                                             <i class="las la-crown mr-1"></i> {{ $member_pkg->name }}
                                         </span>
@@ -128,7 +135,7 @@
                                         </span>
                                     @else
                                         <span class="badge badge-inline badge-light font-weight-600 px-2 py-1 rounded-pill text-muted border">
-                                            {{ translate('Free') }}
+                                            {{ translate('Free Plan') }}
                                         </span>
                                     @endif
                                 </td>
@@ -161,6 +168,9 @@
                                                     @endif
                                                 @endcan
                                                 @can ('approve_member')
+                                                    @if($member->approved == 0)
+                                                        <a class="dropdown-item" href="{{ route('member.approve_verification', $member->id) }}">{{translate('Approve Member')}}</a>
+                                                    @endif
                                                     @if(get_setting('member_verification') == 1 && $member->verification_info != null)
                                                         <a class="dropdown-item" href="{{ route('member.show_verification_info', encrypt($member->id)) }}" >{{translate('View Verification Info')}}</a>
                                                     @endif

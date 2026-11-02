@@ -5,15 +5,7 @@
                 <img src="{{ uploaded_asset(get_setting('system_logo')) }}" class="img-fluid">
             </a>
         </div>
-        <div class="aiz-side-nav-wrap">
-            <div class="px-20px mb-3 position-relative">
-                <i class="las la-search position-absolute" style="left: 32px; top: 50%; transform: translateY(-50%); color: rgba(197, 160, 89, 0.65); font-size: 15px; pointer-events: none;"></i>
-                <input class="form-control" type="text"
-                    name="" placeholder="{{ translate('Search in menu...') }}" id="menu-search"
-                    onkeyup="menuSearch()">
-            </div>
-            <ul class="aiz-side-nav-list" id="search-menu">
-            </ul>
+        <div class="aiz-side-nav-wrap pt-2">
             <ul class="aiz-side-nav-list" id="main-menu" data-toggle="aiz-side-menu">
 
                 <li class="aiz-side-nav-category">{{ translate('Overview') }}</li>
@@ -54,18 +46,10 @@
                         @endforeach
                         @endcan
 
-                        @can('approved_member_show')
-                        <li class="aiz-side-nav-item">
-                            <a href="{{  route('filterbyStatus', 'approved') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.edit', 'members.show']) }}">
-                                <span class="aiz-side-nav-text">{{ translate('Approved Members') }}</span>
-                            </a>
-                        </li>
-                        @endcan
                         @can('pending_member_show')
                         <li class="aiz-side-nav-item">
-                            <a href="{{  route('filterbyStatus', 'pending') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.edit', 'members.show']) }}">
+                            <a href="{{ route('filterbyStatus', 'pending') }}"
+                                class="aiz-side-nav-link {{ (Route::currentRouteName() == 'filterbyStatus' && request()->route('status') == 'pending') ? 'active' : '' }}">
                                 <span class="aiz-side-nav-text">{{ translate('Pending Members') }}</span>
                             </a>
                         </li>
@@ -79,16 +63,16 @@
                         @endcan
                         @can('deactvated_member_show')
                         <li class="aiz-side-nav-item">
-                            <a href="{{  route('filterbyStatus','deactivated') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.edit', 'members.show']) }}">
+                            <a href="{{ route('filterbyStatus', 'deactivated') }}"
+                                class="aiz-side-nav-link {{ (Route::currentRouteName() == 'filterbyStatus' && request()->route('status') == 'deactivated') ? 'active' : '' }}">
                                 <span class="aiz-side-nav-text">{{ translate('Deactivated Members') }}</span>
                             </a>
                         </li>
                         @endcan
                         @can('blocked_member_show')
                         <li class="aiz-side-nav-item">
-                            <a href="{{  route('filterbyStatus', 'blocked') }}"
-                                class="aiz-side-nav-link  {{ areActiveRoutes(['members.edit', 'members.show']) }}">
+                            <a href="{{ route('filterbyStatus', 'blocked') }}"
+                                class="aiz-side-nav-link {{ (Route::currentRouteName() == 'filterbyStatus' && request()->route('status') == 'blocked') ? 'active' : '' }}">
                                 <span class="aiz-side-nav-text">{{ translate('Blocked Members') }}</span>
                             </a>
                         </li>
@@ -353,21 +337,14 @@
                 </li>
                 @endif
 
-                <!-- Messaging -->
+                <!-- Newsletter -->
                 @can('newsletter')
                 <li class="aiz-side-nav-item">
-                    <a href="#" class="aiz-side-nav-link">
-                        <i class="las la-bullhorn aiz-side-nav-icon"></i>
-                        <span class="aiz-side-nav-text">{{ translate('Marketing') }}</span>
-                        <span class="aiz-side-nav-arrow"></span>
+                    <a href="{{ route('newsletters.index') }}"
+                        class="aiz-side-nav-link {{ areActiveRoutes(['newsletters.index']) }}">
+                        <i class="las la-envelope-open-text aiz-side-nav-icon"></i>
+                        <span class="aiz-side-nav-text">{{ translate('Newsletter') }}</span>
                     </a>
-                    <ul class="aiz-side-nav-list level-2">
-                        <li class="aiz-side-nav-item">
-                            <a href="{{ route('newsletters.index') }}" class="aiz-side-nav-link">
-                                <span class="aiz-side-nav-text">{{ translate('Newsletter') }}</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
                 @endcan
 

@@ -132,7 +132,7 @@
                                     $user->member->gender == 1
                                     ? 'assets/img/avatar-place.png'
                                     : 'assets/img/female-avatar-place.png';
-                                $profile_picture_show = show_profile_picture($user);
+                                $profile_picture_show = show_profile_picture($user) || (in_array($auth_user->user_type, ['admin', 'staff']) && $user->photo != null);
                             @endphp
                             <img @if ($profile_picture_show) src="{{ uploaded_asset($user->photo) }}" @else
                             src="{{ static_asset($avatar_image) }}" @endif
@@ -745,7 +745,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="border p-3">
-                                                    @if (Auth::user()->id != $user->id)
+                                                    @if (Auth::user()->id != $user->id && !in_array(Auth::user()->user_type, ['admin', 'staff']))
                                                         @if ($user->phone != null)
                                                             <div class="d-flex mb-3">
                                                                 <i class="las la-phone text-primary la-2x mr-3"></i>
@@ -2089,8 +2089,8 @@
 
 @section('script')
     <script type="text/javascript">
-        var package_validity = {{ package_validity(Auth::user()->id) ? 'true' : 'false' }};
-        var is_paid_user = {{ is_paid_member(Auth::id()) ? 'true' : 'false' }};
+        var package_validity = {{ (package_validity(Auth::user()->id) || in_array(Auth::user()->user_type, ['admin', 'staff'])) ? 'true' : 'false' }};
+        var is_paid_user = {{ ((isset($is_paid_user) && $is_paid_user) || is_paid_member(Auth::id())) ? 'true' : 'false' }};
         var user_id = {{ Auth::user()->id }};
 
         function prompt_biodata_upgrade(customMessage, customTitle) {

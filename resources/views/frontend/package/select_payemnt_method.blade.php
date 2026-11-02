@@ -171,16 +171,22 @@
 
                     <div class="mp-checkout-card-body">
                         @if(!$hasAnyPayment)
-                            <div class="text-center py-4">
-                                <div class="p-4 rounded border-warning bg-soft-warning">
-                                    <i class="las la-wallet fs-36 text-warning mb-2 d-block"></i>
-                                    <h5 class="fw-700 text-dark mb-2">{{ translate('Online Payment Under Upgrade') }}</h5>
-                                    <p class="fs-14 text-muted mb-2">
-                                        {{ translate('Payment systems are temporarily paused for integration of Bangladeshi payment gateways (bKash, Nagad, SSLCommerz).') }}
-                                    </p>
-                                    <p class="fs-13 text-muted mb-0">
-                                        {{ translate('Please use the test premium account or contact admin to activate membership.') }}
-                                    </p>
+                            <input type="hidden" name="payment_option" value="package_request">
+                            <div class="p-4 rounded border mb-3" style="background: #FAF6F1; border-color: #E2D5C1 !important;">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="las la-crown fs-28 mr-2" style="color: #967240;"></i>
+                                    <h5 class="fw-700 text-dark mb-0">{{ translate('Request Package Activation') }}</h5>
+                                </div>
+                                <p class="fs-13 text-muted mb-3">
+                                    {{ translate('Submit your request for') }} <strong>{{ $package->name }}</strong>. {{ translate('Our admin team will review and approve your membership package.') }}
+                                </p>
+                                <div class="form-group mb-2">
+                                    <label class="fw-600 fs-13">{{ translate('Reference / Transaction Note (Optional)') }}</label>
+                                    <input type="text" name="transaction_id" class="form-control" placeholder="{{ translate('Enter reference number or note (optional)') }}">
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="fw-600 fs-13">{{ translate('Additional Message (Optional)') }}</label>
+                                    <textarea name="payment_details" class="form-control" rows="2" placeholder="{{ translate('Write any message for admin...') }}"></textarea>
                                 </div>
                             </div>
                         @endif
@@ -347,7 +353,7 @@
                                 @endif
                             </div>
                         @endforeach
-                        /* */
+                        @if($hasAnyPayment)
                         <div class="card mb-3 p-3 d-none w-100 manual_payment_description">
                             <div id="manual_payment_description"></div>
                         </div>
@@ -383,11 +389,12 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
                         <div class="d-flex justify-content-end pt-3 border-top mt-2">
                             <button type="button" onclick="package_purchase(this)"
-                                class="btn btn-mp-pkg-gold w-auto px-5 purchase_button" disabled>
-                                <span>{{ translate('Confirm & Pay') }}</span>
+                                class="btn btn-mp-pkg-gold w-auto px-5 purchase_button" {{ $hasAnyPayment ? 'disabled' : '' }}>
+                                <span>{{ $hasAnyPayment ? translate('Confirm & Pay') : translate('Request Package') }}</span>
                                 <i class="las la-check-circle"></i>
                             </button>
                         </div>

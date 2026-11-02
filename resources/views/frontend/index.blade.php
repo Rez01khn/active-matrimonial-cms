@@ -136,7 +136,6 @@
     <section class="py-6 bg-mat-cream">
         <div class="container">
             <div class="text-center max-w-700px mx-auto mb-5">
-                <div class="text-mat-gold fs-18 mb-1">✦</div>
                 <h2 class="font-serif fw-700 text-mat-maroon fs-36 mb-2">
                     A Safer Way to Find <span class="text-mat-maroon">Your Life Partner</span>
                 </h2>
@@ -213,15 +212,6 @@
         <div class="container">
             <!-- Section Header -->
             <div class="heritage-header-wrap">
-                <div class="heritage-accent-badge">
-                    <span class="heritage-divider-wing"></span>
-                    <span class="heritage-icon-pin">
-                        <svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 0C4.477 0 0 4.477 0 10C0 17 10 24 10 24C10 24 20 17 20 10C20 4.477 15.523 0 10 0ZM10 13.5C8.067 13.5 6.5 11.933 6.5 10C6.5 8.067 8.067 6.5 10 6.5C11.933 6.5 13.5 8.067 13.5 10C13.5 11.933 11.933 13.5 10 13.5Z" fill="#8C6239"/>
-                        </svg>
-                    </span>
-                    <span class="heritage-divider-wing right"></span>
-                </div>
                 <h2 class="heritage-headline">Matches by Region &amp; Roots</h2>
                 <p class="heritage-subtitle">
                     Discover compatible brides and grooms from your preferred division and cultural background.
@@ -680,17 +670,6 @@
         <div class="container">
             <!-- Section Header -->
             <div class="heritage-header-wrap">
-                <div class="heritage-accent-badge">
-                    <span class="heritage-divider-wing"></span>
-                    <span class="heritage-icon-pin">
-                        <svg width="22" height="20" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="6" width="20" height="14" rx="2.5" stroke="#8C6239" stroke-width="2"/>
-                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#8C6239" stroke-width="2"/>
-                            <path d="M2 11h20" stroke="#8C6239" stroke-width="1.8"/>
-                        </svg>
-                    </span>
-                    <span class="heritage-divider-wing right"></span>
-                </div>
                 <h2 class="heritage-headline">Find Matches by Profession</h2>
                 <p class="heritage-subtitle">
                     Connect with educated and established professionals who share your values, ambition, and lifestyle.

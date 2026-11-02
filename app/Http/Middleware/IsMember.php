@@ -28,6 +28,10 @@ class IsMember
         //     ]);
         // }
 
+        if (Auth::check() && in_array(Auth::user()->user_type, ['admin', 'staff'])) {
+            return $next($request);
+        }
+
         if (Auth::check() && Auth::user()->user_type == 'member') {
 
             $expiresAt = Carbon::now()->addMinutes(3);

@@ -58,8 +58,6 @@ class PackagePaymentController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-
         $user = Auth::user();
         $data['amount']         = $request->amount;
         $data['package_id']     = $request->package_id;
@@ -106,7 +104,8 @@ class PackagePaymentController extends Controller
                 $user->save();
                 return $this->package_payment_done($request->session()->get('payment_data'), null);
             }
-        } elseif ($request->payment_option == 'manual_payment') {
+        } elseif ($request->payment_option == 'manual_payment' || $request->payment_option == 'package_request') {
+            $manualMethod = $request->manual_payment_id ? ManualPaymentMethod::find($request->manual_payment_id) : null;
             $package_payment = new PackagePayment();
             $package_payment->payment_code = date('ymd-His');
             $package_payment->user_id = $user->id;
@@ -116,8 +115,8 @@ class PackagePaymentController extends Controller
             $package_payment->amount = $request->amount;
             $package_payment->payment_details = '';
             $package_payment->offline_payment = 1;
-            $package_payment->custom_payment_name = ManualPaymentMethod::find($request->manual_payment_id)->heading;
-            $package_payment->custom_payment_transaction_id = $request->transaction_id;
+            $package_payment->custom_payment_name = $manualMethod ? $manualMethod->heading : 'Package Request';
+            $package_payment->custom_payment_transaction_id = $request->transaction_id ?: ('REQ-' . date('ymdHis'));
             $package_payment->custom_payment_proof = $request->payment_proof;
             $package_payment->custom_payment_details = $request->payment_details;
             $package_payment->save();
@@ -156,7 +155,7 @@ class PackagePaymentController extends Controller
             Session::forget('payment_data');
             Session::forget('payment_type');
 
-            flash(translate('Payment completed'))->success();
+            flash(translate('Package request submitted successfully! Waiting for admin approval.'))->success();
             return redirect()->route('package_payment.invoice', $package_payment->id);
         }
     }
@@ -323,7 +322,7 @@ class PackagePaymentController extends Controller
             }else{
                 $user->membership = 2;
             }
-
+            $user->approved = 1;
             $user->save();
 
             if (addon_activation('referral_system') && $user->referred_by != null && $user->referral_comission == 0) {

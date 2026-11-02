@@ -35,6 +35,7 @@
                             <th>{{translate('Member Code')}}</th>
                             <th data-breakpoints="md">{{translate('Name')}}</th>
                             <th data-breakpoints="md">{{translate('Gender')}}</th>
+                            <th data-breakpoints="md">{{translate('Requested Package')}}</th>
                             <th data-breakpoints="md">{{translate('Status')}}</th>
                             <th data-breakpoints="md">{{translate('Profile Reported')}}</th>
                             <th data-breakpoints="md">{{translate('Member Since')}}</th>
@@ -63,17 +64,45 @@
                                         {{ ' ' }}
                                     @endif
                                 </td>
+                                @php
+                                    $pending_pkg_payment = $member->payckage_payments
+                                        ? $member->payckage_payments->where('payment_status', 'Due')->sortByDesc('id')->first()
+                                        : null;
+                                    $latest_pkg_payment = $member->payckage_payments
+                                        ? $member->payckage_payments->sortByDesc('id')->first()
+                                        : null;
+                                    $current_pkg = optional($member->member)->package;
+                                @endphp
+                                <td>
+                                    @if($pending_pkg_payment && $pending_pkg_payment->package)
+                                        <span class="badge badge-inline font-weight-700 px-2 py-1 rounded-pill" style="background: rgba(197, 160, 89, 0.18); color: #8A6828; border: 1px solid rgba(197, 160, 89, 0.45);">
+                                            <i class="las la-crown mr-1"></i> {{ $pending_pkg_payment->package->name }} ({{ translate('Requested') }})
+                                        </span>
+                                    @elseif($latest_pkg_payment && $latest_pkg_payment->package)
+                                        <span class="badge badge-inline font-weight-700 px-2 py-1 rounded-pill" style="background: rgba(197, 160, 89, 0.15); color: #8A6828; border: 1px solid rgba(197, 160, 89, 0.35);">
+                                            <i class="las la-crown mr-1"></i> {{ $latest_pkg_payment->package->name }}
+                                        </span>
+                                    @elseif($current_pkg)
+                                        <span class="badge badge-inline font-weight-600 px-2 py-1 rounded-pill" style="background: rgba(74, 21, 33, 0.08); color: #4A1521; border: 1px solid rgba(74, 21, 33, 0.2);">
+                                            {{ $current_pkg->name }}
+                                        </span>
+                                    @else
+                                        <span class="badge badge-inline badge-light font-weight-600 px-2 py-1 rounded-pill text-muted border">
+                                            {{ translate('Free Plan (No Request)') }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($type == 'blocked')
                                         <span class="badge badge-inline badge-danger">{{translate('Blocked')}}</span>
                                     @elseif($type == 'approved')
                                         <span class="badge badge-inline badge-success">{{translate('Approved')}}</span>
                                     @elseif($type == 'pending')
-                                         @if(get_setting('member_verification') == 1 && $member->verification_info != null)
-                                        <span class="badge badge-inline badge-info">{{translate('Applied')}}</span>
-                                        @else
-                                         <span class="badge badge-inline badge-secondary">{{translate('Not Applied')}}</span>
-                                        @endif
+                                         @if($pending_pkg_payment != null || $current_pkg != null || (get_setting('member_verification') == 1 && $member->verification_info != null))
+                                            <span class="badge badge-inline badge-info">{{translate('Applied')}}</span>
+                                         @else
+                                            <span class="badge badge-inline badge-secondary">{{translate('Not Applied')}}</span>
+                                         @endif
                                     @else
                                         <span class="badge badge-inline badge-warning">{{translate('Deactivated')}}</span>
                                     @endif
@@ -110,6 +139,9 @@
                                                     @endif
                                                 @endcan
                                                 @can ('approve_member')
+                                                    @if($member->approved == 0 || $pending_pkg_payment != null)
+                                                        <a class="dropdown-item" href="{{ route('member.approve_verification', $member->id) }}">{{translate('Approve Member')}}</a>
+                                                    @endif
                                                     @if(get_setting('member_verification') == 1 && $member->verification_info != null)
                                                         <a class="dropdown-item" href="{{ route('member.show_verification_info', encrypt($member->id)) }}" >{{translate('View Verification Info')}}</a>
                                                     @endif
@@ -146,7 +178,7 @@
     {{-- Member Block Modal--}}
     <div class="modal fade member-block-modal" id="modal-basic">
     	<div class="modal-dialog">
-    		<div class="modal-content">
+    	<div class="modal-content">
                 <form class="form-horizontal member-block" action="{{ route('members.block') }}" method="POST">
                     @csrf
                     <input type="hidden" name="member_id" id="block_member_id" value="">

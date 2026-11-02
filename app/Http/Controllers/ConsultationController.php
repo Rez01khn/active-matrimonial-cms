@@ -208,7 +208,15 @@ class ConsultationController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.consultations.index', compact('consultations', 'status', 'search'));
+        $status_counts = [
+            'all' => Consultation::count(),
+            'pending' => Consultation::where('status', 'pending')->count(),
+            'scheduled' => Consultation::where('status', 'scheduled')->count(),
+            'completed' => Consultation::where('status', 'completed')->count(),
+            'cancelled' => Consultation::where('status', 'cancelled')->count(),
+        ];
+
+        return view('admin.consultations.index', compact('consultations', 'status', 'search', 'status_counts'));
     }
 
     /**
@@ -217,6 +225,11 @@ class ConsultationController extends Controller
     public function admin_update(Request $request, $id): RedirectResponse
     {
         $consultation = Consultation::with(['user', 'targetUser'])->findOrFail($id);
+
+        if (in_array($consultation->status, ['completed', 'cancelled'], true)) {
+            flash(translate('This consultation is already finalized and locked from further editing.'))->warning();
+            return back();
+        }
 
         $request->validate([
             'status' => 'required|in:pending,scheduled,completed,cancelled',

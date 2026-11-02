@@ -1,6 +1,10 @@
 @extends('admin.layouts.app')
 @section('content')
 
+@php
+    $canAddCategory = auth()->user()->can('add_blog_category') || auth()->user()->can('show_blog_categories') || auth()->user()->user_type == 'admin';
+@endphp
+
 <div class="aiz-titlebar text-left mt-2 mb-3">
     <div class="row align-items-center">
         <div class="col-md-6">
@@ -10,7 +14,7 @@
 </div>
 
 <div class="row">
-    <div class="@if(auth()->user()->can('add_blog_category')) col-lg-7 @else col-lg-12 @endif">
+    <div class="@if($canAddCategory) col-lg-7 @else col-lg-12 @endif">
         <div class="card">
             <div class="card-header row gutters-5">
                 <div class="col text-center text-md-left">
@@ -39,16 +43,16 @@
                             <td>{{ ($key+1) + ($categories->currentPage() - 1)*$categories->perPage() }}</td>
                             <td>{{ $category->category_name }}</td>
                             <td class="text-right">
-                                @can('edit_blog_category')
+                                @if(auth()->user()->can('edit_blog_category') || auth()->user()->user_type == 'admin')
                                 <a class="btn btn-soft-info btn-icon btn-circle btn-sm" href="{{url('admin/blog-category/'.$category->id.'/edit')}}" title="{{ translate('Edit') }}">
                                     <i class="las la-edit"></i>
                                 </a>
-                                @endcan
-                                @can('delete_blog_category')
+                                @endif
+                                @if(auth()->user()->can('delete_blog_category') || auth()->user()->user_type == 'admin')
                                 <a href="#" class="btn btn-soft-danger btn-icon btn-circle btn-sm confirm-delete" data-href="{{route('blog-category.destroy', $category->id)}}" title="{{ translate('Delete') }}">
                                     <i class="las la-trash"></i>
                                 </a>
-                                @endcan
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -60,7 +64,7 @@
             </div>
         </div>
     </div>
-    @can('add_blog_category')
+    @if($canAddCategory)
         <div class="col-lg-5">
             <div class="card">
                 <div class="card-header">
@@ -70,17 +74,17 @@
                     <form action="{{ route('blog-category.store') }}" method="POST">
                         @csrf
                         <div class="form-group mb-3">
-                            <label for="name">{{translate('Name')}}</label>
-                            <input type="text" id="category_name" name="category_name" placeholder="{{ translate('Name') }}" class="form-control" required>
+                            <label for="category_name">{{translate('Category Name')}} <span class="text-danger">*</span></label>
+                            <input type="text" id="category_name" name="category_name" placeholder="{{ translate('Enter category name...') }}" class="form-control" required>
                         </div>
-                        <div class="form-group mb-3 text-right">
-                            <button type="submit" class="btn btn-primary">{{translate('Save')}}</button>
+                        <div class="form-group mb-0 text-right">
+                            <button type="submit" class="btn btn-primary">{{translate('Save Category')}}</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    @endcan
+    @endif
 </div>
 
 @endsection

@@ -56,21 +56,19 @@
 						<input type="text" class="form-control" placeholder="{{ translate('Address') }}" name="footer_address" value="{{ get_setting('footer_address') }}">
 					</div>
                     <div class="form-group">
-						<label>{{ translate('Website') }}</label>
-						<input type="hidden" name="types[]" value="footer_website">
-						<input type="text" class="form-control" placeholder="{{ translate('Website Address') }}" name="footer_website" value="{{ get_setting('footer_website') }}">
-					</div>
-                    <div class="form-group">
 						<label>{{ translate('Email') }}</label>
 						<input type="hidden" name="types[]" value="footer_email">
 						<input type="text" class="form-control" placeholder="{{ translate('Email') }}" name="footer_email" value="{{ get_setting('footer_email') }}">
 					</div>
                     <div class="form-group">
-						<label>{{ translate('Phone') }}</label>
+						<label>{{ translate('Mobile / Phone Number') }}</label>
 						<div class="footer-phones">
 							<input type="hidden" name="types[]" value="footer_phones">
-							@if (get_setting('footer_phones') != null)
-								@foreach (json_decode(get_setting('footer_phones'), true) as $key => $value)
+							@php
+								$admin_footer_phones = get_setting('footer_phones') != null ? json_decode(get_setting('footer_phones'), true) : [];
+							@endphp
+							@if (!empty($admin_footer_phones) && is_array($admin_footer_phones))
+								@foreach ($admin_footer_phones as $key => $value)
 									<div class="row gutters-5">
 										<div class="col">
 											<div class="form-group">
@@ -84,6 +82,19 @@
 										</div>
 									</div>
 								@endforeach
+							@else
+								<div class="row gutters-5">
+									<div class="col">
+										<div class="form-group">
+											<input type="text" class="form-control" placeholder="{{ translate('Phone Number') }}" name="footer_phones[]" value="">
+										</div>
+									</div>
+									<div class="col-auto">
+										<button type="button" class="mt-1 btn btn-icon btn-circle btn-sm btn-soft-danger" data-toggle="remove-parent" data-parent=".row">
+											<i class="las la-times"></i>
+										</button>
+									</div>
+								</div>
 							@endif
 						</div>
 						<button
@@ -105,6 +116,16 @@
 							data-target=".footer-phones">
 							{{ translate('Add New') }}
 						</button>
+					</div>
+                    <div class="form-group">
+						<label>{{ translate('Working Hours') }}</label>
+						<input type="hidden" name="types[]" value="footer_working_hours">
+						<input type="text" class="form-control" placeholder="{{ translate('e.g. Sat - Thu: 10:00 AM - 7:00 PM') }}" name="footer_working_hours" value="{{ get_setting('footer_working_hours') }}">
+					</div>
+                    <div class="form-group">
+						<label>{{ translate('Website') }}</label>
+						<input type="hidden" name="types[]" value="footer_website">
+						<input type="text" class="form-control" placeholder="{{ translate('Website Address') }}" name="footer_website" value="{{ get_setting('footer_website') }}">
 					</div>
 					<div class="text-right">
 						<button type="submit" class="btn btn-primary">{{ translate('Update') }}</button>

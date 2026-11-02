@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HappyStory;
 use App\Models\Upload;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -40,11 +41,24 @@ class HappyStoryController extends Controller
         $sort_search = null;
         $happy_stories = HappyStory::with(['user.addresses.city', 'user.addresses.country'])->latest();
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != null) {
             $sort_search = $request->search;
+            $happy_stories = $happy_stories->where(function ($q) use ($sort_search) {
+                $q->where('title', 'like', '%' . $sort_search . '%')
+                    ->orWhere('partner_name', 'like', '%' . $sort_search . '%')
+                    ->orWhereHas('user', function ($uq) use ($sort_search) {
+                        $uq->where('first_name', 'like', '%' . $sort_search . '%')
+                            ->orWhere('last_name', 'like', '%' . $sort_search . '%');
+                    });
+            });
         }
         $happy_stories = $happy_stories->paginate(18);
-        return view('admin.happy_stories.index', compact('happy_stories', 'sort_search'));
+        $members = User::where('user_type', 'member')
+            ->where('blocked', 0)
+            ->latest()
+            ->get(['id', 'first_name', 'last_name', 'code']);
+
+        return view('admin.happy_stories.index', compact('happy_stories', 'sort_search', 'members'));
     }
 
     /**
@@ -56,7 +70,7 @@ class HappyStoryController extends Controller
     }
 
     /**
-     * Store or update a newly created resource in storage from User End.
+     * Store or update a newly created resource in storage from User End or Admin Panel.
      */
     public function store(Request $request)
     {
@@ -67,6 +81,33 @@ class HappyStoryController extends Controller
         }
 
         $user = Auth::user();
+        $isAdmin = ($user && $user->user_type === 'admin') || $request->filled('from_admin');
+
+        if ($isAdmin) {
+            $targetUserId = $request->filled('user_id') ? (int) $request->user_id : $user->id;
+            $targetUser = User::find($targetUserId) ?? $user;
+
+            $story = new HappyStory();
+            $story->user_id = $targetUser->id;
+            $story->partner_name = trim($request->partner_name);
+            $story->title = $request->filled('title')
+                ? trim($request->title)
+                : trim($targetUser->first_name . ' & ' . $request->partner_name);
+            $story->details = $request->details;
+            $story->photos = $request->photos;
+            $story->video_provider = $request->video_provider;
+            $story->video_link = $request->video_link;
+            $story->approved = 1;
+
+            if ($story->save()) {
+                flash(translate('Happy Story has been added successfully!'))->success();
+                return redirect()->route('happy-story.index');
+            }
+
+            flash(translate('Sorry! Something went wrong.'))->error();
+            return back();
+        }
+
         $mediaType = $request->input('media_type', 'photo');
 
         $story = HappyStory::where('user_id', $user->id)->first();

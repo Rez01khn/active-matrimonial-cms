@@ -640,7 +640,7 @@ class HomeController extends Controller
     {
         $authUser = auth()->user();
 
-        $is_paid_user = ($authUser && ($authUser->id == $id || is_paid_member($authUser->id) || $authUser->user_type == 'admin'));
+        $is_paid_user = ($authUser && ($authUser->id == $id || is_paid_member($authUser->id) || in_array($authUser->user_type, ['admin', 'staff'])));
 
         $similar_profiles = ProfileMatch::orderBy('match_percentage', 'desc')
             ->where('user_id', $authUser->id)

@@ -47,6 +47,7 @@ use Redirect;
 use Auth;
 use App\Utility\EmailUtility;
 use App\Utility\SmsUtility;
+use Carbon\Carbon;
 use MehediIitdu\CoreComponentRepository\CoreComponentRepository;
 
 class MemberController extends Controller
@@ -102,7 +103,9 @@ class MemberController extends Controller
         CoreComponentRepository::initializeCache();
 
         $sort_search = null;
-        $members = User::latest()->where('user_type', 'member');
+        $members = User::with(['member.package', 'payckage_payments.package', 'reported_users'])
+            ->latest()
+            ->where('user_type', 'member');
 
         if ($request->has('search') && $request->search != null) {
             $sort_search = $request->search;
@@ -117,7 +120,7 @@ class MemberController extends Controller
 
         if ($request->has('package_id') && $request->package_id != null) {
             $package_id = $request->package_id;
-            $members = $members->whereHas('member', function ($q) use ($package_id) {
+            $members = $members->where('approved', 1)->whereHas('member', function ($q) use ($package_id) {
                 if ($package_id == 1) {
                     $q->where(function ($sub) {
                         $sub->where('current_package_id', 1)->orWhereNull('current_package_id');
@@ -156,7 +159,7 @@ class MemberController extends Controller
 
         if ($request->has('package_id') && $request->package_id != null) {
             $package_id = $request->package_id;
-            $members = $members->whereHas('member', function ($q) use ($package_id) {
+            $members = $members->where('approved', 1)->whereHas('member', function ($q) use ($package_id) {
                 if ($package_id == 1) {
                     $q->where(function ($sub) {
                         $sub->where('current_package_id', 1)->orWhereNull('current_package_id');
@@ -609,10 +612,44 @@ class MemberController extends Controller
 
     public function approve_verification($id)
     {
-        $user             = User::findOrFail($id);
+        $user             = User::with('member')->findOrFail($id);
         $user->approved   = 1;
-        if ($user->save()) {
 
+        $pending_payment = PackagePayment::where('user_id', $user->id)
+            ->where('payment_status', 'Due')
+            ->latest()
+            ->first();
+
+        if ($pending_payment && $user->member) {
+            $package = Package::find($pending_payment->package_id);
+            if ($package) {
+                $user->member->current_package_id            = $package->id;
+                $user->member->remaining_interest            = $user->member->remaining_interest + $package->express_interest;
+                $user->member->remaining_photo_gallery       = $user->member->remaining_photo_gallery + $package->photo_gallery;
+                $user->member->remaining_contact_view        = $user->member->remaining_contact_view + $package->contact;
+                $user->member->remaining_profile_viewer_view = $user->member->remaining_profile_viewer_view + $package->profile_viewers_view;
+                $user->member->remaining_profile_image_view  = $user->member->remaining_profile_image_view + $package->profile_image_view;
+                $user->member->remaining_gallery_image_view  = $user->member->remaining_gallery_image_view + $package->gallery_image_view;
+                $user->member->auto_profile_match            = $package->auto_profile_match;
+                $user->member->package_validity              = Carbon::now()->addDays($package->validity)->format('Y-m-d');
+                $user->member->save();
+
+                $pending_payment->payment_status = 'Paid';
+                $pending_payment->save();
+
+                $user->membership = ($package->id == 1) ? 1 : 2;
+            }
+        } else {
+            if ($user->member && $user->member->current_package_id == null) {
+                $user->member->current_package_id = 1;
+                $user->member->save();
+            }
+            if ($user->membership == 0) {
+                $user->membership = ($user->member && $user->member->current_package_id > 1) ? 2 : 1;
+            }
+        }
+
+        if ($user->save()) {
             $status = 'Approved';
 
             // Member verification email send to members
@@ -620,15 +657,10 @@ class MemberController extends Controller
                 EmailUtility::member_verification_email($user, $status);
             }
 
-            flash('Member Verified Successfully')->success();
+            flash(translate('Member Approved Successfully'))->success();
 
-            if ($user->membership === 2) {
-                return redirect()->route('premium.members.index');
-            } elseif ($user->membership === 1) {
-                return redirect()->route('free.members.index');
-            } else {
-                return redirect()->route('unsubscribed.members.index');
-            }
+            $pkgId = optional($user->member)->current_package_id ?: 1;
+            return redirect()->route('members.index', ['package_id' => $pkgId]);
         } else {
             flash('Sorry! Something went wrong.')->error();
             return back();
@@ -649,13 +681,7 @@ class MemberController extends Controller
 
             flash('Member Verification Rejected.')->success();
 
-            if ($user->membership === 2) {
-                return redirect()->route('premium.members.index');
-            } elseif ($user->membership === 1) {
-                return redirect()->route('free.members.index');
-            } else {
-                return redirect()->route('unsubscribed.members.index');
-            }
+            return redirect()->route('filterbyStatus', 'pending');
         } else {
             flash('Sorry! Something went wrong.')->error();
             return back();
@@ -1042,7 +1068,7 @@ class MemberController extends Controller
     public function filterbyStatus(Request $request, $status)
     {
         $sort_search  = null;
-        $query = User::query();
+        $query = User::with(['member.package', 'payckage_payments.package', 'reported_users'])->latest();
         $type = $status;
         // Apply filters based on request
 
@@ -1058,7 +1084,12 @@ class MemberController extends Controller
             $query->where('user_type', 'member')->where('approved', 1);
         }
         if ($status == 'pending') {
-            $query->where('user_type', 'member')->where('approved', 0);
+            $query->where('user_type', 'member')->where(function ($q) {
+                $q->where('approved', 0)
+                    ->orWhereHas('payckage_payments', function ($sub) {
+                        $sub->where('payment_status', 'Due');
+                    });
+            });
         }
 
         // Apply search filter
